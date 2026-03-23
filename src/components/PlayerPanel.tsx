@@ -9,6 +9,7 @@ interface PlayerPanelProps {
   targetMode: boolean;
   onUseItem: (itemId: string) => void;
   onCancelTarget: () => void;
+  inventoryFlash?: boolean;
 }
 
 const StatBar: React.FC<{
