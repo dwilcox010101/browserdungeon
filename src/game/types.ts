@@ -19,15 +19,19 @@ export type Trait =
   | 'STUN'
   | 'KNOCKBACK';
 
+export type ItemType = 'weapon' | 'armor' | 'consumable';
+
 export interface Item {
   id: string;
   name: string;
+  itemType: ItemType;
   verb: Verb;
   traits: Trait[];
   energyCost: number;
   power: number;
   range: number;
   description: string;
+  defenseBonus?: number;
 }
 
 export type LevelUpStat = 'hp' | 'energy' | 'attack' | 'defense' | 'inventory';
