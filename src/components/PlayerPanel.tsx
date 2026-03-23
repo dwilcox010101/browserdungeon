@@ -59,7 +59,7 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
   const totalDef = player.defense + (player.equippedArmor?.defenseBonus ?? 0);
 
   return (
-    <div className="w-64 bg-card border-l border-border p-4 flex flex-col h-full overflow-y-auto">
+    <div className="w-64 bg-card border-r border-border p-4 flex flex-col h-full overflow-y-auto shrink-0">
       <h2 className="text-primary font-bold text-sm tracking-wider uppercase mb-4">
         {player.name}
       </h2>

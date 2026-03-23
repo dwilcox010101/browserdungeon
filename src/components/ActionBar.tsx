@@ -53,32 +53,32 @@ const ActionBar: React.FC<ActionBarProps> = ({
         </div>
       </div>
 
-      <div className="h-6 w-px bg-border" />
+      <div className="flex gap-1 w-full">
+        <button className={`${btnClass} flex-1`} onClick={onPass} title="Pass turn (Space/Num5)">
+          <SkipForward size={14} className="mr-1" />
+          <span className="text-xs">Pass</span>
+        </button>
 
-      <button className={btnClass} onClick={onPass} title="Pass turn (Space/Num5)">
-        <SkipForward size={14} className="mr-1" />
-        <span className="text-xs">Pass</span>
-      </button>
+        <button
+          className={`${hasItem ? btnClass : disabledClass} flex-1`}
+          onClick={onPickUp}
+          disabled={!hasItem}
+          title="Pick up item (G)"
+        >
+          <Package size={14} className="mr-1" />
+          <span className="text-xs">Pick up</span>
+        </button>
 
-      <button
-        className={hasItem ? btnClass : disabledClass}
-        onClick={onPickUp}
-        disabled={!hasItem}
-        title="Pick up item (G)"
-      >
-        <Package size={14} className="mr-1" />
-        <span className="text-xs">Pick up</span>
-      </button>
-
-      <button
-        className={canDescend ? btnClass : disabledClass}
-        onClick={onDescend}
-        disabled={!canDescend}
-        title="Descend stairs (>)"
-      >
-        <ArrowDown size={14} className="mr-1" />
-        <span className="text-xs">Descend</span>
-      </button>
+        <button
+          className={`${canDescend ? btnClass : disabledClass} flex-1`}
+          onClick={onDescend}
+          disabled={!canDescend}
+          title="Descend stairs (>)"
+        >
+          <ArrowDown size={14} className="mr-1" />
+          <span className="text-xs">Descend</span>
+        </button>
+      </div>
     </div>
   );
 };

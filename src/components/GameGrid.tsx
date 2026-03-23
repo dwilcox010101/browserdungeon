@@ -24,11 +24,11 @@ interface GameGridProps {
   onTileClick: (pos: Position) => void;
 }
 
-const TILE_SIZE = 20;
+const TILE_SIZE = 24;
 
 const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick }) => {
-  const viewportWidth = 21;
-  const viewportHeight = 17;
+  const viewportWidth = 27;
+  const viewportHeight = 21;
 
   const viewport = useMemo(() => {
     const halfW = Math.floor(viewportWidth / 2);
