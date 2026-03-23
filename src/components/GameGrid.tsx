@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { Tile, Position } from '@/game/types';
 import {
-  Sword, Bug, Skull, Droplets, Bird, Ghost,
+  Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
   Gem, ArrowDown, Package
 } from 'lucide-react';
+
+// ... keep existing code
 import {
   Tooltip,
   TooltipContent,
