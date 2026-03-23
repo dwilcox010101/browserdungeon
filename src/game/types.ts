@@ -34,7 +34,9 @@ export interface Item {
   defenseBonus?: number;
 }
 
-export type LevelUpStat = 'hp' | 'energy' | 'attack' | 'defense' | 'inventory';
+export type LevelUpStat = 'hp' | 'energy' | 'attack' | 'defense' | 'inventory' | 'luck' | 'dodge';
+
+export type Direction = 'up' | 'down' | 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right';
 
 export interface Entity {
   id: string;
@@ -46,6 +48,8 @@ export interface Entity {
   maxEnergy: number;
   attack: number;
   defense: number;
+  luck: number;
+  dodge: number;
   level: number;
   xp: number;
   xpToNext: number;
@@ -88,8 +92,6 @@ export interface GameState {
   collectedItemIds: Set<string>;
   characterId: string;
 }
-
-export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export type GameAction =
   | { type: 'MOVE'; direction: Direction }

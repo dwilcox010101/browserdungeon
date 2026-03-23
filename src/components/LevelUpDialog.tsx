@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Heart, Zap, Sword, Shield, Package } from 'lucide-react';
+import { Heart, Zap, Sword, Shield, Package, Clover, Wind } from 'lucide-react';
 
 interface LevelUpDialogProps {
   open: boolean;
@@ -20,6 +20,8 @@ const STAT_OPTIONS: { stat: LevelUpStat; label: string; icon: React.ElementType;
   { stat: 'energy', label: 'Max Energy', icon: Zap, description: 'More actions per turn', bonus: '+1 Energy' },
   { stat: 'attack', label: 'Attack', icon: Sword, description: 'Deal more damage', bonus: '+2 ATK' },
   { stat: 'defense', label: 'Defense', icon: Shield, description: 'Take less damage', bonus: '+1 DEF' },
+  { stat: 'luck', label: 'Luck', icon: Clover, description: 'Higher crit chance & bonus XP', bonus: '+2 LCK' },
+  { stat: 'dodge', label: 'Dodge', icon: Wind, description: 'Chance to avoid attacks entirely', bonus: '+2 DDG' },
   { stat: 'inventory', label: 'Inventory', icon: Package, description: 'Carry more items', bonus: '+1 Slot' },
 ];
 

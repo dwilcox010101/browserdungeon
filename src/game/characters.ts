@@ -9,11 +9,13 @@ export interface CharacterDef {
   energy: number;
   attack: number;
   defense: number;
+  luck: number;
+  dodge: number;
   inventorySize: number;
   startWeapon: Omit<Item, 'id'>;
   startArmor: Omit<Item, 'id'> | null;
   startItems: Omit<Item, 'id'>[];
-  unlockRequirement: { type: 'floor'; floor: number } | null; // null = always unlocked
+  unlockRequirement: { type: 'floor'; floor: number } | null;
 }
 
 export const CHARACTERS: CharacterDef[] = [
@@ -23,9 +25,11 @@ export const CHARACTERS: CharacterDef[] = [
     icon: 'Sword',
     description: 'Balanced fighter with solid stats.',
     hp: 30,
-    energy: 5,
+    energy: 3,
     attack: 5,
     defense: 2,
+    luck: 1,
+    dodge: 1,
     inventorySize: 4,
     startWeapon: { name: 'Rusty Sword', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack' },
     startArmor: null,
@@ -36,11 +40,13 @@ export const CHARACTERS: CharacterDef[] = [
     id: 'rogue',
     name: 'Rogue',
     icon: 'Zap',
-    description: 'Fast and deadly. High energy, low HP.',
-    hp: 20,
-    energy: 7,
+    description: 'Fast and evasive. High dodge, low HP.',
+    hp: 18,
+    energy: 4,
     attack: 4,
-    defense: 1,
+    defense: 0,
+    luck: 3,
+    dodge: 5,
     inventorySize: 5,
     startWeapon: { name: 'Poison Dagger', itemType: 'weapon', verb: 'HIT', traits: ['POISON', 'PIERCING'], energyCost: 1, power: 4, range: 1, description: 'Venomous strike that ignores armor' },
     startArmor: null,
@@ -52,10 +58,12 @@ export const CHARACTERS: CharacterDef[] = [
     name: 'Mage',
     icon: 'Flame',
     description: 'Fragile but wields powerful ranged magic.',
-    hp: 18,
-    energy: 8,
+    hp: 16,
+    energy: 4,
     attack: 3,
     defense: 0,
+    luck: 4,
+    dodge: 1,
     inventorySize: 5,
     startWeapon: { name: 'Apprentice Staff', itemType: 'weapon', verb: 'HIT', traits: ['FIRE'], energyCost: 2, power: 7, range: 3, description: 'A staff crackling with fire magic' },
     startArmor: null,
@@ -70,9 +78,11 @@ export const CHARACTERS: CharacterDef[] = [
     icon: 'Shield',
     description: 'Holy knight. High defense and self-healing.',
     hp: 35,
-    energy: 4,
+    energy: 3,
     attack: 4,
     defense: 4,
+    luck: 1,
+    dodge: 0,
     inventorySize: 3,
     startWeapon: { name: 'Blessed Mace', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A mace imbued with holy light' },
     startArmor: { name: 'Holy Shield', itemType: 'armor', verb: 'BUFF', traits: [], energyCost: 0, power: 0, range: 0, description: 'A blessed shield. +3 DEF', defenseBonus: 3 },
@@ -86,10 +96,12 @@ export const CHARACTERS: CharacterDef[] = [
     name: 'Vampire',
     icon: 'Ghost',
     description: 'Drains life from foes. No armor, must feed.',
-    hp: 22,
-    energy: 6,
+    hp: 20,
+    energy: 3,
     attack: 6,
     defense: 0,
+    luck: 2,
+    dodge: 3,
     inventorySize: 4,
     startWeapon: { name: 'Vampiric Claws', itemType: 'weapon', verb: 'HIT', traits: ['LIFESTEAL'], energyCost: 1, power: 6, range: 1, description: 'Claws that drain life from the target' },
     startArmor: null,
@@ -101,10 +113,12 @@ export const CHARACTERS: CharacterDef[] = [
     name: 'Berserker',
     icon: 'Skull',
     description: 'Glass cannon. Massive attack, paper-thin defense.',
-    hp: 25,
-    energy: 6,
+    hp: 22,
+    energy: 3,
     attack: 8,
     defense: 0,
+    luck: 3,
+    dodge: 0,
     inventorySize: 3,
     startWeapon: { name: 'Great Axe', itemType: 'weapon', verb: 'HIT', traits: ['AOE'], energyCost: 2, power: 10, range: 1, description: 'A massive axe that cleaves nearby foes' },
     startArmor: null,
