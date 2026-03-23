@@ -146,6 +146,7 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
     // Player can dodge
     if (rollDodge(player)) {
       state.log.push(addLog(state, `You dodge ${enemy.name}'s attack!`, 'combat'));
+      emit(state, { type: 'player_dodge', pos: { ...player.pos } });
       return;
     }
     const isCrit = rollCritical(enemy);
@@ -154,9 +155,12 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
     dmg = Math.max(1, dmg - getPlayerDefense(player));
     player.hp -= dmg;
     state.log.push(addLog(state, `${enemy.name} attacks you for ${dmg} damage!${isCrit ? ' (CRIT!)' : ''}`, 'damage'));
+    emit(state, { type: 'player_hit', pos: { ...player.pos }, amount: dmg });
+    if (isCrit) emit(state, { type: 'crit', pos: { ...player.pos } });
     if (player.hp <= 0) {
       state.gameOver = true;
       state.log.push(addLog(state, 'You have been slain...', 'system'));
+      emit(state, { type: 'game_over' });
     }
     return;
   }
