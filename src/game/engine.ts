@@ -429,6 +429,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         if (rollDodge(enemy)) {
           s.log.push(addLog(s, `${enemy.name} dodges your attack!`, 'combat'));
           s.player.energy -= energyCost;
+          emit(s, { type: 'enemy_dodge', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
           const atkPower = weapon ? weapon.power + s.player.attack : s.player.attack;
