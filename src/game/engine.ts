@@ -285,6 +285,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           s.player.pos = pos;
           s.grid[pos.y][pos.x].entity = s.player;
           s.log.push(addLog(s, 'You teleport!', 'info'));
+          checkItemOnGround(s);
         }
       } else {
         const targets: Entity[] = [];
