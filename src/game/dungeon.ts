@@ -158,6 +158,7 @@ export function generateDungeon(
         xp: 0,
         xpToNext: 100,
         inventory: [],
+        inventorySize: 0,
         isPlayer: false,
         icon: template.icon,
       };
