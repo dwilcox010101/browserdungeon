@@ -1,4 +1,4 @@
-import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat, Direction } from './types';
+import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat, Direction, GameEvent } from './types';
 import { generateDungeon, computeFOV } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
@@ -38,7 +38,11 @@ function manhattan(a: Position, b: Position): number {
 
 function cloneGrid(state: GameState): GameState {
   const grid = state.grid.map(row => row.map(tile => ({ ...tile })));
-  return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds) };
+  return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds), events: [] };
+}
+
+function emit(s: GameState, event: GameEvent): void {
+  s.events.push(event);
 }
 
 function checkItemOnGround(s: GameState): void {
@@ -142,6 +146,7 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
     // Player can dodge
     if (rollDodge(player)) {
       state.log.push(addLog(state, `You dodge ${enemy.name}'s attack!`, 'combat'));
+      emit(state, { type: 'player_dodge', pos: { ...player.pos } });
       return;
     }
     const isCrit = rollCritical(enemy);
@@ -150,9 +155,12 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
     dmg = Math.max(1, dmg - getPlayerDefense(player));
     player.hp -= dmg;
     state.log.push(addLog(state, `${enemy.name} attacks you for ${dmg} damage!${isCrit ? ' (CRIT!)' : ''}`, 'damage'));
+    emit(state, { type: 'player_hit', pos: { ...player.pos }, amount: dmg });
+    if (isCrit) emit(state, { type: 'crit', pos: { ...player.pos } });
     if (player.hp <= 0) {
       state.gameOver = true;
       state.log.push(addLog(state, 'You have been slain...', 'system'));
+      emit(state, { type: 'game_over' });
     }
     return;
   }
@@ -194,6 +202,7 @@ function checkLevelUp(s: GameState): void {
     s.player.xpToNext = Math.floor(s.player.xpToNext * 1.5);
     s.player.hp = s.player.maxHp;
     s.pendingLevelUp = true;
+    emit(s, { type: 'level_up', pos: { ...s.player.pos } });
     s.log.push(addLog(s, `Level up! You are now level ${s.player.level}! Choose a stat to improve.`, 'system'));
   }
 }
@@ -295,6 +304,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     pendingLevelUp: false,
     collectedItemIds: new Set(),
     characterId,
+    events: [],
   };
 
   state.log.push(addLog(state, `${charDef.name} descends into the dungeon...`, 'system'));
@@ -400,6 +410,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (s.player.energy < energyCost) {
         s.log.push(addLog(s, 'Not enough energy to move!', 'system'));
+        emit(s, { type: 'no_energy' });
         return s;
       }
 
@@ -419,6 +430,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         if (rollDodge(enemy)) {
           s.log.push(addLog(s, `${enemy.name} dodges your attack!`, 'combat'));
           s.player.energy -= energyCost;
+          emit(s, { type: 'enemy_dodge', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
           const atkPower = weapon ? weapon.power + s.player.attack : s.player.attack;
@@ -429,12 +441,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           enemy.hp -= dmg;
           s.player.energy -= energyCost;
           s.log.push(addLog(s, `You attack ${enemy.name} for ${dmg} damage!${isCrit ? ' (CRIT!)' : ''}`, 'combat'));
+          emit(s, { type: 'player_attack', pos: { ...enemy.pos }, amount: dmg, entityId: enemy.id });
+          if (isCrit) emit(s, { type: 'crit', pos: { ...enemy.pos } });
 
           // Lifesteal from weapon
           if (weapon?.traits.includes('LIFESTEAL')) {
             const heal = Math.floor(dmg * 0.3);
             s.player.hp = Math.min(s.player.maxHp, s.player.hp + heal);
             s.log.push(addLog(s, `You drain ${heal} HP!`, 'combat'));
+            emit(s, { type: 'heal', pos: { ...s.player.pos }, amount: heal });
           }
 
           if (enemy.hp <= 0) {
@@ -471,6 +486,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             tile.item = null;
           }
           s.player.equippedWeapon = item;
+          emit(s, { type: 'pickup', pos: { ...s.player.pos } });
         } else if (item.itemType === 'armor') {
           if (s.player.equippedArmor) {
             s.log.push(addLog(s, `Swapped ${s.player.equippedArmor.name} for ${item.name}`, 'pickup'));
@@ -480,6 +496,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             tile.item = null;
           }
           s.player.equippedArmor = item;
+          emit(s, { type: 'pickup', pos: { ...s.player.pos } });
         } else {
           if (s.player.inventory.length >= s.player.inventorySize) {
             s.log.push(addLog(s, 'Inventory is full!', 'system'));
@@ -487,6 +504,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           }
           s.player.inventory.push(item);
           s.log.push(addLog(s, `Picked up ${item.name}!`, 'pickup'));
+          emit(s, { type: 'pickup', pos: { ...s.player.pos } });
           tile.item = null;
         }
         if (isNewItem) {
@@ -512,6 +530,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.grid[playerStart.y][playerStart.x].entity = s.player;
         s.grid = computeFOV(s.grid, playerStart, FOV_RADIUS);
         s.log.push(addLog(s, `You descend to floor ${newFloor}...`, 'system'));
+        emit(s, { type: 'descend' });
         recordFloorReached(newFloor);
         grantXp(s, 10 + newFloor * 2, 'new floor');
       }
@@ -569,6 +588,7 @@ function handleDeadEnemies(s: GameState): void {
   s.enemies = s.enemies.filter(e => {
     if (e.hp <= 0) {
       s.grid[e.pos.y][e.pos.x].entity = null;
+      emit(s, { type: 'enemy_killed', pos: { ...e.pos }, entityId: e.id });
       const xpGain = 5 + e.level * 3;
       grantXp(s, xpGain, `${e.name} defeated`);
       return false;

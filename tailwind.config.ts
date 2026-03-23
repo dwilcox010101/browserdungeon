@@ -70,20 +70,21 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        wiggle: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "25%": { transform: "translateX(-2px)" },
+          "75%": { transform: "translateX(2px)" },
+        },
+        inventoryPulse: {
+          "0%": { backgroundColor: "hsl(var(--game-item) / 0.3)" },
+          "100%": { backgroundColor: "transparent" },
         },
       },
       animation: {

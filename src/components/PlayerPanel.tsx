@@ -9,6 +9,7 @@ interface PlayerPanelProps {
   targetMode: boolean;
   onUseItem: (itemId: string) => void;
   onCancelTarget: () => void;
+  inventoryFlash?: boolean;
 }
 
 const StatBar: React.FC<{
@@ -54,7 +55,7 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ ite
 );
 
 const PlayerPanel: React.FC<PlayerPanelProps> = ({
-  player, floor, turn, targetMode, onUseItem, onCancelTarget
+  player, floor, turn, targetMode, onUseItem, onCancelTarget, inventoryFlash
 }) => {
   const totalDef = player.defense + (player.equippedArmor?.defenseBonus ?? 0);
 
@@ -131,7 +132,7 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       </div>
 
       {/* General Inventory */}
-      <div className="border-t border-border pt-3 mt-2">
+      <div className={`border-t border-border pt-3 mt-2 ${inventoryFlash ? 'animate-[inventoryPulse_0.4s_ease-out]' : ''}`}>
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
           <Package size={12} /> Inventory ({player.inventory.length}/{player.inventorySize})
         </h3>

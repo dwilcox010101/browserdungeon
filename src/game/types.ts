@@ -76,6 +76,17 @@ export interface LogEntry {
   turn: number;
 }
 
+export type GameEventType = 
+  | 'player_attack' | 'player_hit' | 'enemy_killed' | 'player_dodge' | 'enemy_dodge'
+  | 'pickup' | 'level_up' | 'descend' | 'heal' | 'crit' | 'no_energy' | 'game_over';
+
+export interface GameEvent {
+  type: GameEventType;
+  pos?: Position;
+  amount?: number;
+  entityId?: string;
+}
+
 export interface GameState {
   grid: Tile[][];
   width: number;
@@ -91,6 +102,7 @@ export interface GameState {
   pendingLevelUp: boolean;
   collectedItemIds: Set<string>;
   characterId: string;
+  events: GameEvent[];
 }
 
 export type GameAction =

@@ -1,6 +1,6 @@
-import React, { useReducer, useCallback, useEffect, useState } from 'react';
+import React, { useReducer, useCallback, useEffect, useState, useRef } from 'react';
 import { gameReducer, createInitialState } from '@/game/engine';
-import { Direction, LevelUpStat } from '@/game/types';
+import { Direction, LevelUpStat, GameEvent } from '@/game/types';
 import GameGrid from '@/components/GameGrid';
 import PlayerPanel from '@/components/PlayerPanel';
 import CombatLog from '@/components/CombatLog';
@@ -8,10 +8,63 @@ import ActionBar from '@/components/ActionBar';
 import LevelUpDialog from '@/components/LevelUpDialog';
 import TitleScreen from '@/components/TitleScreen';
 import { RotateCcw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import {
+  sfxHit, sfxPlayerHit, sfxKill, sfxPickup, sfxLevelUp,
+  sfxDescend, sfxDodge, sfxCrit, sfxNoEnergy, sfxHeal
+} from '@/game/sfx';
+
+function processEvents(events: GameEvent[]) {
+  events.forEach(ev => {
+    switch (ev.type) {
+      case 'player_attack': sfxHit(); break;
+      case 'player_hit': sfxPlayerHit(); break;
+      case 'enemy_killed': sfxKill(); break;
+      case 'pickup': sfxPickup(); break;
+      case 'level_up': sfxLevelUp(); break;
+      case 'descend': sfxDescend(); break;
+      case 'player_dodge':
+      case 'enemy_dodge': sfxDodge(); break;
+      case 'crit': sfxCrit(); break;
+      case 'heal': sfxHeal(); break;
+      case 'no_energy': sfxNoEnergy(); break;
+    }
+  });
+}
 
 const GamePage: React.FC = () => {
   const [screen, setScreen] = useState<'title' | 'game'>('title');
   const [state, dispatch] = useReducer(gameReducer, null, () => createInitialState('warrior'));
+  const { toast } = useToast();
+  const prevInventoryLen = useRef(state.player.inventory.length);
+  const [inventoryFlash, setInventoryFlash] = useState(false);
+
+  // Process game events for sfx + toasts
+  useEffect(() => {
+    if (state.events.length === 0) return;
+    processEvents(state.events);
+
+    if (state.events.some(e => e.type === 'no_energy')) {
+      toast({
+        title: "Out of Energy!",
+        description: "Pass turn (Space) to recover energy.",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  }, [state.events, toast]);
+
+  // Inventory flash animation
+  useEffect(() => {
+    const newLen = state.player.inventory.length;
+    if (newLen > prevInventoryLen.current) {
+      setInventoryFlash(true);
+      const timer = setTimeout(() => setInventoryFlash(false), 400);
+      prevInventoryLen.current = newLen;
+      return () => clearTimeout(timer);
+    }
+    prevInventoryLen.current = newLen;
+  }, [state.player.inventory.length]);
 
   const handleStartGame = useCallback((characterId: string) => {
     dispatch({ type: 'NEW_GAME', characterId });
@@ -114,6 +167,7 @@ const GamePage: React.FC = () => {
           targetMode={!!state.targetMode}
           onUseItem={handleUseItem}
           onCancelTarget={handleCancelTarget}
+          inventoryFlash={inventoryFlash}
         />
 
         <div className="flex-1 relative min-h-0 bg-game-grid">
@@ -127,6 +181,7 @@ const GamePage: React.FC = () => {
             playerPos={state.player.pos}
             targetMode={state.targetMode}
             onTileClick={handleTileClick}
+            events={state.events}
           />
           {state.gameOver && (
             <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center">
