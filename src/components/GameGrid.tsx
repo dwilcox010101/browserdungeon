@@ -200,8 +200,8 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                   >
                     {tile.visible && (
                       <>
-                        {isPlayer && (
-                          <Sword className={`text-game-player ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
+                        {isPlayer && EntityIcon && (
+                          <EntityIcon className={`text-game-player ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
                         )}
                         {isEnemy && EntityIcon && (
                           <EntityIcon className={`text-game-enemy ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
