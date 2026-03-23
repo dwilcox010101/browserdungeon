@@ -530,6 +530,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.grid[playerStart.y][playerStart.x].entity = s.player;
         s.grid = computeFOV(s.grid, playerStart, FOV_RADIUS);
         s.log.push(addLog(s, `You descend to floor ${newFloor}...`, 'system'));
+        emit(s, { type: 'descend' });
         recordFloorReached(newFloor);
         grantXp(s, 10 + newFloor * 2, 'new floor');
       }
