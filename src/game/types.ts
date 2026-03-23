@@ -86,6 +86,7 @@ export interface GameState {
   targetMode: { item: Item; range: number } | null;
   pendingLevelUp: boolean;
   collectedItemIds: Set<string>;
+  characterId: string;
 }
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
