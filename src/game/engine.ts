@@ -299,6 +299,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     pendingLevelUp: false,
     collectedItemIds: new Set(),
     characterId,
+    events: [],
   };
 
   state.log.push(addLog(state, `${charDef.name} descends into the dungeon...`, 'system'));
