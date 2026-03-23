@@ -409,6 +409,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (s.player.energy < energyCost) {
         s.log.push(addLog(s, 'Not enough energy to move!', 'system'));
+        emit(s, { type: 'no_energy' });
         return s;
       }
 
