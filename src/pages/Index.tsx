@@ -1,4 +1,4 @@
-import React, { useReducer, useCallback, useEffect } from 'react';
+import React, { useReducer, useCallback, useEffect, useState } from 'react';
 import { gameReducer, createInitialState } from '@/game/engine';
 import { Direction, LevelUpStat } from '@/game/types';
 import GameGrid from '@/components/GameGrid';
@@ -6,10 +6,17 @@ import PlayerPanel from '@/components/PlayerPanel';
 import CombatLog from '@/components/CombatLog';
 import ActionBar from '@/components/ActionBar';
 import LevelUpDialog from '@/components/LevelUpDialog';
+import TitleScreen from '@/components/TitleScreen';
 import { RotateCcw } from 'lucide-react';
 
 const GamePage: React.FC = () => {
-  const [state, dispatch] = useReducer(gameReducer, null, createInitialState);
+  const [screen, setScreen] = useState<'title' | 'game'>('title');
+  const [state, dispatch] = useReducer(gameReducer, null, () => createInitialState('warrior'));
+
+  const handleStartGame = useCallback((characterId: string) => {
+    dispatch({ type: 'NEW_GAME', characterId });
+    setScreen('game');
+  }, []);
 
   const handleMove = useCallback((dir: Direction) => {
     dispatch({ type: 'MOVE', direction: dir });
@@ -18,7 +25,7 @@ const GamePage: React.FC = () => {
   const handlePass = useCallback(() => dispatch({ type: 'PASS_TURN' }), []);
   const handlePickUp = useCallback(() => dispatch({ type: 'PICK_UP' }), []);
   const handleDescend = useCallback(() => dispatch({ type: 'DESCEND' }), []);
-  const handleNewGame = useCallback(() => dispatch({ type: 'NEW_GAME' }), []);
+  const handleNewGame = useCallback(() => setScreen('title'), []);
 
   const handleUseItem = useCallback((itemId: string) => {
     dispatch({ type: 'USE_ITEM', itemId });
@@ -39,6 +46,7 @@ const GamePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (screen !== 'game') return;
     const handler = (e: KeyboardEvent) => {
       if (state.gameOver || state.pendingLevelUp) return;
       const key = e.key.toLowerCase();
@@ -70,7 +78,11 @@ const GamePage: React.FC = () => {
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [state.gameOver, state.pendingLevelUp, handleMove, handlePass, handlePickUp, handleDescend]);
+  }, [screen, state.gameOver, state.pendingLevelUp, handleMove, handlePass, handlePickUp, handleDescend]);
+
+  if (screen === 'title') {
+    return <TitleScreen onStart={handleStartGame} />;
+  }
 
   const playerTile = state.grid[state.player.pos.y]?.[state.player.pos.x];
   const canDescend = playerTile?.type === 'stairs';
