@@ -24,6 +24,13 @@ function cloneGrid(state: GameState): GameState {
   return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds) };
 }
 
+function checkItemOnGround(s: GameState): void {
+  const tile = s.grid[s.player.pos.y][s.player.pos.x];
+  if (tile.item) {
+    s.log.push(addLog(s, `You see a ${tile.item.name} on the ground here.`, 'info'));
+  }
+}
+
 // === VERB/TRAIT RESOLUTION ===
 
 function resolveVerb(
