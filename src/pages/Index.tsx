@@ -70,7 +70,7 @@ const GamePage: React.FC = () => {
       if (dirMap[key]) {
         e.preventDefault();
         handleMove(dirMap[key]);
-      } else if (key === ' ') {
+      } else if (key === ' ' || key === '5') {
         e.preventDefault();
         handlePass();
       } else if (key === 'g') {
