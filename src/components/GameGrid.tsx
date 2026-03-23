@@ -38,12 +38,13 @@ interface GameGridProps {
   targetMode: { range: number } | null;
   onTileClick: (pos: Position) => void;
   events: GameEvent[];
+  playerTileItem?: { name: string; description: string } | null;
 }
 
 const TILE_SIZE = 24;
 let floatIdCounter = 0;
 
-const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick, events }) => {
+const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick, events, playerTileItem }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
