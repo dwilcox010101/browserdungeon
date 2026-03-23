@@ -84,11 +84,15 @@ function resolveVerb(
 
 // === ENEMY AI ===
 
+function getPlayerDefense(player: Entity): number {
+  return player.defense + (player.equippedArmor?.defenseBonus ?? 0);
+}
+
 function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
   const player = state.player;
   const dist = manhattan(enemy.pos, player.pos);
   if (dist <= 1) {
-    const dmg = Math.max(1, enemy.attack - player.defense);
+    const dmg = Math.max(1, enemy.attack - getPlayerDefense(player));
     player.hp -= dmg;
     state.log.push(addLog(state, `${enemy.name} attacks you for ${dmg} damage!`, 'damage'));
     if (player.hp <= 0) {
@@ -177,6 +181,10 @@ function grantXp(s: GameState, amount: number, reason: string): void {
 export function createInitialState(): GameState {
   const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, 1);
 
+  const startWeapon: Item = {
+    id: 'start_sword', name: 'Rusty Sword', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack'
+  };
+
   const player: Entity = {
     id: 'player',
     name: 'Hero',
@@ -190,9 +198,9 @@ export function createInitialState(): GameState {
     level: 1,
     xp: 0,
     xpToNext: 20,
-    inventory: [
-      { id: 'start_sword', name: 'Rusty Sword', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack' },
-    ],
+    equippedWeapon: startWeapon,
+    equippedArmor: null,
+    inventory: [],
     inventorySize: INITIAL_INVENTORY_SIZE,
     isPlayer: true,
     icon: 'Sword',
@@ -293,7 +301,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         }
       }
 
-      if (item.id !== 'start_sword') {
+      // Consumables are removed after use; equipped items stay
+      if (item.itemType === 'consumable') {
         s.player.inventory = s.player.inventory.filter(i => i.id !== item.id);
       }
 
@@ -333,7 +342,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (targetTile.entity && !targetTile.entity.isPlayer) {
         const enemy = targetTile.entity;
-        const dmg = Math.max(1, s.player.attack - enemy.defense);
+        const weapon = s.player.equippedWeapon;
+        const atkPower = weapon ? weapon.power + s.player.attack : s.player.attack;
+        const dmg = Math.max(1, atkPower - enemy.defense);
         enemy.hp -= dmg;
         s.player.energy -= 1;
         s.log.push(addLog(s, `You attack ${enemy.name} for ${dmg} damage!`, 'combat'));
@@ -359,14 +370,36 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'PICK_UP': {
       const tile = s.grid[s.player.pos.y][s.player.pos.x];
       if (tile.item) {
-        if (s.player.inventory.length >= s.player.inventorySize) {
-          s.log.push(addLog(s, 'Inventory is full!', 'system'));
-          return s;
+        const item = tile.item;
+        if (item.itemType === 'weapon') {
+          if (s.player.equippedWeapon) {
+            // Swap: put current weapon on ground
+            s.log.push(addLog(s, `Swapped ${s.player.equippedWeapon.name} for ${item.name}`, 'pickup'));
+            tile.item = s.player.equippedWeapon;
+          } else {
+            s.log.push(addLog(s, `Equipped ${item.name}!`, 'pickup'));
+            tile.item = null;
+          }
+          s.player.equippedWeapon = item;
+        } else if (item.itemType === 'armor') {
+          if (s.player.equippedArmor) {
+            s.log.push(addLog(s, `Swapped ${s.player.equippedArmor.name} for ${item.name}`, 'pickup'));
+            tile.item = s.player.equippedArmor;
+          } else {
+            s.log.push(addLog(s, `Equipped ${item.name}!`, 'pickup'));
+            tile.item = null;
+          }
+          s.player.equippedArmor = item;
+        } else {
+          if (s.player.inventory.length >= s.player.inventorySize) {
+            s.log.push(addLog(s, 'Inventory is full!', 'system'));
+            return s;
+          }
+          s.player.inventory.push(item);
+          s.log.push(addLog(s, `Picked up ${item.name}!`, 'pickup'));
+          tile.item = null;
         }
-        s.player.inventory.push(tile.item);
-        s.log.push(addLog(s, `Picked up ${tile.item.name}!`, 'pickup'));
         grantXp(s, 3, 'item found');
-        tile.item = null;
       } else {
         s.log.push(addLog(s, 'Nothing to pick up here.', 'system'));
       }
@@ -399,7 +432,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'USE_ITEM': {
-      const item = s.player.inventory.find(i => i.id === action.itemId);
+      // Check equipped slots first, then inventory
+      let item: Item | undefined;
+      let source: 'weapon' | 'armor' | 'inventory' = 'inventory';
+      if (s.player.equippedWeapon?.id === action.itemId) {
+        item = s.player.equippedWeapon;
+        source = 'weapon';
+      } else if (s.player.equippedArmor?.id === action.itemId) {
+        item = s.player.equippedArmor;
+        source = 'armor';
+      } else {
+        item = s.player.inventory.find(i => i.id === action.itemId);
+      }
       if (!item) return s;
 
       if (s.player.energy < item.energyCost) {
@@ -411,8 +455,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.player.energy -= item.energyCost;
         const result = resolveVerb(item.verb, item.traits, item.power, s.player, [], s);
         result.messages.forEach(m => s.log.push(addLog(s, m, 'combat')));
-        if (item.id !== 'start_sword') {
-          s.player.inventory = s.player.inventory.filter(i => i.id !== item.id);
+        if (item.itemType === 'consumable') {
+          s.player.inventory = s.player.inventory.filter(i => i.id !== item!.id);
         }
         if (s.player.energy <= 0) endTurn(s);
         return s;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Entity, Item } from '@/game/types';
-import { Heart, Zap, Shield, Sword, Star, ChevronUp, Package } from 'lucide-react';
+import { Heart, Zap, Shield, Sword, Star, ChevronUp, Package, Shirt } from 'lucide-react';
 
 interface PlayerPanelProps {
   player: Entity;
@@ -34,43 +34,46 @@ const StatBar: React.FC<{
   </div>
 );
 
+const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ item, onUse }) => (
+  <button
+    onClick={() => onUse(item.id)}
+    className="w-full text-left text-xs bg-secondary hover:bg-secondary/80 rounded p-2 transition-colors group"
+    title={item.description}
+  >
+    <div className="flex justify-between items-center">
+      <span className="text-foreground font-medium">{item.name}</span>
+      {item.energyCost > 0 && (
+        <span className="text-game-energy text-[10px]">⚡{item.energyCost}</span>
+      )}
+    </div>
+    <div className="text-muted-foreground text-[10px] mt-0.5">
+      {item.verb} {item.traits.length > 0 && `• ${item.traits.join(', ')}`}
+      {item.defenseBonus ? `• +${item.defenseBonus} DEF` : ''}
+    </div>
+  </button>
+);
+
 const PlayerPanel: React.FC<PlayerPanelProps> = ({
   player, floor, turn, targetMode, onUseItem, onCancelTarget
 }) => {
+  const totalDef = player.defense + (player.equippedArmor?.defenseBonus ?? 0);
+
   return (
     <div className="w-64 bg-card border-l border-border p-4 flex flex-col h-full overflow-y-auto">
       <h2 className="text-primary font-bold text-sm tracking-wider uppercase mb-4">
         {player.name}
       </h2>
 
-      <StatBar
-        label="HP"
-        current={player.hp}
-        max={player.maxHp}
-        icon={<Heart size={12} />}
-        colorClass="bg-game-health"
-      />
-      <StatBar
-        label="Energy"
-        current={player.energy}
-        max={player.maxEnergy}
-        icon={<Zap size={12} />}
-        colorClass="bg-game-energy"
-      />
-      <StatBar
-        label="XP"
-        current={player.xp}
-        max={player.xpToNext}
-        icon={<Star size={12} />}
-        colorClass="bg-primary"
-      />
+      <StatBar label="HP" current={player.hp} max={player.maxHp} icon={<Heart size={12} />} colorClass="bg-game-health" />
+      <StatBar label="Energy" current={player.energy} max={player.maxEnergy} icon={<Zap size={12} />} colorClass="bg-game-energy" />
+      <StatBar label="XP" current={player.xp} max={player.xpToNext} icon={<Star size={12} />} colorClass="bg-primary" />
 
       <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
         <div className="bg-secondary rounded p-2 flex items-center gap-1">
           <Sword size={12} className="text-primary" /> ATK: {player.attack}
         </div>
         <div className="bg-secondary rounded p-2 flex items-center gap-1">
-          <Shield size={12} className="text-primary" /> DEF: {player.defense}
+          <Shield size={12} className="text-primary" /> DEF: {totalDef}
         </div>
         <div className="bg-secondary rounded p-2 flex items-center gap-1">
           <Star size={12} className="text-primary" /> LVL: {player.level}
@@ -84,34 +87,51 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
         <span>Turn {turn}</span>
       </div>
 
+      {targetMode && (
+        <button
+          onClick={onCancelTarget}
+          className="w-full mb-2 text-xs bg-accent/20 text-accent-foreground border border-accent rounded px-2 py-1 hover:bg-accent/30 transition-colors"
+        >
+          Cancel targeting (ESC)
+        </button>
+      )}
+
+      {/* Equipment Slots */}
+      <div className="border-t border-border pt-3 mt-2">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
+          <Sword size={12} /> Weapon
+        </h3>
+        {player.equippedWeapon ? (
+          <ItemButton item={player.equippedWeapon} onUse={onUseItem} />
+        ) : (
+          <p className="text-muted-foreground text-xs italic mb-1">None</p>
+        )}
+      </div>
+
+      <div className="border-t border-border pt-3 mt-2">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
+          <Shirt size={12} /> Armor
+        </h3>
+        {player.equippedArmor ? (
+          <div className="w-full text-left text-xs bg-secondary rounded p-2">
+            <div className="flex justify-between items-center">
+              <span className="text-foreground font-medium">{player.equippedArmor.name}</span>
+              <span className="text-primary text-[10px]">+{player.equippedArmor.defenseBonus} DEF</span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-xs italic mb-1">None</p>
+        )}
+      </div>
+
+      {/* General Inventory */}
       <div className="border-t border-border pt-3 mt-2">
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
           <Package size={12} /> Inventory ({player.inventory.length}/{player.inventorySize})
         </h3>
-        {targetMode && (
-          <button
-            onClick={onCancelTarget}
-            className="w-full mb-2 text-xs bg-accent/20 text-accent-foreground border border-accent rounded px-2 py-1 hover:bg-accent/30 transition-colors"
-          >
-            Cancel targeting (ESC)
-          </button>
-        )}
         <div className="space-y-1">
           {player.inventory.map(item => (
-            <button
-              key={item.id}
-              onClick={() => onUseItem(item.id)}
-              className="w-full text-left text-xs bg-secondary hover:bg-secondary/80 rounded p-2 transition-colors group"
-              title={item.description}
-            >
-              <div className="flex justify-between items-center">
-                <span className="text-foreground font-medium">{item.name}</span>
-                <span className="text-game-energy text-[10px]">⚡{item.energyCost}</span>
-              </div>
-              <div className="text-muted-foreground text-[10px] mt-0.5">
-                {item.verb} {item.traits.length > 0 && `• ${item.traits.join(', ')}`}
-              </div>
-            </button>
+            <ItemButton key={item.id} item={item} onUse={onUseItem} />
           ))}
           {player.inventory.length === 0 && (
             <p className="text-muted-foreground text-xs italic">Empty</p>

@@ -78,13 +78,16 @@ const ENEMY_TEMPLATES = [
 ];
 
 const ITEM_POOL: Omit<Item, 'id'>[] = [
-  { name: 'Fire Scroll', verb: 'HIT', traits: ['FIRE', 'AOE'], energyCost: 3, power: 10, range: 3, description: 'Launches a fiery blast hitting nearby enemies' },
-  { name: 'Healing Potion', verb: 'HEAL', traits: [], energyCost: 2, power: 15, range: 0, description: 'Restores health' },
-  { name: 'Ice Shard', verb: 'HIT', traits: ['ICE', 'STUN'], energyCost: 3, power: 8, range: 4, description: 'Freezes and stuns a target' },
-  { name: 'Poison Dagger', verb: 'HIT', traits: ['POISON', 'PIERCING'], energyCost: 2, power: 6, range: 1, description: 'Venomous strike that ignores armor' },
-  { name: 'Vampiric Blade', verb: 'HIT', traits: ['LIFESTEAL'], energyCost: 3, power: 8, range: 1, description: 'Drains life from the target' },
-  { name: 'Teleport Stone', verb: 'TELEPORT', traits: [], energyCost: 4, power: 0, range: 6, description: 'Teleport to a visible tile' },
-  { name: 'War Cry', verb: 'BUFF', traits: [], energyCost: 2, power: 3, range: 0, description: 'Temporarily boosts attack' },
+  { name: 'Fire Scroll', itemType: 'consumable', verb: 'HIT', traits: ['FIRE', 'AOE'], energyCost: 3, power: 10, range: 3, description: 'Launches a fiery blast hitting nearby enemies' },
+  { name: 'Healing Potion', itemType: 'consumable', verb: 'HEAL', traits: [], energyCost: 2, power: 15, range: 0, description: 'Restores health' },
+  { name: 'Ice Shard', itemType: 'consumable', verb: 'HIT', traits: ['ICE', 'STUN'], energyCost: 3, power: 8, range: 4, description: 'Freezes and stuns a target' },
+  { name: 'Poison Dagger', itemType: 'weapon', verb: 'HIT', traits: ['POISON', 'PIERCING'], energyCost: 2, power: 6, range: 1, description: 'Venomous strike that ignores armor' },
+  { name: 'Vampiric Blade', itemType: 'weapon', verb: 'HIT', traits: ['LIFESTEAL'], energyCost: 3, power: 8, range: 1, description: 'Drains life from the target' },
+  { name: 'Teleport Stone', itemType: 'consumable', verb: 'TELEPORT', traits: [], energyCost: 4, power: 0, range: 6, description: 'Teleport to a visible tile' },
+  { name: 'War Cry', itemType: 'consumable', verb: 'BUFF', traits: [], energyCost: 2, power: 3, range: 0, description: 'Temporarily boosts attack' },
+  { name: 'Iron Shield', itemType: 'armor', verb: 'BUFF', traits: [], energyCost: 0, power: 0, range: 0, description: 'A sturdy shield. +2 DEF', defenseBonus: 2 },
+  { name: 'Chainmail', itemType: 'armor', verb: 'BUFF', traits: [], energyCost: 0, power: 0, range: 0, description: 'Light chainmail. +3 DEF', defenseBonus: 3 },
+  { name: 'Steel Sword', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 8, range: 1, description: 'A reliable steel sword' },
 ];
 
 let entityIdCounter = 0;
@@ -157,6 +160,8 @@ export function generateDungeon(
         level: floor,
         xp: 0,
         xpToNext: 100,
+        equippedWeapon: null,
+        equippedArmor: null,
         inventory: [],
         inventorySize: 0,
         isPlayer: false,
