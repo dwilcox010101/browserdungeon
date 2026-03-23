@@ -186,32 +186,34 @@ function grantXp(s: GameState, amount: number, reason: string): void {
 
 // === INITIAL STATE ===
 
-export function createInitialState(): GameState {
+export function createInitialState(characterId: string = 'warrior'): GameState {
+  const charDef = CHARACTERS.find(c => c.id === characterId) || CHARACTERS[0];
   const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, 1);
 
-  const startWeapon: Item = {
-    id: 'start_sword', name: 'Rusty Sword', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack'
-  };
+  let itemIdCounter = 100;
+  const startWeapon: Item = { ...charDef.startWeapon, id: `start_weapon_${itemIdCounter++}` };
+  const startArmor: Item | null = charDef.startArmor ? { ...charDef.startArmor, id: `start_armor_${itemIdCounter++}` } : null;
+  const startItems: Item[] = charDef.startItems.map(i => ({ ...i, id: `start_item_${itemIdCounter++}` }));
 
   const player: Entity = {
     id: 'player',
-    name: 'Hero',
+    name: charDef.name,
     pos: playerStart,
-    hp: 30,
-    maxHp: 30,
-    energy: 5,
-    maxEnergy: 5,
-    attack: 5,
-    defense: 2,
+    hp: charDef.hp,
+    maxHp: charDef.hp,
+    energy: charDef.energy,
+    maxEnergy: charDef.energy,
+    attack: charDef.attack,
+    defense: charDef.defense,
     level: 1,
     xp: 0,
     xpToNext: 20,
     equippedWeapon: startWeapon,
-    equippedArmor: null,
-    inventory: [],
-    inventorySize: INITIAL_INVENTORY_SIZE,
+    equippedArmor: startArmor,
+    inventory: startItems,
+    inventorySize: charDef.inventorySize,
     isPlayer: true,
-    icon: 'Sword',
+    icon: charDef.icon,
   };
 
   grid[playerStart.y][playerStart.x].entity = player;
@@ -231,9 +233,10 @@ export function createInitialState(): GameState {
     targetMode: null,
     pendingLevelUp: false,
     collectedItemIds: new Set(),
+    characterId,
   };
 
-  state.log.push(addLog(state, 'You descend into the dungeon...', 'system'));
+  state.log.push(addLog(state, `${charDef.name} descends into the dungeon...`, 'system'));
   state.log.push(addLog(state, 'Use WASD or arrow keys to move. Click items in inventory to use them.', 'system'));
 
   return state;
