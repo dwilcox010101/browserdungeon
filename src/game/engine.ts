@@ -440,6 +440,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           enemy.hp -= dmg;
           s.player.energy -= energyCost;
           s.log.push(addLog(s, `You attack ${enemy.name} for ${dmg} damage!${isCrit ? ' (CRIT!)' : ''}`, 'combat'));
+          emit(s, { type: 'player_attack', pos: { ...enemy.pos }, amount: dmg, entityId: enemy.id });
+          if (isCrit) emit(s, { type: 'crit', pos: { ...enemy.pos } });
 
           // Lifesteal from weapon
           if (weapon?.traits.includes('LIFESTEAL')) {
