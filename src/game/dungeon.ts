@@ -70,11 +70,11 @@ function rand(min: number, max: number): number {
 }
 
 const ENEMY_TEMPLATES = [
-  { name: 'Goblin', icon: 'Bug', hp: 12, attack: 3, defense: 1 },
-  { name: 'Skeleton', icon: 'Skull', hp: 18, attack: 5, defense: 2 },
-  { name: 'Slime', icon: 'Droplets', hp: 8, attack: 2, defense: 0 },
-  { name: 'Bat', icon: 'Bird', hp: 6, attack: 4, defense: 0 },
-  { name: 'Wraith', icon: 'Ghost', hp: 22, attack: 7, defense: 3 },
+  { name: 'Goblin', icon: 'Bug', hp: 12, attack: 3, defense: 1, dodge: 2, luck: 1 },
+  { name: 'Skeleton', icon: 'Skull', hp: 18, attack: 5, defense: 2, dodge: 0, luck: 0 },
+  { name: 'Slime', icon: 'Droplets', hp: 8, attack: 2, defense: 0, dodge: 0, luck: 0 },
+  { name: 'Bat', icon: 'Bird', hp: 6, attack: 4, defense: 0, dodge: 5, luck: 1 },
+  { name: 'Wraith', icon: 'Ghost', hp: 22, attack: 7, defense: 3, dodge: 3, luck: 2 },
 ];
 
 const ITEM_POOL: Omit<Item, 'id'>[] = [
@@ -122,14 +122,12 @@ export function generateDungeon(
     }
   }
 
-  // Connect rooms
   for (let i = 1; i < rooms.length; i++) {
     carveCorridor(grid, roomCenter(rooms[i - 1]), roomCenter(rooms[i]));
   }
 
   const playerStart = roomCenter(rooms[0]);
 
-  // Place stairs in last room
   const stairsPos = roomCenter(rooms[rooms.length - 1]);
   grid[stairsPos.y][stairsPos.x].type = 'stairs';
 
@@ -137,7 +135,7 @@ export function generateDungeon(
   const enemies: Entity[] = [];
   const enemyCount = rand(3, 5) + floor;
   for (let i = 0; i < enemyCount; i++) {
-    const roomIdx = rand(1, rooms.length - 1); // not in starting room
+    const roomIdx = rand(1, rooms.length - 1);
     const room = rooms[roomIdx];
     const pos: Position = {
       x: rand(room.x, room.x + room.w - 1),
@@ -157,6 +155,8 @@ export function generateDungeon(
         maxEnergy: 2,
         attack: template.attack + floor,
         defense: template.defense + Math.floor(floor / 2),
+        luck: template.luck + Math.floor(floor / 3),
+        dodge: template.dodge + Math.floor(floor / 3),
         level: floor,
         xp: 0,
         xpToNext: 100,
@@ -172,7 +172,7 @@ export function generateDungeon(
     }
   }
 
-  // Place items on floor
+  // Place items
   const itemCount = rand(2, 4);
   for (let i = 0; i < itemCount; i++) {
     const roomIdx = rand(0, rooms.length - 1);
@@ -190,9 +190,8 @@ export function generateDungeon(
   return { grid, playerStart, enemies, stairs: stairsPos };
 }
 
-// Simple FOV - reveal tiles within radius
+// Simple FOV
 export function computeFOV(grid: Tile[][], center: Position, radius: number): Tile[][] {
-  // Reset visibility
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[0].length; x++) {
       grid[y][x].visible = false;
@@ -203,7 +202,6 @@ export function computeFOV(grid: Tile[][], center: Position, radius: number): Ti
     for (let x = Math.max(0, center.x - radius); x <= Math.min(grid[0].length - 1, center.x + radius); x++) {
       const dist = Math.abs(x - center.x) + Math.abs(y - center.y);
       if (dist <= radius) {
-        // Simple raycast check
         if (hasLineOfSight(grid, center, { x, y })) {
           grid[y][x].visible = true;
           grid[y][x].explored = true;
