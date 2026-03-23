@@ -55,7 +55,7 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ ite
 );
 
 const PlayerPanel: React.FC<PlayerPanelProps> = ({
-  player, floor, turn, targetMode, onUseItem, onCancelTarget
+  player, floor, turn, targetMode, onUseItem, onCancelTarget, inventoryFlash
 }) => {
   const totalDef = player.defense + (player.equippedArmor?.defenseBonus ?? 0);
 
