@@ -1,5 +1,6 @@
 import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat } from './types';
 import { generateDungeon, computeFOV } from './dungeon';
+import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
 const MAP_WIDTH = 40;
 const MAP_HEIGHT = 30;
