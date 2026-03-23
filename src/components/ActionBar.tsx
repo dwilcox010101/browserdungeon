@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Hand, Package, StairsIcon, SkipForward } from 'lucide-react';
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Package, SkipForward } from 'lucide-react';
 import { Direction } from '@/game/types';
 
 interface ActionBarProps {
