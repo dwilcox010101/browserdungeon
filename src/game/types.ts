@@ -86,6 +86,7 @@ export interface GameState {
   targetMode: { item: Item; range: number } | null;
   pendingLevelUp: boolean;
   collectedItemIds: Set<string>;
+  characterId: string;
 }
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
@@ -97,7 +98,7 @@ export type GameAction =
   | { type: 'PASS_TURN' }
   | { type: 'PICK_UP' }
   | { type: 'DESCEND' }
-  | { type: 'NEW_GAME' }
+  | { type: 'NEW_GAME'; characterId?: string }
   | { type: 'SET_TARGET_MODE'; item: Item | null }
   | { type: 'TARGET_TILE'; pos: Position }
   | { type: 'LEVEL_UP_CHOICE'; stat: LevelUpStat };

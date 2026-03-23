@@ -1,0 +1,138 @@
+import { Item } from './types';
+
+export interface CharacterDef {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  hp: number;
+  energy: number;
+  attack: number;
+  defense: number;
+  inventorySize: number;
+  startWeapon: Omit<Item, 'id'>;
+  startArmor: Omit<Item, 'id'> | null;
+  startItems: Omit<Item, 'id'>[];
+  unlockRequirement: { type: 'floor'; floor: number } | null; // null = always unlocked
+}
+
+export const CHARACTERS: CharacterDef[] = [
+  {
+    id: 'warrior',
+    name: 'Warrior',
+    icon: 'Sword',
+    description: 'Balanced fighter with solid stats.',
+    hp: 30,
+    energy: 5,
+    attack: 5,
+    defense: 2,
+    inventorySize: 4,
+    startWeapon: { name: 'Rusty Sword', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack' },
+    startArmor: null,
+    startItems: [],
+    unlockRequirement: null,
+  },
+  {
+    id: 'rogue',
+    name: 'Rogue',
+    icon: 'Zap',
+    description: 'Fast and deadly. High energy, low HP.',
+    hp: 20,
+    energy: 7,
+    attack: 4,
+    defense: 1,
+    inventorySize: 5,
+    startWeapon: { name: 'Poison Dagger', itemType: 'weapon', verb: 'HIT', traits: ['POISON', 'PIERCING'], energyCost: 1, power: 4, range: 1, description: 'Venomous strike that ignores armor' },
+    startArmor: null,
+    startItems: [],
+    unlockRequirement: null,
+  },
+  {
+    id: 'mage',
+    name: 'Mage',
+    icon: 'Flame',
+    description: 'Fragile but wields powerful ranged magic.',
+    hp: 18,
+    energy: 8,
+    attack: 3,
+    defense: 0,
+    inventorySize: 5,
+    startWeapon: { name: 'Apprentice Staff', itemType: 'weapon', verb: 'HIT', traits: ['FIRE'], energyCost: 2, power: 7, range: 3, description: 'A staff crackling with fire magic' },
+    startArmor: null,
+    startItems: [
+      { name: 'Fire Scroll', itemType: 'consumable', verb: 'HIT', traits: ['FIRE', 'AOE'], energyCost: 3, power: 10, range: 3, description: 'Launches a fiery blast hitting nearby enemies' },
+    ],
+    unlockRequirement: null,
+  },
+  {
+    id: 'paladin',
+    name: 'Paladin',
+    icon: 'Shield',
+    description: 'Holy knight. High defense and self-healing.',
+    hp: 35,
+    energy: 4,
+    attack: 4,
+    defense: 4,
+    inventorySize: 3,
+    startWeapon: { name: 'Blessed Mace', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A mace imbued with holy light' },
+    startArmor: { name: 'Holy Shield', itemType: 'armor', verb: 'BUFF', traits: [], energyCost: 0, power: 0, range: 0, description: 'A blessed shield. +3 DEF', defenseBonus: 3 },
+    startItems: [
+      { name: 'Healing Potion', itemType: 'consumable', verb: 'HEAL', traits: [], energyCost: 2, power: 15, range: 0, description: 'Restores health' },
+    ],
+    unlockRequirement: { type: 'floor', floor: 3 },
+  },
+  {
+    id: 'vampire',
+    name: 'Vampire',
+    icon: 'Ghost',
+    description: 'Drains life from foes. No armor, must feed.',
+    hp: 22,
+    energy: 6,
+    attack: 6,
+    defense: 0,
+    inventorySize: 4,
+    startWeapon: { name: 'Vampiric Claws', itemType: 'weapon', verb: 'HIT', traits: ['LIFESTEAL'], energyCost: 1, power: 6, range: 1, description: 'Claws that drain life from the target' },
+    startArmor: null,
+    startItems: [],
+    unlockRequirement: { type: 'floor', floor: 5 },
+  },
+  {
+    id: 'berserker',
+    name: 'Berserker',
+    icon: 'Skull',
+    description: 'Glass cannon. Massive attack, paper-thin defense.',
+    hp: 25,
+    energy: 6,
+    attack: 8,
+    defense: 0,
+    inventorySize: 3,
+    startWeapon: { name: 'Great Axe', itemType: 'weapon', verb: 'HIT', traits: ['AOE'], energyCost: 2, power: 10, range: 1, description: 'A massive axe that cleaves nearby foes' },
+    startArmor: null,
+    startItems: [
+      { name: 'War Cry', itemType: 'consumable', verb: 'BUFF', traits: [], energyCost: 2, power: 3, range: 0, description: 'Temporarily boosts attack' },
+    ],
+    unlockRequirement: { type: 'floor', floor: 7 },
+  },
+];
+
+const UNLOCK_KEY = 'dungeon_max_floor';
+
+export function getMaxFloorReached(): number {
+  try {
+    return parseInt(localStorage.getItem(UNLOCK_KEY) || '1', 10);
+  } catch {
+    return 1;
+  }
+}
+
+export function recordFloorReached(floor: number): void {
+  const current = getMaxFloorReached();
+  if (floor > current) {
+    localStorage.setItem(UNLOCK_KEY, String(floor));
+  }
+}
+
+export function isCharacterUnlocked(char: CharacterDef): boolean {
+  if (!char.unlockRequirement) return true;
+  return getMaxFloorReached() >= char.unlockRequirement.floor;
+}
