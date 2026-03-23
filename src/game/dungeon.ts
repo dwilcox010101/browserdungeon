@@ -160,6 +160,8 @@ export function generateDungeon(
         level: floor,
         xp: 0,
         xpToNext: 100,
+        equippedWeapon: null,
+        equippedArmor: null,
         inventory: [],
         inventorySize: 0,
         isPlayer: false,

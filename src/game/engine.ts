@@ -177,6 +177,10 @@ function grantXp(s: GameState, amount: number, reason: string): void {
 export function createInitialState(): GameState {
   const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, 1);
 
+  const startWeapon: Item = {
+    id: 'start_sword', name: 'Rusty Sword', itemType: 'weapon', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack'
+  };
+
   const player: Entity = {
     id: 'player',
     name: 'Hero',
@@ -190,9 +194,9 @@ export function createInitialState(): GameState {
     level: 1,
     xp: 0,
     xpToNext: 20,
-    inventory: [
-      { id: 'start_sword', name: 'Rusty Sword', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack' },
-    ],
+    equippedWeapon: startWeapon,
+    equippedArmor: null,
+    inventory: [],
     inventorySize: INITIAL_INVENTORY_SIZE,
     isPlayer: true,
     icon: 'Sword',
