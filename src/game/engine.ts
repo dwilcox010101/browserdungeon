@@ -358,6 +358,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.player.pos = newPos;
         s.grid[newPos.y][newPos.x].entity = s.player;
         s.player.energy -= 1;
+        checkItemOnGround(s);
       }
 
       if (s.player.energy <= 0) {
