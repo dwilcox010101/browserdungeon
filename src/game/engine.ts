@@ -369,14 +369,36 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'PICK_UP': {
       const tile = s.grid[s.player.pos.y][s.player.pos.x];
       if (tile.item) {
-        if (s.player.inventory.length >= s.player.inventorySize) {
-          s.log.push(addLog(s, 'Inventory is full!', 'system'));
-          return s;
+        const item = tile.item;
+        if (item.itemType === 'weapon') {
+          if (s.player.equippedWeapon) {
+            // Swap: put current weapon on ground
+            s.log.push(addLog(s, `Swapped ${s.player.equippedWeapon.name} for ${item.name}`, 'pickup'));
+            tile.item = s.player.equippedWeapon;
+          } else {
+            s.log.push(addLog(s, `Equipped ${item.name}!`, 'pickup'));
+            tile.item = null;
+          }
+          s.player.equippedWeapon = item;
+        } else if (item.itemType === 'armor') {
+          if (s.player.equippedArmor) {
+            s.log.push(addLog(s, `Swapped ${s.player.equippedArmor.name} for ${item.name}`, 'pickup'));
+            tile.item = s.player.equippedArmor;
+          } else {
+            s.log.push(addLog(s, `Equipped ${item.name}!`, 'pickup'));
+            tile.item = null;
+          }
+          s.player.equippedArmor = item;
+        } else {
+          if (s.player.inventory.length >= s.player.inventorySize) {
+            s.log.push(addLog(s, 'Inventory is full!', 'system'));
+            return s;
+          }
+          s.player.inventory.push(item);
+          s.log.push(addLog(s, `Picked up ${item.name}!`, 'pickup'));
+          tile.item = null;
         }
-        s.player.inventory.push(tile.item);
-        s.log.push(addLog(s, `Picked up ${tile.item.name}!`, 'pickup'));
         grantXp(s, 3, 'item found');
-        tile.item = null;
       } else {
         s.log.push(addLog(s, 'Nothing to pick up here.', 'system'));
       }
