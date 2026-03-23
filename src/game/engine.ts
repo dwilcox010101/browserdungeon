@@ -301,7 +301,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         }
       }
 
-      if (item.id !== 'start_sword') {
+      // Consumables are removed after use; equipped items stay
+      if (item.itemType === 'consumable') {
         s.player.inventory = s.player.inventory.filter(i => i.id !== item.id);
       }
 
