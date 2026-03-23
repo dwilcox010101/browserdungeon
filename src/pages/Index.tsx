@@ -1,10 +1,11 @@
 import React, { useReducer, useCallback, useEffect } from 'react';
 import { gameReducer, createInitialState } from '@/game/engine';
-import { Direction } from '@/game/types';
+import { Direction, LevelUpStat } from '@/game/types';
 import GameGrid from '@/components/GameGrid';
 import PlayerPanel from '@/components/PlayerPanel';
 import CombatLog from '@/components/CombatLog';
 import ActionBar from '@/components/ActionBar';
+import LevelUpDialog from '@/components/LevelUpDialog';
 import { RotateCcw } from 'lucide-react';
 
 const GamePage: React.FC = () => {
@@ -33,10 +34,13 @@ const GamePage: React.FC = () => {
     }
   }, [state.targetMode]);
 
-  // Keyboard controls
+  const handleLevelUpChoice = useCallback((stat: LevelUpStat) => {
+    dispatch({ type: 'LEVEL_UP_CHOICE', stat });
+  }, []);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (state.gameOver) return;
+      if (state.gameOver || state.pendingLevelUp) return;
       const key = e.key.toLowerCase();
 
       if (key === 'escape') {
@@ -66,7 +70,7 @@ const GamePage: React.FC = () => {
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [state.gameOver, handleMove, handlePass, handlePickUp, handleDescend]);
+  }, [state.gameOver, state.pendingLevelUp, handleMove, handlePass, handlePickUp, handleDescend]);
 
   const playerTile = state.grid[state.player.pos.y]?.[state.player.pos.x];
   const canDescend = playerTile?.type === 'stairs';
@@ -74,7 +78,6 @@ const GamePage: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      {/* Header */}
       <div className="h-10 bg-card border-b border-border flex items-center px-4 justify-between shrink-0">
         <h1 className="text-primary font-bold text-sm tracking-widest uppercase">
           ⚔ Dungeon of Verbs
@@ -87,9 +90,7 @@ const GamePage: React.FC = () => {
         </button>
       </div>
 
-      {/* Main area */}
       <div className="flex flex-1 min-h-0">
-        {/* Game viewport */}
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex-1 flex items-center justify-center relative">
             {state.targetMode && (
@@ -119,7 +120,6 @@ const GamePage: React.FC = () => {
             )}
           </div>
 
-          {/* Bottom: Log + Action bar */}
           <CombatLog log={state.log} />
           <ActionBar
             onMove={handleMove}
@@ -131,7 +131,6 @@ const GamePage: React.FC = () => {
           />
         </div>
 
-        {/* Right sidebar */}
         <PlayerPanel
           player={state.player}
           floor={state.floor}
@@ -141,6 +140,12 @@ const GamePage: React.FC = () => {
           onCancelTarget={handleCancelTarget}
         />
       </div>
+
+      <LevelUpDialog
+        open={state.pendingLevelUp}
+        player={state.player}
+        onChoose={handleLevelUpChoice}
+      />
     </div>
   );
 };
