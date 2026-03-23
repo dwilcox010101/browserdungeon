@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LevelUpStat, Entity } from '@/game/types';
 import {
   Dialog,
@@ -26,23 +26,56 @@ const STAT_OPTIONS: { stat: LevelUpStat; label: string; icon: React.ElementType;
 ];
 
 const LevelUpDialog: React.FC<LevelUpDialogProps> = ({ open, player, onChoose }) => {
+  const [selected, setSelected] = useState(0);
+
+  useEffect(() => {
+    if (open) setSelected(0);
+  }, [open]);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (!open) return;
+    const key = e.key.toLowerCase();
+    if (key === 'w' || key === 'arrowup' || key === '8') {
+      e.preventDefault();
+      setSelected(i => (i - 1 + STAT_OPTIONS.length) % STAT_OPTIONS.length);
+    } else if (key === 's' || key === 'arrowdown' || key === '2') {
+      e.preventDefault();
+      setSelected(i => (i + 1) % STAT_OPTIONS.length);
+    } else if (key === 'enter' || key === ' ' || key === '5') {
+      e.preventDefault();
+      onChoose(STAT_OPTIONS[selected].stat);
+    }
+  }, [open, selected, onChoose]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   return (
     <Dialog open={open}>
-      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent
+        className="sm:max-w-md"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        overlayClassName="bg-black/20"
+      >
         <DialogHeader>
           <DialogTitle className="text-primary text-center text-lg">
             ⬆ Level Up! — Level {player.level}
           </DialogTitle>
           <DialogDescription className="text-center">
-            Choose a stat to improve
+            Choose a stat to improve (↑↓ to navigate, Enter to select)
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 py-2">
-          {STAT_OPTIONS.map(({ stat, label, icon: Icon, description, bonus }) => (
+          {STAT_OPTIONS.map(({ stat, label, icon: Icon, description, bonus }, idx) => (
             <button
               key={stat}
               onClick={() => onChoose(stat)}
-              className="flex items-center gap-3 p-3 rounded-lg bg-secondary hover:bg-secondary/80 border border-border hover:border-primary/50 transition-colors text-left group"
+              onMouseEnter={() => setSelected(idx)}
+              className={`flex items-center gap-3 p-3 rounded-lg bg-secondary hover:bg-secondary/80 border transition-colors text-left group ${
+                idx === selected ? 'border-primary ring-1 ring-primary/50' : 'border-border hover:border-primary/50'
+              }`}
             >
               <div className="w-9 h-9 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
                 <Icon size={18} className="text-primary" />
