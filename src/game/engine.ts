@@ -84,11 +84,15 @@ function resolveVerb(
 
 // === ENEMY AI ===
 
+function getPlayerDefense(player: Entity): number {
+  return player.defense + (player.equippedArmor?.defenseBonus ?? 0);
+}
+
 function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
   const player = state.player;
   const dist = manhattan(enemy.pos, player.pos);
   if (dist <= 1) {
-    const dmg = Math.max(1, enemy.attack - player.defense);
+    const dmg = Math.max(1, enemy.attack - getPlayerDefense(player));
     player.hp -= dmg;
     state.log.push(addLog(state, `${enemy.name} attacks you for ${dmg} damage!`, 'damage'));
     if (player.hp <= 0) {
