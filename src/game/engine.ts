@@ -21,7 +21,7 @@ function manhattan(a: Position, b: Position): number {
 
 function cloneGrid(state: GameState): GameState {
   const grid = state.grid.map(row => row.map(tile => ({ ...tile })));
-  return { ...state, grid, log: [...state.log], enemies: [...state.enemies] };
+  return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds) };
 }
 
 // === VERB/TRAIT RESOLUTION ===
@@ -222,6 +222,7 @@ export function createInitialState(): GameState {
     floor: 1,
     targetMode: null,
     pendingLevelUp: false,
+    collectedItemIds: new Set(),
   };
 
   state.log.push(addLog(state, 'You descend into the dungeon...', 'system'));
@@ -371,9 +372,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const tile = s.grid[s.player.pos.y][s.player.pos.x];
       if (tile.item) {
         const item = tile.item;
+        const isNewItem = !s.collectedItemIds.has(item.id);
         if (item.itemType === 'weapon') {
           if (s.player.equippedWeapon) {
-            // Swap: put current weapon on ground
             s.log.push(addLog(s, `Swapped ${s.player.equippedWeapon.name} for ${item.name}`, 'pickup'));
             tile.item = s.player.equippedWeapon;
           } else {
@@ -399,7 +400,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           s.log.push(addLog(s, `Picked up ${item.name}!`, 'pickup'));
           tile.item = null;
         }
-        grantXp(s, 3, 'item found');
+        if (isNewItem) {
+          s.collectedItemIds.add(item.id);
+          grantXp(s, 3, 'item found');
+        }
       } else {
         s.log.push(addLog(s, 'Nothing to pick up here.', 'system'));
       }
