@@ -21,7 +21,7 @@ function manhattan(a: Position, b: Position): number {
 
 function cloneGrid(state: GameState): GameState {
   const grid = state.grid.map(row => row.map(tile => ({ ...tile })));
-  return { ...state, grid, log: [...state.log], enemies: [...state.enemies] };
+  return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds) };
 }
 
 // === VERB/TRAIT RESOLUTION ===
