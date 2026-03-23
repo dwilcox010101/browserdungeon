@@ -588,6 +588,7 @@ function handleDeadEnemies(s: GameState): void {
   s.enemies = s.enemies.filter(e => {
     if (e.hp <= 0) {
       s.grid[e.pos.y][e.pos.x].entity = null;
+      emit(s, { type: 'enemy_killed', pos: { ...e.pos }, entityId: e.id });
       const xpGain = 5 + e.level * 3;
       grantXp(s, xpGain, `${e.name} defeated`);
       return false;
