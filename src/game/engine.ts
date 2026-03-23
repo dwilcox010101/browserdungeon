@@ -504,6 +504,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           }
           s.player.inventory.push(item);
           s.log.push(addLog(s, `Picked up ${item.name}!`, 'pickup'));
+          emit(s, { type: 'pickup', pos: { ...s.player.pos } });
           tile.item = null;
         }
         if (isNewItem) {
