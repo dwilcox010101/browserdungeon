@@ -63,7 +63,7 @@ const GamePage: React.FC = () => {
         d: 'right', arrowright: 'right', '6': 'right',
         q: 'up-left', '7': 'up-left',
         e: 'up-right', '9': 'up-right',
-        z: 'up-left' === 'up-left' ? 'down-left' : 'down-left', '1': 'down-left',
+        z: 'down-left', '1': 'down-left',
         c: 'down-right', '3': 'down-right',
       };
 
