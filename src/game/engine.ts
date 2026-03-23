@@ -222,6 +222,7 @@ export function createInitialState(): GameState {
     floor: 1,
     targetMode: null,
     pendingLevelUp: false,
+    collectedItemIds: new Set(),
   };
 
   state.log.push(addLog(state, 'You descend into the dungeon...', 'system'));
