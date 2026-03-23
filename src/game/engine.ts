@@ -448,6 +448,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             const heal = Math.floor(dmg * 0.3);
             s.player.hp = Math.min(s.player.maxHp, s.player.hp + heal);
             s.log.push(addLog(s, `You drain ${heal} HP!`, 'combat'));
+            emit(s, { type: 'heal', pos: { ...s.player.pos }, amount: heal });
           }
 
           if (enemy.hp <= 0) {
