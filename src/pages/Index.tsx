@@ -57,10 +57,14 @@ const GamePage: React.FC = () => {
       }
 
       const dirMap: Record<string, Direction> = {
-        w: 'up', arrowup: 'up',
-        s: 'down', arrowdown: 'down',
-        a: 'left', arrowleft: 'left',
-        d: 'right', arrowright: 'right',
+        w: 'up', arrowup: 'up', '8': 'up',
+        s: 'down', arrowdown: 'down', '2': 'down',
+        a: 'left', arrowleft: 'left', '4': 'left',
+        d: 'right', arrowright: 'right', '6': 'right',
+        q: 'up-left', '7': 'up-left',
+        e: 'up-right', '9': 'up-right',
+        z: 'up-left' === 'up-left' ? 'down-left' : 'down-left', '1': 'down-left',
+        c: 'down-right', '3': 'down-right',
       };
 
       if (dirMap[key]) {

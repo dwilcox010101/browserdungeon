@@ -1,6 +1,6 @@
 import React from 'react';
 import { Entity, Item } from '@/game/types';
-import { Heart, Zap, Shield, Sword, Star, ChevronUp, Package, Shirt } from 'lucide-react';
+import { Heart, Zap, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind } from 'lucide-react';
 
 interface PlayerPanelProps {
   player: Entity;
@@ -47,8 +47,8 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ ite
       )}
     </div>
     <div className="text-muted-foreground text-[10px] mt-0.5">
-      {item.verb} {item.traits.length > 0 && `• ${item.traits.join(', ')}`}
-      {item.defenseBonus ? `• +${item.defenseBonus} DEF` : ''}
+      {item.description}
+      {item.defenseBonus ? ` • +${item.defenseBonus} DEF` : ''}
     </div>
   </button>
 );
@@ -68,18 +68,24 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       <StatBar label="Energy" current={player.energy} max={player.maxEnergy} icon={<Zap size={12} />} colorClass="bg-game-energy" />
       <StatBar label="XP" current={player.xp} max={player.xpToNext} icon={<Star size={12} />} colorClass="bg-primary" />
 
-      <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
-        <div className="bg-secondary rounded p-2 flex items-center gap-1">
-          <Sword size={12} className="text-primary" /> ATK: {player.attack}
+      <div className="grid grid-cols-3 gap-1.5 mb-4 text-xs">
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Attack power">
+          <Sword size={10} className="text-primary" /> ATK: {player.attack}
         </div>
-        <div className="bg-secondary rounded p-2 flex items-center gap-1">
-          <Shield size={12} className="text-primary" /> DEF: {totalDef}
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Defense (reduces damage taken)">
+          <Shield size={10} className="text-primary" /> DEF: {totalDef}
         </div>
-        <div className="bg-secondary rounded p-2 flex items-center gap-1">
-          <Star size={12} className="text-primary" /> LVL: {player.level}
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Level">
+          <Star size={10} className="text-primary" /> LVL: {player.level}
         </div>
-        <div className="bg-secondary rounded p-2 flex items-center gap-1">
-          <ChevronUp size={12} className="text-primary" /> FLR: {floor}
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Luck (crit chance & bonus XP)">
+          <Clover size={10} className="text-primary" /> LCK: {player.luck}
+        </div>
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Dodge (chance to avoid attacks)">
+          <Wind size={10} className="text-primary" /> DDG: {player.dodge}
+        </div>
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Current floor">
+          <ChevronUp size={10} className="text-primary" /> FLR: {floor}
         </div>
       </div>
 
