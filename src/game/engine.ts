@@ -432,7 +432,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'USE_ITEM': {
-      const item = s.player.inventory.find(i => i.id === action.itemId);
+      // Check equipped slots first, then inventory
+      let item: Item | undefined;
+      let source: 'weapon' | 'armor' | 'inventory' = 'inventory';
+      if (s.player.equippedWeapon?.id === action.itemId) {
+        item = s.player.equippedWeapon;
+        source = 'weapon';
+      } else if (s.player.equippedArmor?.id === action.itemId) {
+        item = s.player.equippedArmor;
+        source = 'armor';
+      } else {
+        item = s.player.inventory.find(i => i.id === action.itemId);
+      }
       if (!item) return s;
 
       if (s.player.energy < item.energyCost) {
@@ -444,8 +455,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.player.energy -= item.energyCost;
         const result = resolveVerb(item.verb, item.traits, item.power, s.player, [], s);
         result.messages.forEach(m => s.log.push(addLog(s, m, 'combat')));
-        if (item.id !== 'start_sword') {
-          s.player.inventory = s.player.inventory.filter(i => i.id !== item.id);
+        if (item.itemType === 'consumable') {
+          s.player.inventory = s.player.inventory.filter(i => i.id !== item!.id);
         }
         if (s.player.energy <= 0) endTurn(s);
         return s;
