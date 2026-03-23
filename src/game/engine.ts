@@ -496,6 +496,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             tile.item = null;
           }
           s.player.equippedArmor = item;
+          emit(s, { type: 'pickup', pos: { ...s.player.pos } });
         } else {
           if (s.player.inventory.length >= s.player.inventorySize) {
             s.log.push(addLog(s, 'Inventory is full!', 'system'));
