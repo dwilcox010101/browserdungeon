@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { Tile, Position } from '@/game/types';
+import { Tile, Position, GameEvent } from '@/game/types';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
   Gem, ArrowDown, Package
@@ -16,18 +16,38 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
 };
 
+interface FloatingText {
+  id: number;
+  x: number;
+  y: number;
+  text: string;
+  color: string;
+  startTime: number;
+}
+
+interface FlashTile {
+  x: number;
+  y: number;
+  color: string;
+  startTime: number;
+}
+
 interface GameGridProps {
   grid: Tile[][];
   playerPos: Position;
   targetMode: { range: number } | null;
   onTileClick: (pos: Position) => void;
+  events: GameEvent[];
 }
 
 const TILE_SIZE = 24;
+let floatIdCounter = 0;
 
-const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick }) => {
+const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick, events }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
+  const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
+  const [flashTiles, setFlashTiles] = useState<FlashTile[]>([]);
 
   const updateDims = useCallback(() => {
     if (containerRef.current) {
@@ -55,6 +75,62 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     return { startX, startY };
   }, [playerPos, grid, viewportWidth, viewportHeight]);
 
+  // Process events into floating texts and flashes
+  useEffect(() => {
+    if (events.length === 0) return;
+    const now = Date.now();
+    const newFloats: FloatingText[] = [];
+    const newFlashes: FlashTile[] = [];
+
+    events.forEach(ev => {
+      if (ev.pos) {
+        const screenX = (ev.pos.x - viewport.startX) * TILE_SIZE;
+        const screenY = (ev.pos.y - viewport.startY) * TILE_SIZE;
+
+        if (ev.type === 'player_attack' && ev.amount) {
+          newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: `-${ev.amount}`, color: 'hsl(var(--primary))', startTime: now });
+          newFlashes.push({ x: ev.pos.x, y: ev.pos.y, color: 'bg-primary/40', startTime: now });
+        } else if (ev.type === 'player_hit' && ev.amount) {
+          newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: `-${ev.amount}`, color: 'hsl(var(--game-enemy))', startTime: now });
+          newFlashes.push({ x: ev.pos.x, y: ev.pos.y, color: 'bg-game-enemy/40', startTime: now });
+        } else if (ev.type === 'heal' && ev.amount) {
+          newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: `+${ev.amount}`, color: 'hsl(var(--game-item))', startTime: now });
+        } else if (ev.type === 'player_dodge' || ev.type === 'enemy_dodge') {
+          newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'DODGE', color: 'hsl(var(--game-energy))', startTime: now });
+        } else if (ev.type === 'crit') {
+          newFloats.push({ id: floatIdCounter++, x: screenX + 12, y: screenY - 8, text: 'CRIT!', color: 'hsl(var(--primary))', startTime: now });
+        } else if (ev.type === 'enemy_killed') {
+          newFlashes.push({ x: ev.pos.x, y: ev.pos.y, color: 'bg-primary/60', startTime: now });
+        } else if (ev.type === 'level_up') {
+          newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'LEVEL UP!', color: 'hsl(var(--primary))', startTime: now });
+        }
+      }
+    });
+
+    if (newFloats.length > 0) setFloatingTexts(prev => [...prev, ...newFloats]);
+    if (newFlashes.length > 0) setFlashTiles(prev => [...prev, ...newFlashes]);
+  }, [events, viewport.startX, viewport.startY]);
+
+  // Clean up old floating texts
+  useEffect(() => {
+    if (floatingTexts.length === 0) return;
+    const timer = setTimeout(() => {
+      const now = Date.now();
+      setFloatingTexts(prev => prev.filter(f => now - f.startTime < 800));
+    }, 850);
+    return () => clearTimeout(timer);
+  }, [floatingTexts]);
+
+  // Clean up old flashes
+  useEffect(() => {
+    if (flashTiles.length === 0) return;
+    const timer = setTimeout(() => {
+      const now = Date.now();
+      setFlashTiles(prev => prev.filter(f => now - f.startTime < 200));
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [flashTiles]);
+
   const manhattan = (a: Position, b: Position) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
   const getTileTooltip = (tile: Tile): string | null => {
@@ -68,12 +144,18 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     return null;
   };
 
+  const isFlashing = (x: number, y: number): string | null => {
+    const now = Date.now();
+    const flash = flashTiles.find(f => f.x === x && f.y === y && now - f.startTime < 200);
+    return flash ? flash.color : null;
+  };
+
   return (
-    <div ref={containerRef} className="w-full h-full overflow-hidden">
+    <div ref={containerRef} className="w-full h-full overflow-hidden relative">
       {dims.w > 0 && dims.h > 0 && (
         <TooltipProvider delayDuration={200}>
           <div
-            className="bg-game-grid select-none mx-auto"
+            className="bg-game-grid select-none mx-auto relative"
             style={{
               width: viewportWidth * TILE_SIZE,
               height: viewportHeight * TILE_SIZE,
@@ -94,6 +176,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                 const hasItem = !!tile.item;
                 const isStairs = tile.type === 'stairs';
                 const inRange = targetMode && manhattan(playerPos, { x, y }) <= targetMode.range;
+                const flashColor = isFlashing(x, y);
 
                 let bgClass = 'bg-game-grid';
                 if (tile.visible) {
@@ -110,17 +193,17 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                   <div
                     className={`${bgClass} flex items-center justify-center cursor-pointer transition-colors duration-75 ${
                       inRange ? 'ring-1 ring-inset ring-primary/50' : ''
-                    } ${targetMode && !inRange ? 'opacity-50' : ''}`}
+                    } ${targetMode && !inRange ? 'opacity-50' : ''} ${flashColor || ''}`}
                     style={{ width: TILE_SIZE, height: TILE_SIZE }}
                     onClick={() => onTileClick({ x, y })}
                   >
                     {tile.visible && (
                       <>
                         {isPlayer && (
-                          <Sword className="text-game-player" size={14} />
+                          <Sword className={`text-game-player ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
                         )}
                         {isEnemy && EntityIcon && (
-                          <EntityIcon className="text-game-enemy" size={14} />
+                          <EntityIcon className={`text-game-enemy ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
                         )}
                         {hasItem && !tile.entity && (
                           <Package className="text-game-item" size={12} />
@@ -150,6 +233,32 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
           </div>
         </TooltipProvider>
       )}
+
+      {/* Floating damage/heal numbers */}
+      {floatingTexts.map(ft => {
+        const age = Date.now() - ft.startTime;
+        const progress = Math.min(age / 800, 1);
+        const offsetY = -30 * progress;
+        const opacity = 1 - progress;
+
+        return (
+          <div
+            key={ft.id}
+            className="absolute pointer-events-none font-bold text-xs whitespace-nowrap z-20"
+            style={{
+              left: ft.x + TILE_SIZE / 2,
+              top: ft.y + offsetY,
+              color: ft.color,
+              opacity,
+              transform: 'translateX(-50%)',
+              textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+              fontSize: ft.text.includes('LEVEL') || ft.text.includes('CRIT') ? '11px' : '10px',
+            }}
+          >
+            {ft.text}
+          </div>
+        );
+      })}
     </div>
   );
 };
