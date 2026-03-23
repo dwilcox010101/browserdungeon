@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { Tile, Position, GameEvent } from '@/game/types';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
-  Gem, ArrowDown, Package
+  Gem, ArrowDown, Package, Zap, Shield
 } from 'lucide-react';
 
 import {
