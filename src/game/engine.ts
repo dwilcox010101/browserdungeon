@@ -202,6 +202,7 @@ function checkLevelUp(s: GameState): void {
     s.player.xpToNext = Math.floor(s.player.xpToNext * 1.5);
     s.player.hp = s.player.maxHp;
     s.pendingLevelUp = true;
+    emit(s, { type: 'level_up', pos: { ...s.player.pos } });
     s.log.push(addLog(s, `Level up! You are now level ${s.player.level}! Choose a stat to improve.`, 'system'));
   }
 }
