@@ -1,9 +1,10 @@
-import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb } from './types';
+import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat } from './types';
 import { generateDungeon, computeFOV } from './dungeon';
 
 const MAP_WIDTH = 40;
 const MAP_HEIGHT = 30;
 const FOV_RADIUS = 7;
+const INITIAL_INVENTORY_SIZE = 4;
 
 function addLog(state: GameState, message: string, type: LogEntry['type'] = 'info'): LogEntry {
   return {
@@ -37,18 +38,12 @@ function resolveVerb(
   let healed = 0;
   const messages: string[] = [];
 
-  // Trait modifiers
   if (traits.includes('FIRE')) damage = Math.floor(damage * 1.3);
   if (traits.includes('ICE')) damage = Math.floor(damage * 1.1);
-  if (traits.includes('PIERCING')) {
-    // ignore defense handled at application
-  }
 
   switch (verb) {
     case 'HIT': {
-      const actualTargets = traits.includes('AOE')
-        ? targets
-        : targets.slice(0, 1);
+      const actualTargets = traits.includes('AOE') ? targets : targets.slice(0, 1);
       actualTargets.forEach(t => {
         const def = traits.includes('PIERCING') ? 0 : t.defense;
         const finalDmg = Math.max(1, damage - def);
@@ -59,12 +54,8 @@ function resolveVerb(
           user.hp = Math.min(user.maxHp, user.hp + heal);
           messages.push(`${user.name} drains ${heal} HP`);
         }
-        if (traits.includes('POISON')) {
-          messages.push(`${t.name} is poisoned!`);
-        }
-        if (traits.includes('STUN')) {
-          messages.push(`${t.name} is stunned!`);
-        }
+        if (traits.includes('POISON')) messages.push(`${t.name} is poisoned!`);
+        if (traits.includes('STUN')) messages.push(`${t.name} is stunned!`);
       });
       break;
     }
@@ -97,7 +88,6 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
   const player = state.player;
   const dist = manhattan(enemy.pos, player.pos);
   if (dist <= 1) {
-    // Attack player
     const dmg = Math.max(1, enemy.attack - player.defense);
     player.hp -= dmg;
     state.log.push(addLog(state, `${enemy.name} attacks you for ${dmg} damage!`, 'damage'));
@@ -108,9 +98,8 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
     return;
   }
 
-  if (dist > FOV_RADIUS + 2) return; // Don't move if too far
+  if (dist > FOV_RADIUS + 2) return;
 
-  // Simple pathfinding: move toward player
   const dx = Math.sign(player.pos.x - enemy.pos.x);
   const dy = Math.sign(player.pos.y - enemy.pos.y);
   const moves: Position[] = [
@@ -136,6 +125,53 @@ function processEnemyTurns(state: GameState): void {
   });
 }
 
+// === XP & LEVELING ===
+
+function checkLevelUp(s: GameState): void {
+  if (s.player.xp >= s.player.xpToNext) {
+    s.player.level++;
+    s.player.xp -= s.player.xpToNext;
+    s.player.xpToNext = Math.floor(s.player.xpToNext * 1.5);
+    s.player.hp = s.player.maxHp; // full heal on level up
+    s.pendingLevelUp = true;
+    s.log.push(addLog(s, `Level up! You are now level ${s.player.level}! Choose a stat to improve.`, 'system'));
+  }
+}
+
+function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
+  switch (stat) {
+    case 'hp':
+      s.player.maxHp += 5;
+      s.player.hp = Math.min(s.player.hp + 5, s.player.maxHp);
+      s.log.push(addLog(s, 'Max HP increased by 5!', 'system'));
+      break;
+    case 'energy':
+      s.player.maxEnergy += 1;
+      s.player.energy = Math.min(s.player.energy + 1, s.player.maxEnergy);
+      s.log.push(addLog(s, 'Max Energy increased by 1!', 'system'));
+      break;
+    case 'attack':
+      s.player.attack += 2;
+      s.log.push(addLog(s, 'Attack increased by 2!', 'system'));
+      break;
+    case 'defense':
+      s.player.defense += 1;
+      s.log.push(addLog(s, 'Defense increased by 1!', 'system'));
+      break;
+    case 'inventory':
+      s.player.inventorySize += 1;
+      s.log.push(addLog(s, 'Inventory size increased by 1!', 'system'));
+      break;
+  }
+  s.pendingLevelUp = false;
+}
+
+function grantXp(s: GameState, amount: number, reason: string): void {
+  s.player.xp += amount;
+  s.log.push(addLog(s, `+${amount} XP (${reason})`, 'info'));
+  checkLevelUp(s);
+}
+
 // === INITIAL STATE ===
 
 export function createInitialState(): GameState {
@@ -157,6 +193,7 @@ export function createInitialState(): GameState {
     inventory: [
       { id: 'start_sword', name: 'Rusty Sword', verb: 'HIT', traits: [], energyCost: 1, power: 5, range: 1, description: 'A basic melee attack' },
     ],
+    inventorySize: INITIAL_INVENTORY_SIZE,
     isPlayer: true,
     icon: 'Sword',
   };
@@ -176,6 +213,7 @@ export function createInitialState(): GameState {
     gameOver: false,
     floor: 1,
     targetMode: null,
+    pendingLevelUp: false,
   };
 
   state.log.push(addLog(state, 'You descend into the dungeon...', 'system'));
@@ -188,12 +226,19 @@ export function createInitialState(): GameState {
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   if (state.gameOver && action.type !== 'NEW_GAME') return state;
+  // Block actions while level up pending (except choosing)
+  if (state.pendingLevelUp && action.type !== 'LEVEL_UP_CHOICE' && action.type !== 'NEW_GAME') return state;
 
   let s = cloneGrid(state);
 
   switch (action.type) {
     case 'NEW_GAME':
       return createInitialState();
+
+    case 'LEVEL_UP_CHOICE': {
+      applyLevelUpChoice(s, action.stat);
+      return s;
+    }
 
     case 'SET_TARGET_MODE': {
       s.targetMode = action.item ? { item: action.item, range: action.item.range } : null;
@@ -226,7 +271,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           s.log.push(addLog(s, 'You teleport!', 'info'));
         }
       } else {
-        // Find targets at/near pos
         const targets: Entity[] = [];
         const aoeRange = item.traits.includes('AOE') ? 2 : 0;
         s.enemies.forEach(e => {
@@ -237,20 +281,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         if (targets.length > 0) {
           const result = resolveVerb(item.verb, item.traits, item.power, s.player, targets, s);
           result.messages.forEach(m => s.log.push(addLog(s, m, 'combat')));
-          // Remove dead enemies
           handleDeadEnemies(s);
         } else if (item.verb === 'HEAL' || item.verb === 'BUFF') {
           const result = resolveVerb(item.verb, item.traits, item.power, s.player, [], s);
           result.messages.forEach(m => s.log.push(addLog(s, m, 'combat')));
         } else {
           s.log.push(addLog(s, 'No target there!', 'system'));
-          s.player.energy += item.energyCost; // refund
+          s.player.energy += item.energyCost;
           s.targetMode = null;
           return s;
         }
       }
 
-      // Remove consumable (not starting sword)
       if (item.id !== 'start_sword') {
         s.player.inventory = s.player.inventory.filter(i => i.id !== item.id);
       }
@@ -289,7 +331,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const targetTile = s.grid[newPos.y][newPos.x];
       if (targetTile.type === 'wall') return s;
 
-      // Bump attack
       if (targetTile.entity && !targetTile.entity.isPlayer) {
         const enemy = targetTile.entity;
         const dmg = Math.max(1, s.player.attack - enemy.defense);
@@ -301,7 +342,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           handleDeadEnemies(s);
         }
       } else {
-        // Move
         s.grid[s.player.pos.y][s.player.pos.x].entity = null;
         s.player.pos = newPos;
         s.grid[newPos.y][newPos.x].entity = s.player;
@@ -319,8 +359,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'PICK_UP': {
       const tile = s.grid[s.player.pos.y][s.player.pos.x];
       if (tile.item) {
+        if (s.player.inventory.length >= s.player.inventorySize) {
+          s.log.push(addLog(s, 'Inventory is full!', 'system'));
+          return s;
+        }
         s.player.inventory.push(tile.item);
         s.log.push(addLog(s, `Picked up ${tile.item.name}!`, 'pickup'));
+        grantXp(s, 3, 'item found');
         tile.item = null;
       } else {
         s.log.push(addLog(s, 'Nothing to pick up here.', 'system'));
@@ -341,6 +386,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.grid[playerStart.y][playerStart.x].entity = s.player;
         s.grid = computeFOV(s.grid, playerStart, FOV_RADIUS);
         s.log.push(addLog(s, `You descend to floor ${newFloor}...`, 'system'));
+        grantXp(s, 10 + newFloor * 2, 'new floor');
       }
       return s;
     }
@@ -361,7 +407,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return s;
       }
 
-      // Self-target items
       if (item.verb === 'HEAL' || item.verb === 'BUFF') {
         s.player.energy -= item.energyCost;
         const result = resolveVerb(item.verb, item.traits, item.power, s.player, [], s);
@@ -373,7 +418,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return s;
       }
 
-      // Enter target mode for other items
       s.targetMode = { item, range: item.range };
       s.log.push(addLog(s, `Select a target for ${item.name} (range: ${item.range})`, 'system'));
       return s;
@@ -388,21 +432,8 @@ function handleDeadEnemies(s: GameState): void {
   s.enemies = s.enemies.filter(e => {
     if (e.hp <= 0) {
       s.grid[e.pos.y][e.pos.x].entity = null;
-      const xpGain = 5 + e.level * 2;
-      s.player.xp += xpGain;
-      s.log.push(addLog(s, `${e.name} defeated! +${xpGain} XP`, 'combat'));
-
-      // Level up check
-      if (s.player.xp >= s.player.xpToNext) {
-        s.player.level++;
-        s.player.xp -= s.player.xpToNext;
-        s.player.xpToNext = Math.floor(s.player.xpToNext * 1.5);
-        s.player.maxHp += 5;
-        s.player.hp = s.player.maxHp;
-        s.player.attack += 1;
-        s.player.maxEnergy += 1;
-        s.log.push(addLog(s, `Level up! You are now level ${s.player.level}!`, 'system'));
-      }
+      const xpGain = 5 + e.level * 3;
+      grantXp(s, xpGain, `${e.name} defeated`);
       return false;
     }
     return true;

@@ -30,6 +30,8 @@ export interface Item {
   description: string;
 }
 
+export type LevelUpStat = 'hp' | 'energy' | 'attack' | 'defense' | 'inventory';
+
 export interface Entity {
   id: string;
   name: string;
@@ -44,6 +46,7 @@ export interface Entity {
   xp: number;
   xpToNext: number;
   inventory: Item[];
+  inventorySize: number;
   isPlayer: boolean;
   icon: string; // lucide icon name
 }
@@ -75,6 +78,7 @@ export interface GameState {
   gameOver: boolean;
   floor: number;
   targetMode: { item: Item; range: number } | null;
+  pendingLevelUp: boolean;
 }
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
@@ -88,4 +92,5 @@ export type GameAction =
   | { type: 'DESCEND' }
   | { type: 'NEW_GAME' }
   | { type: 'SET_TARGET_MODE'; item: Item | null }
-  | { type: 'TARGET_TILE'; pos: Position };
+  | { type: 'TARGET_TILE'; pos: Position }
+  | { type: 'LEVEL_UP_CHOICE'; stat: LevelUpStat };

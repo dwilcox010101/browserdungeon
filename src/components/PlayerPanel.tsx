@@ -57,6 +57,13 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
         icon={<Zap size={12} />}
         colorClass="bg-game-energy"
       />
+      <StatBar
+        label="XP"
+        current={player.xp}
+        max={player.xpToNext}
+        icon={<Star size={12} />}
+        colorClass="bg-primary"
+      />
 
       <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
         <div className="bg-secondary rounded p-2 flex items-center gap-1">
@@ -69,18 +76,17 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
           <Star size={12} className="text-primary" /> LVL: {player.level}
         </div>
         <div className="bg-secondary rounded p-2 flex items-center gap-1">
-          <ChevronUp size={12} className="text-primary" /> XP: {player.xp}/{player.xpToNext}
+          <ChevronUp size={12} className="text-primary" /> FLR: {floor}
         </div>
       </div>
 
       <div className="text-xs text-muted-foreground mb-2 flex justify-between">
-        <span>Floor {floor}</span>
         <span>Turn {turn}</span>
       </div>
 
       <div className="border-t border-border pt-3 mt-2">
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
-          <Package size={12} /> Inventory
+          <Package size={12} /> Inventory ({player.inventory.length}/{player.inventorySize})
         </h3>
         {targetMode && (
           <button
