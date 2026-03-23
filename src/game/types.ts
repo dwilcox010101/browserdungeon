@@ -49,6 +49,8 @@ export interface Entity {
   level: number;
   xp: number;
   xpToNext: number;
+  equippedWeapon: Item | null;
+  equippedArmor: Item | null;
   inventory: Item[];
   inventorySize: number;
   isPlayer: boolean;
