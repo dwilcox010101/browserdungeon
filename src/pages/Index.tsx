@@ -182,6 +182,7 @@ const GamePage: React.FC = () => {
             targetMode={state.targetMode}
             onTileClick={handleTileClick}
             events={state.events}
+            playerTileItem={playerTile?.item ? { name: playerTile.item.name, description: playerTile.item.description } : null}
           />
           {state.gameOver && (
             <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center">

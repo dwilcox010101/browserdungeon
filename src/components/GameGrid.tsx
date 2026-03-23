@@ -38,12 +38,13 @@ interface GameGridProps {
   targetMode: { range: number } | null;
   onTileClick: (pos: Position) => void;
   events: GameEvent[];
+  playerTileItem?: { name: string; description: string } | null;
 }
 
 const TILE_SIZE = 24;
 let floatIdCounter = 0;
 
-const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick, events }) => {
+const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick, events, playerTileItem }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
@@ -232,6 +233,23 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
             )}
           </div>
         </TooltipProvider>
+      )}
+
+      {/* Item tooltip above player */}
+      {playerTileItem && dims.w > 0 && (
+        <div
+          className="absolute z-30 pointer-events-none"
+          style={{
+            left: (playerPos.x - viewport.startX) * TILE_SIZE + TILE_SIZE / 2,
+            top: (playerPos.y - viewport.startY) * TILE_SIZE - 8,
+            transform: 'translate(-50%, -100%)',
+          }}
+        >
+          <div className="bg-card border border-border rounded px-2 py-1 text-xs text-foreground shadow-lg whitespace-nowrap">
+            <span className="text-game-item font-medium">{playerTileItem.name}</span>
+            <span className="text-muted-foreground ml-1">— {playerTileItem.description}</span>
+          </div>
+        </div>
       )}
 
       {/* Floating damage/heal numbers */}
