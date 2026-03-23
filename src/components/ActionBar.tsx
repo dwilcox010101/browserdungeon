@@ -21,7 +21,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
   const disabledClass = "bg-secondary/30 text-muted-foreground/30 rounded p-1.5 cursor-not-allowed flex items-center justify-center";
 
   return (
-    <div className="bg-card border-t border-border px-4 py-2 flex items-center gap-4">
+    <div className="bg-card border-t border-border px-3 py-3 flex flex-col items-center gap-3 shrink-0">
       <div className="flex items-center gap-1">
         <span className="text-xs text-muted-foreground mr-1">Move:</span>
         <div className="grid grid-cols-3 gap-0.5">
@@ -53,32 +53,32 @@ const ActionBar: React.FC<ActionBarProps> = ({
         </div>
       </div>
 
-      <div className="h-6 w-px bg-border" />
+      <div className="flex gap-1 w-full">
+        <button className={`${btnClass} flex-1`} onClick={onPass} title="Pass turn (Space/Num5)">
+          <SkipForward size={14} className="mr-1" />
+          <span className="text-xs">Pass</span>
+        </button>
 
-      <button className={btnClass} onClick={onPass} title="Pass turn (Space/Num5)">
-        <SkipForward size={14} className="mr-1" />
-        <span className="text-xs">Pass</span>
-      </button>
+        <button
+          className={`${hasItem ? btnClass : disabledClass} flex-1`}
+          onClick={onPickUp}
+          disabled={!hasItem}
+          title="Pick up item (G)"
+        >
+          <Package size={14} className="mr-1" />
+          <span className="text-xs">Pick up</span>
+        </button>
 
-      <button
-        className={hasItem ? btnClass : disabledClass}
-        onClick={onPickUp}
-        disabled={!hasItem}
-        title="Pick up item (G)"
-      >
-        <Package size={14} className="mr-1" />
-        <span className="text-xs">Pick up</span>
-      </button>
-
-      <button
-        className={canDescend ? btnClass : disabledClass}
-        onClick={onDescend}
-        disabled={!canDescend}
-        title="Descend stairs (>)"
-      >
-        <ArrowDown size={14} className="mr-1" />
-        <span className="text-xs">Descend</span>
-      </button>
+        <button
+          className={`${canDescend ? btnClass : disabledClass} flex-1`}
+          onClick={onDescend}
+          disabled={!canDescend}
+          title="Descend stairs (>)"
+        >
+          <ArrowDown size={14} className="mr-1" />
+          <span className="text-xs">Descend</span>
+        </button>
+      </div>
     </div>
   );
 };

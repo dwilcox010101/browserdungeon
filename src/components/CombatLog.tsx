@@ -23,7 +23,7 @@ const CombatLog: React.FC<CombatLogProps> = ({ log }) => {
   }, [log.length]);
 
   return (
-    <div className="bg-card border-t border-border flex flex-col" style={{ height: 160 }}>
+    <div className="bg-card border-b border-border flex flex-col flex-1 min-h-0">
       <div className="px-3 py-1.5 border-b border-border text-xs text-muted-foreground uppercase tracking-wider">
         Combat Log
       </div>

@@ -107,35 +107,44 @@ const GamePage: React.FC = () => {
       </div>
 
       <div className="flex flex-1 min-h-0">
-        <div className="flex-1 flex flex-col min-h-0">
-          <div className="flex-1 flex items-center justify-center relative">
-            {state.targetMode && (
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-primary/20 text-primary text-xs px-3 py-1 rounded z-10">
-                Click a tile to target • ESC to cancel
-              </div>
-            )}
-            <GameGrid
-              grid={state.grid}
-              playerPos={state.player.pos}
-              targetMode={state.targetMode}
-              onTileClick={handleTileClick}
-            />
-            {state.gameOver && (
-              <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center">
-                <div className="text-accent text-2xl font-bold mb-2">Game Over</div>
-                <p className="text-muted-foreground text-sm mb-4">
-                  You reached floor {state.floor}, level {state.player.level}
-                </p>
-                <button
-                  onClick={handleNewGame}
-                  className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-medium hover:bg-primary/90 transition-colors"
-                >
-                  Try Again
-                </button>
-              </div>
-            )}
-          </div>
+        <PlayerPanel
+          player={state.player}
+          floor={state.floor}
+          turn={state.turn}
+          targetMode={!!state.targetMode}
+          onUseItem={handleUseItem}
+          onCancelTarget={handleCancelTarget}
+        />
 
+        <div className="flex-1 flex items-center justify-center relative min-h-0">
+          {state.targetMode && (
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-primary/20 text-primary text-xs px-3 py-1 rounded z-10">
+              Click a tile to target • ESC to cancel
+            </div>
+          )}
+          <GameGrid
+            grid={state.grid}
+            playerPos={state.player.pos}
+            targetMode={state.targetMode}
+            onTileClick={handleTileClick}
+          />
+          {state.gameOver && (
+            <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center">
+              <div className="text-accent text-2xl font-bold mb-2">Game Over</div>
+              <p className="text-muted-foreground text-sm mb-4">
+                You reached floor {state.floor}, level {state.player.level}
+              </p>
+              <button
+                onClick={handleNewGame}
+                className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="w-72 bg-card border-l border-border flex flex-col h-full">
           <CombatLog log={state.log} />
           <ActionBar
             onMove={handleMove}
@@ -146,15 +155,6 @@ const GamePage: React.FC = () => {
             hasItem={hasItemOnGround}
           />
         </div>
-
-        <PlayerPanel
-          player={state.player}
-          floor={state.floor}
-          turn={state.turn}
-          targetMode={!!state.targetMode}
-          onUseItem={handleUseItem}
-          onCancelTarget={handleCancelTarget}
-        />
       </div>
 
       <LevelUpDialog
