@@ -253,7 +253,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
   switch (action.type) {
     case 'NEW_GAME':
-      return createInitialState();
+      return createInitialState(action.characterId || state.characterId);
 
     case 'LEVEL_UP_CHOICE': {
       applyLevelUpChoice(s, action.stat);
