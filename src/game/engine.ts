@@ -341,7 +341,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (targetTile.entity && !targetTile.entity.isPlayer) {
         const enemy = targetTile.entity;
-        const dmg = Math.max(1, s.player.attack - enemy.defense);
+        const weapon = s.player.equippedWeapon;
+        const atkPower = weapon ? weapon.power + s.player.attack : s.player.attack;
+        const dmg = Math.max(1, atkPower - enemy.defense);
         enemy.hp -= dmg;
         s.player.energy -= 1;
         s.log.push(addLog(s, `You attack ${enemy.name} for ${dmg} damage!`, 'combat'));
