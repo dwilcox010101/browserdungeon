@@ -1,4 +1,4 @@
-import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat, Direction } from './types';
+import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat, Direction, GameEvent } from './types';
 import { generateDungeon, computeFOV } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
