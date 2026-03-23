@@ -38,7 +38,11 @@ function manhattan(a: Position, b: Position): number {
 
 function cloneGrid(state: GameState): GameState {
   const grid = state.grid.map(row => row.map(tile => ({ ...tile })));
-  return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds) };
+  return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds), events: [] };
+}
+
+function emit(s: GameState, event: GameEvent): void {
+  s.events.push(event);
 }
 
 function checkItemOnGround(s: GameState): void {
