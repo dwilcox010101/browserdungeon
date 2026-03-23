@@ -486,6 +486,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             tile.item = null;
           }
           s.player.equippedWeapon = item;
+          emit(s, { type: 'pickup', pos: { ...s.player.pos } });
         } else if (item.itemType === 'armor') {
           if (s.player.equippedArmor) {
             s.log.push(addLog(s, `Swapped ${s.player.equippedArmor.name} for ${item.name}`, 'pickup'));
