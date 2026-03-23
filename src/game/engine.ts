@@ -24,6 +24,13 @@ function cloneGrid(state: GameState): GameState {
   return { ...state, grid, log: [...state.log], enemies: [...state.enemies], collectedItemIds: new Set(state.collectedItemIds) };
 }
 
+function checkItemOnGround(s: GameState): void {
+  const tile = s.grid[s.player.pos.y][s.player.pos.x];
+  if (tile.item) {
+    s.log.push(addLog(s, `You see a ${tile.item.name} on the ground here.`, 'info'));
+  }
+}
+
 // === VERB/TRAIT RESOLUTION ===
 
 function resolveVerb(
@@ -278,6 +285,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           s.player.pos = pos;
           s.grid[pos.y][pos.x].entity = s.player;
           s.log.push(addLog(s, 'You teleport!', 'info'));
+          checkItemOnGround(s);
         }
       } else {
         const targets: Entity[] = [];
@@ -358,6 +366,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.player.pos = newPos;
         s.grid[newPos.y][newPos.x].entity = s.player;
         s.player.energy -= 1;
+        checkItemOnGround(s);
       }
 
       if (s.player.energy <= 0) {
