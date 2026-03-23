@@ -1,11 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { Tile, Position } from '@/game/types';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
   Gem, ArrowDown, Package
 } from 'lucide-react';
 
-// ... keep existing code
 import {
   Tooltip,
   TooltipContent,
@@ -27,8 +26,24 @@ interface GameGridProps {
 const TILE_SIZE = 24;
 
 const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTileClick }) => {
-  const viewportWidth = 27;
-  const viewportHeight = 21;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dims, setDims] = useState({ w: 0, h: 0 });
+
+  const updateDims = useCallback(() => {
+    if (containerRef.current) {
+      setDims({ w: containerRef.current.clientWidth, h: containerRef.current.clientHeight });
+    }
+  }, []);
+
+  useEffect(() => {
+    updateDims();
+    const ro = new ResizeObserver(updateDims);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [updateDims]);
+
+  const viewportWidth = Math.max(1, Math.floor(dims.w / TILE_SIZE));
+  const viewportHeight = Math.max(1, Math.floor(dims.h / TILE_SIZE));
 
   const viewport = useMemo(() => {
     const halfW = Math.floor(viewportWidth / 2);
@@ -38,7 +53,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     startX = Math.max(0, Math.min(startX, grid[0].length - viewportWidth));
     startY = Math.max(0, Math.min(startY, grid.length - viewportHeight));
     return { startX, startY };
-  }, [playerPos, grid]);
+  }, [playerPos, grid, viewportWidth, viewportHeight]);
 
   const manhattan = (a: Position, b: Position) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
@@ -54,84 +69,88 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
   };
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <div
-        className="bg-game-grid border border-border rounded overflow-hidden select-none"
-        style={{
-          width: viewportWidth * TILE_SIZE,
-          height: viewportHeight * TILE_SIZE,
-          display: 'grid',
-          gridTemplateColumns: `repeat(${viewportWidth}, ${TILE_SIZE}px)`,
-          gridTemplateRows: `repeat(${viewportHeight}, ${TILE_SIZE}px)`,
-        }}
-      >
-        {Array.from({ length: viewportHeight }, (_, vy) =>
-          Array.from({ length: viewportWidth }, (_, vx) => {
-            const x = viewport.startX + vx;
-            const y = viewport.startY + vy;
-            const tile = grid[y]?.[x];
-            if (!tile) return <div key={`${vx}-${vy}`} className="bg-game-grid" />;
+    <div ref={containerRef} className="w-full h-full overflow-hidden">
+      {dims.w > 0 && dims.h > 0 && (
+        <TooltipProvider delayDuration={200}>
+          <div
+            className="bg-game-grid select-none mx-auto"
+            style={{
+              width: viewportWidth * TILE_SIZE,
+              height: viewportHeight * TILE_SIZE,
+              display: 'grid',
+              gridTemplateColumns: `repeat(${viewportWidth}, ${TILE_SIZE}px)`,
+              gridTemplateRows: `repeat(${viewportHeight}, ${TILE_SIZE}px)`,
+            }}
+          >
+            {Array.from({ length: viewportHeight }, (_, vy) =>
+              Array.from({ length: viewportWidth }, (_, vx) => {
+                const x = viewport.startX + vx;
+                const y = viewport.startY + vy;
+                const tile = grid[y]?.[x];
+                if (!tile) return <div key={`${vx}-${vy}`} className="bg-game-grid" />;
 
-            const isPlayer = tile.entity?.isPlayer;
-            const isEnemy = tile.entity && !tile.entity.isPlayer;
-            const hasItem = !!tile.item;
-            const isStairs = tile.type === 'stairs';
-            const inRange = targetMode && manhattan(playerPos, { x, y }) <= targetMode.range;
+                const isPlayer = tile.entity?.isPlayer;
+                const isEnemy = tile.entity && !tile.entity.isPlayer;
+                const hasItem = !!tile.item;
+                const isStairs = tile.type === 'stairs';
+                const inRange = targetMode && manhattan(playerPos, { x, y }) <= targetMode.range;
 
-            let bgClass = 'bg-game-grid';
-            if (tile.visible) {
-              bgClass = tile.type === 'wall' ? 'bg-game-wall' : 'bg-game-floor';
-              if (isStairs) bgClass = 'bg-primary/20';
-            } else if (tile.explored) {
-              bgClass = tile.type === 'wall' ? 'bg-game-wall/30' : 'bg-game-floor/30';
-            }
+                let bgClass = 'bg-game-grid';
+                if (tile.visible) {
+                  bgClass = tile.type === 'wall' ? 'bg-game-wall' : 'bg-game-floor';
+                  if (isStairs) bgClass = 'bg-primary/20';
+                } else if (tile.explored) {
+                  bgClass = tile.type === 'wall' ? 'bg-game-wall/30' : 'bg-game-floor/30';
+                }
 
-            const EntityIcon = tile.entity ? ICON_MAP[tile.entity.icon] : null;
-            const tooltip = getTileTooltip(tile);
+                const EntityIcon = tile.entity ? ICON_MAP[tile.entity.icon] : null;
+                const tooltip = getTileTooltip(tile);
 
-            const tileContent = (
-              <div
-                className={`${bgClass} flex items-center justify-center cursor-pointer transition-colors duration-75 ${
-                  inRange ? 'ring-1 ring-inset ring-primary/50' : ''
-                } ${targetMode && !inRange ? 'opacity-50' : ''}`}
-                style={{ width: TILE_SIZE, height: TILE_SIZE }}
-                onClick={() => onTileClick({ x, y })}
-              >
-                {tile.visible && (
-                  <>
-                    {isPlayer && (
-                      <Sword className="text-game-player" size={14} />
+                const tileContent = (
+                  <div
+                    className={`${bgClass} flex items-center justify-center cursor-pointer transition-colors duration-75 ${
+                      inRange ? 'ring-1 ring-inset ring-primary/50' : ''
+                    } ${targetMode && !inRange ? 'opacity-50' : ''}`}
+                    style={{ width: TILE_SIZE, height: TILE_SIZE }}
+                    onClick={() => onTileClick({ x, y })}
+                  >
+                    {tile.visible && (
+                      <>
+                        {isPlayer && (
+                          <Sword className="text-game-player" size={14} />
+                        )}
+                        {isEnemy && EntityIcon && (
+                          <EntityIcon className="text-game-enemy" size={14} />
+                        )}
+                        {hasItem && !tile.entity && (
+                          <Package className="text-game-item" size={12} />
+                        )}
+                        {isStairs && !tile.entity && !hasItem && (
+                          <ArrowDown className="text-primary" size={14} />
+                        )}
+                      </>
                     )}
-                    {isEnemy && EntityIcon && (
-                      <EntityIcon className="text-game-enemy" size={14} />
-                    )}
-                    {hasItem && !tile.entity && (
-                      <Package className="text-game-item" size={12} />
-                    )}
-                    {isStairs && !tile.entity && !hasItem && (
-                      <ArrowDown className="text-primary" size={14} />
-                    )}
-                  </>
-                )}
-              </div>
-            );
+                  </div>
+                );
 
-            if (tooltip) {
-              return (
-                <Tooltip key={`${vx}-${vy}`}>
-                  <TooltipTrigger asChild>{tileContent}</TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs max-w-48">
-                    {tooltip}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
+                if (tooltip) {
+                  return (
+                    <Tooltip key={`${vx}-${vy}`}>
+                      <TooltipTrigger asChild>{tileContent}</TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs max-w-48">
+                        {tooltip}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
 
-            return <React.Fragment key={`${vx}-${vy}`}>{tileContent}</React.Fragment>;
-          })
-        )}
-      </div>
-    </TooltipProvider>
+                return <React.Fragment key={`${vx}-${vy}`}>{tileContent}</React.Fragment>;
+              })
+            )}
+          </div>
+        </TooltipProvider>
+      )}
+    </div>
   );
 };
 

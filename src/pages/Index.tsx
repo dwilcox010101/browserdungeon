@@ -116,7 +116,7 @@ const GamePage: React.FC = () => {
           onCancelTarget={handleCancelTarget}
         />
 
-        <div className="flex-1 flex items-center justify-center relative min-h-0">
+        <div className="flex-1 relative min-h-0 bg-game-grid">
           {state.targetMode && (
             <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-primary/20 text-primary text-xs px-3 py-1 rounded z-10">
               Click a tile to target • ESC to cancel
