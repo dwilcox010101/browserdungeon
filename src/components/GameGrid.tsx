@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/tooltip';
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  Sword, Bug, Skull, Droplets, Bird, Ghost,
+  Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
 };
 
 interface GameGridProps {
