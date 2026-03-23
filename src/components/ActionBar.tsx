@@ -21,7 +21,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
   const disabledClass = "bg-secondary/30 text-muted-foreground/30 rounded p-1.5 cursor-not-allowed flex items-center justify-center";
 
   return (
-    <div className="bg-card border-t border-border px-4 py-2 flex items-center gap-4">
+    <div className="bg-card border-t border-border px-3 py-3 flex flex-col items-center gap-3 shrink-0">
       <div className="flex items-center gap-1">
         <span className="text-xs text-muted-foreground mr-1">Move:</span>
         <div className="grid grid-cols-3 gap-0.5">
