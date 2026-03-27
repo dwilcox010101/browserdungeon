@@ -170,7 +170,7 @@ const GamePage: React.FC = () => {
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [screen, state.gameOver, state.pendingLevelUp, handleMove, handlePass, handlePickUp, handleDescend]);
+  }, [screen, state.gameOver, state.pendingLevelUp, state.victory, state.player.equippedWeapon, state.player.inventory, handleMove, handlePass, handlePickUp, handleDescend, handleUseItem]);
 
   if (screen === 'title') {
     return <TitleScreen onStart={handleStartGame} />;
