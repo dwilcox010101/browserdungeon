@@ -1,4 +1,5 @@
-import { Position, Tile, TileType, Entity, Item } from './types';
+import { Position, Tile, TileType, Entity } from './types';
+import { rollItemForFloor } from './items';
 
 const ROOM_MIN = 4;
 const ROOM_MAX = 8;
