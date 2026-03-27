@@ -97,6 +97,7 @@ export interface GameState {
   log: LogEntry[];
   logIdCounter: number;
   gameOver: boolean;
+  victory: boolean;
   floor: number;
   targetMode: { item: Item; range: number } | null;
   pendingLevelUp: boolean;
