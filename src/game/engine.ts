@@ -288,6 +288,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     log: [],
     logIdCounter: 0,
     gameOver: false,
+    victory: false,
     floor: 1,
     targetMode: null,
     pendingLevelUp: false,
