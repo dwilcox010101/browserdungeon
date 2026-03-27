@@ -145,8 +145,8 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
           <Package size={12} /> Inventory ({player.inventory.length}/{player.inventorySize})
         </h3>
         <div className="space-y-1">
-          {player.inventory.map(item => (
-            <ItemButton key={item.id} item={item} onUse={onUseItem} />
+          {player.inventory.map((item, idx) => (
+            <ItemButton key={item.id} item={item} onUse={onUseItem} keybind={idx < 10 ? `${(idx + 1) % 10}` : undefined} />
           ))}
           {player.inventory.length === 0 && (
             <p className="text-muted-foreground text-xs italic">Empty</p>
