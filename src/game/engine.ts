@@ -17,12 +17,6 @@ const DIRECTION_DELTAS: Record<Direction, Position> = {
   'down-right': { x: 1,  y: 1 },
 };
 
-const DIAGONAL_DIRS = new Set<Direction>(['up-left', 'up-right', 'down-left', 'down-right']);
-
-function isDiagonal(dir: Direction): boolean {
-  return DIAGONAL_DIRS.has(dir);
-}
-
 function addLog(state: GameState, message: string, type: LogEntry['type'] = 'info'): LogEntry {
   return {
     id: state.logIdCounter++,
@@ -55,13 +49,11 @@ function checkItemOnGround(s: GameState): void {
 // === COMBAT HELPERS ===
 
 function rollDodge(defender: Entity): boolean {
-  // dodge% = dodge * 3, capped at 50%
   const chance = Math.min(defender.dodge * 3, 50);
   return Math.random() * 100 < chance;
 }
 
 function rollCritical(attacker: Entity): boolean {
-  // crit% = luck * 2, capped at 40%
   const chance = Math.min(attacker.luck * 2, 40);
   return Math.random() * 100 < chance;
 }
@@ -114,7 +106,6 @@ function resolveVerb(
     }
     case 'HEAL':
       healed = power;
-      // luck boosts healing slightly
       healed += Math.floor(user.luck * 0.5);
       user.hp = Math.min(user.maxHp, user.hp + healed);
       messages.push(`${user.name} heals for ${healed} HP`);
@@ -143,7 +134,6 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
   const player = state.player;
   const dist = manhattan(enemy.pos, player.pos);
   if (dist <= 1) {
-    // Player can dodge
     if (rollDodge(player)) {
       state.log.push(addLog(state, `You dodge ${enemy.name}'s attack!`, 'combat'));
       emit(state, { type: 'player_dodge', pos: { ...player.pos } });
@@ -170,7 +160,7 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
   const dx = Math.sign(player.pos.x - enemy.pos.x);
   const dy = Math.sign(player.pos.y - enemy.pos.y);
   const moves: Position[] = [
-    { x: enemy.pos.x + dx, y: enemy.pos.y + dy }, // try diagonal first
+    { x: enemy.pos.x + dx, y: enemy.pos.y + dy },
     { x: enemy.pos.x + dx, y: enemy.pos.y },
     { x: enemy.pos.x, y: enemy.pos.y + dy },
   ].filter(p =>
@@ -214,10 +204,10 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
       s.player.hp = Math.min(s.player.hp + 5, s.player.maxHp);
       s.log.push(addLog(s, 'Max HP increased by 5!', 'system'));
       break;
-    case 'energy':
-      s.player.maxEnergy += 1;
-      s.player.energy = Math.min(s.player.energy + 1, s.player.maxEnergy);
-      s.log.push(addLog(s, 'Max Energy increased by 1!', 'system'));
+    case 'mana':
+      s.player.maxMana += 2;
+      s.player.mana = Math.min(s.player.mana + 2, s.player.maxMana);
+      s.log.push(addLog(s, 'Max Mana increased by 2!', 'system'));
       break;
     case 'attack':
       s.player.attack += 2;
@@ -244,7 +234,6 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
 }
 
 function grantXp(s: GameState, amount: number, reason: string): void {
-  // Luck gives bonus XP
   const bonus = Math.floor(s.player.luck * 0.5);
   const total = amount + bonus;
   s.player.xp += total;
@@ -269,8 +258,8 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     pos: playerStart,
     hp: charDef.hp,
     maxHp: charDef.hp,
-    energy: charDef.energy,
-    maxEnergy: charDef.energy,
+    mana: charDef.mana,
+    maxMana: charDef.mana,
     attack: charDef.attack,
     defense: charDef.defense,
     luck: charDef.luck,
@@ -308,9 +297,20 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
   };
 
   state.log.push(addLog(state, `${charDef.name} descends into the dungeon...`, 'system'));
-  state.log.push(addLog(state, 'Move: WASD/Arrows/Numpad (diagonals: QE/ZC or Numpad 7/9/1/3). Space: pass. G: pick up.', 'system'));
+  state.log.push(addLog(state, 'Move: WASD/Arrows/Numpad (diagonals: QE/ZC or Numpad 7/9/1/3). Space: wait. G: pick up.', 'system'));
 
   return state;
+}
+
+// === TURN MANAGEMENT ===
+// You-go-I-go: every player action ends the turn, then enemies act.
+// Mana regenerates 1 per turn.
+
+function endTurn(s: GameState): void {
+  s.turn++;
+  processEnemyTurns(s);
+  // Regenerate 1 mana per turn
+  s.player.mana = Math.min(s.player.maxMana, s.player.mana + 1);
 }
 
 // === REDUCER ===
@@ -346,12 +346,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return s;
       }
 
-      if (s.player.energy < item.energyCost) {
-        s.log.push(addLog(s, 'Not enough energy!', 'system'));
+      if (item.manaCost > 0 && s.player.mana < item.manaCost) {
+        s.log.push(addLog(s, 'Not enough mana!', 'system'));
+        emit(s, { type: 'no_mana' });
         return s;
       }
 
-      s.player.energy -= item.energyCost;
+      s.player.mana -= item.manaCost;
 
       if (item.verb === 'TELEPORT') {
         if (s.grid[pos.y][pos.x].type !== 'wall' && !s.grid[pos.y][pos.x].entity) {
@@ -378,7 +379,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           result.messages.forEach(m => s.log.push(addLog(s, m, 'combat')));
         } else {
           s.log.push(addLog(s, 'No target there!', 'system'));
-          s.player.energy += item.energyCost;
+          s.player.mana += item.manaCost;
           s.targetMode = null;
           return s;
         }
@@ -389,11 +390,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       s.targetMode = null;
-
-      if (s.player.energy <= 0) {
-        endTurn(s);
-      }
-
+      endTurn(s);
       s.grid = computeFOV(s.grid, s.player.pos, FOV_RADIUS);
       return s;
     }
@@ -406,13 +403,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       const dir = action.direction;
       const delta = DIRECTION_DELTAS[dir];
-      const energyCost = isDiagonal(dir) ? 2 : 1;
-
-      if (s.player.energy < energyCost) {
-        s.log.push(addLog(s, 'Not enough energy to move!', 'system'));
-        emit(s, { type: 'no_energy' });
-        return s;
-      }
 
       const newPos: Position = {
         x: s.player.pos.x + delta.x,
@@ -426,10 +416,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (targetTile.entity && !targetTile.entity.isPlayer) {
         const enemy = targetTile.entity;
-        // Dodge check for enemy
         if (rollDodge(enemy)) {
           s.log.push(addLog(s, `${enemy.name} dodges your attack!`, 'combat'));
-          s.player.energy -= energyCost;
           emit(s, { type: 'enemy_dodge', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
@@ -439,12 +427,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           if (isCrit) dmg = Math.floor(dmg * 1.5);
           dmg = Math.max(1, dmg - enemy.defense);
           enemy.hp -= dmg;
-          s.player.energy -= energyCost;
           s.log.push(addLog(s, `You attack ${enemy.name} for ${dmg} damage!${isCrit ? ' (CRIT!)' : ''}`, 'combat'));
           emit(s, { type: 'player_attack', pos: { ...enemy.pos }, amount: dmg, entityId: enemy.id });
           if (isCrit) emit(s, { type: 'crit', pos: { ...enemy.pos } });
 
-          // Lifesteal from weapon
           if (weapon?.traits.includes('LIFESTEAL')) {
             const heal = Math.floor(dmg * 0.3);
             s.player.hp = Math.min(s.player.maxHp, s.player.hp + heal);
@@ -460,14 +446,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.grid[s.player.pos.y][s.player.pos.x].entity = null;
         s.player.pos = newPos;
         s.grid[newPos.y][newPos.x].entity = s.player;
-        s.player.energy -= energyCost;
         checkItemOnGround(s);
       }
 
-      if (s.player.energy <= 0) {
-        endTurn(s);
-      }
-
+      // Every action ends the turn
+      endTurn(s);
       s.grid = computeFOV(s.grid, s.player.pos, FOV_RADIUS);
       return s;
     }
@@ -514,6 +497,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       } else {
         s.log.push(addLog(s, 'Nothing to pick up here.', 'system'));
       }
+      // Picking up doesn't end the turn (free action)
       return s;
     }
 
@@ -526,7 +510,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.enemies = enemies;
         s.floor = newFloor;
         s.player.pos = playerStart;
-        s.player.energy = s.player.maxEnergy;
+        s.player.mana = s.player.maxMana;
         s.grid[playerStart.y][playerStart.x].entity = s.player;
         s.grid = computeFOV(s.grid, playerStart, FOV_RADIUS);
         s.log.push(addLog(s, `You descend to floor ${newFloor}...`, 'system'));
@@ -558,19 +542,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
       if (!item) return s;
 
-      if (s.player.energy < item.energyCost) {
-        s.log.push(addLog(s, 'Not enough energy!', 'system'));
+      if (item.manaCost > 0 && s.player.mana < item.manaCost) {
+        s.log.push(addLog(s, 'Not enough mana!', 'system'));
+        emit(s, { type: 'no_mana' });
         return s;
       }
 
       if (item.verb === 'HEAL' || item.verb === 'BUFF') {
-        s.player.energy -= item.energyCost;
+        s.player.mana -= item.manaCost;
         const result = resolveVerb(item.verb, item.traits, item.power, s.player, [], s);
         result.messages.forEach(m => s.log.push(addLog(s, m, 'combat')));
         if (item.itemType === 'consumable') {
           s.player.inventory = s.player.inventory.filter(i => i.id !== item!.id);
         }
-        if (s.player.energy <= 0) endTurn(s);
+        endTurn(s);
         return s;
       }
 
@@ -595,10 +580,4 @@ function handleDeadEnemies(s: GameState): void {
     }
     return true;
   });
-}
-
-function endTurn(s: GameState): void {
-  s.turn++;
-  processEnemyTurns(s);
-  s.player.energy = s.player.maxEnergy;
 }
