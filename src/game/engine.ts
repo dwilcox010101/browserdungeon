@@ -319,7 +319,7 @@ function endTurn(s: GameState): void {
 // === REDUCER ===
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
-  if (state.gameOver && action.type !== 'NEW_GAME') return state;
+  if ((state.gameOver || state.victory) && action.type !== 'NEW_GAME') return state;
   if (state.pendingLevelUp && action.type !== 'LEVEL_UP_CHOICE' && action.type !== 'NEW_GAME') return state;
 
   let s = cloneGrid(state);
