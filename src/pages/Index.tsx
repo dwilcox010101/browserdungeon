@@ -126,8 +126,13 @@ const GamePage: React.FC = () => {
       } else if (key === ' ' || key === '5') {
         e.preventDefault();
         handlePass();
-      } else if (key === 'g') {
-        handlePickUp();
+      } else if (key === 'g' || key === 'enter') {
+        const pTile = state.grid[state.player.pos.y]?.[state.player.pos.x];
+        if (pTile?.type === 'stairs') {
+          handleDescend();
+        } else if (key === 'g') {
+          handlePickUp();
+        }
       } else if (key === '>') {
         handleDescend();
       }
