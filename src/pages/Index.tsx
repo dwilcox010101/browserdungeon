@@ -203,6 +203,24 @@ const GamePage: React.FC = () => {
               </button>
             </div>
           )}
+          {state.victory && (
+            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center">
+              <div className="text-primary text-3xl font-bold mb-2">🏆 Victory!</div>
+              <div className="text-foreground text-lg font-medium mb-1">You claimed the Artifact of Verbs!</div>
+              <p className="text-muted-foreground text-sm mb-1">
+                Conquered all {state.floor} floors as {state.player.name}
+              </p>
+              <p className="text-muted-foreground text-sm mb-4">
+                Level {state.player.level} • Turn {state.turn}
+              </p>
+              <button
+                onClick={handleNewGame}
+                className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                Play Again
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="w-72 bg-card border-l border-border flex flex-col h-full">
