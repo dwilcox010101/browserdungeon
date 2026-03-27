@@ -1,6 +1,6 @@
 // === CORE TYPES ===
 
-export type TileType = 'wall' | 'floor' | 'stairs';
+export type TileType = 'wall' | 'floor' | 'stairs' | 'treasure';
 
 export interface Position {
   x: number;
