@@ -36,14 +36,17 @@ const StatBar: React.FC<{
   </div>
 );
 
-const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ item, onUse }) => (
+const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: string }> = ({ item, onUse, keybind }) => (
   <button
     onClick={() => onUse(item.id)}
     className={`w-full text-left text-xs ${RARITY_BG[item.rarity]} hover:opacity-80 rounded p-2 transition-colors group border ${RARITY_BORDER[item.rarity]}`}
-    title={`[${RARITY_LABEL[item.rarity]}] ${item.description}`}
+    title={`[${RARITY_LABEL[item.rarity]}] ${item.description}${keybind ? ` (${keybind})` : ''}`}
   >
     <div className="flex justify-between items-center">
-      <span className={`${RARITY_COLORS[item.rarity]} font-medium`}>{item.name}</span>
+      <span className={`${RARITY_COLORS[item.rarity]} font-medium`}>
+        {keybind && <span className="text-muted-foreground font-mono mr-1">[{keybind}]</span>}
+        {item.name}
+      </span>
       {item.manaCost > 0 && (
         <span className="text-game-energy text-[10px]">💧{item.manaCost}</span>
       )}
@@ -108,7 +111,7 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       {/* Equipment Slots */}
       <div className="border-t border-border pt-3 mt-2">
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
-          <Sword size={12} /> Weapon
+          <Sword size={12} /> Weapon <span className="text-muted-foreground font-mono text-[10px] ml-auto">[F]</span>
         </h3>
         {player.equippedWeapon ? (
           <ItemButton item={player.equippedWeapon} onUse={onUseItem} />
@@ -142,8 +145,8 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
           <Package size={12} /> Inventory ({player.inventory.length}/{player.inventorySize})
         </h3>
         <div className="space-y-1">
-          {player.inventory.map(item => (
-            <ItemButton key={item.id} item={item} onUse={onUseItem} />
+          {player.inventory.map((item, idx) => (
+            <ItemButton key={item.id} item={item} onUse={onUseItem} keybind={idx < 10 ? `${(idx + 1) % 10}` : undefined} />
           ))}
           {player.inventory.length === 0 && (
             <p className="text-muted-foreground text-xs italic">Empty</p>
