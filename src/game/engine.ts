@@ -1,4 +1,5 @@
 import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat, Direction, GameEvent } from './types';
+import { RARITY_LABEL } from './items';
 
 const FINAL_FLOOR = 10;
 import { generateDungeon, computeFOV } from './dungeon';
@@ -44,7 +45,8 @@ function emit(s: GameState, event: GameEvent): void {
 function checkItemOnGround(s: GameState): void {
   const tile = s.grid[s.player.pos.y][s.player.pos.x];
   if (tile.item) {
-    s.log.push(addLog(s, `You see a ${tile.item.name} on the ground here.`, 'info'));
+    const rl = RARITY_LABEL[tile.item.rarity];
+    s.log.push(addLog(s, `You see a [${rl}] ${tile.item.name} on the ground here.`, 'info'));
   }
 }
 

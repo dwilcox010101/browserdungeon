@@ -1,5 +1,6 @@
 import React from 'react';
 import { Entity, Item } from '@/game/types';
+import { RARITY_COLORS, RARITY_BG, RARITY_BORDER, RARITY_LABEL } from '@/game/items';
 import { Heart, Droplets, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind } from 'lucide-react';
 
 interface PlayerPanelProps {
@@ -38,16 +39,17 @@ const StatBar: React.FC<{
 const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ item, onUse }) => (
   <button
     onClick={() => onUse(item.id)}
-    className="w-full text-left text-xs bg-secondary hover:bg-secondary/80 rounded p-2 transition-colors group"
-    title={item.description}
+    className={`w-full text-left text-xs ${RARITY_BG[item.rarity]} hover:opacity-80 rounded p-2 transition-colors group border ${RARITY_BORDER[item.rarity]}`}
+    title={`[${RARITY_LABEL[item.rarity]}] ${item.description}`}
   >
     <div className="flex justify-between items-center">
-      <span className="text-foreground font-medium">{item.name}</span>
+      <span className={`${RARITY_COLORS[item.rarity]} font-medium`}>{item.name}</span>
       {item.manaCost > 0 && (
         <span className="text-game-energy text-[10px]">💧{item.manaCost}</span>
       )}
     </div>
     <div className="text-muted-foreground text-[10px] mt-0.5">
+      <span className={`${RARITY_COLORS[item.rarity]} opacity-70`}>[{RARITY_LABEL[item.rarity]}]</span>{' '}
       {item.description}
       {item.defenseBonus ? ` • +${item.defenseBonus} DEF` : ''}
     </div>
@@ -120,10 +122,13 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
           <Shirt size={12} /> Armor
         </h3>
         {player.equippedArmor ? (
-          <div className="w-full text-left text-xs bg-secondary rounded p-2">
+          <div className={`w-full text-left text-xs ${RARITY_BG[player.equippedArmor.rarity]} rounded p-2 border ${RARITY_BORDER[player.equippedArmor.rarity]}`}>
             <div className="flex justify-between items-center">
-              <span className="text-foreground font-medium">{player.equippedArmor.name}</span>
+              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} font-medium`}>{player.equippedArmor.name}</span>
               <span className="text-primary text-[10px]">+{player.equippedArmor.defenseBonus} DEF</span>
+            </div>
+            <div className="text-muted-foreground text-[10px] mt-0.5">
+              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} opacity-70`}>[{RARITY_LABEL[player.equippedArmor.rarity]}]</span>
             </div>
           </div>
         ) : (

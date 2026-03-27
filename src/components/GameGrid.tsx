@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { Tile, Position, GameEvent } from '@/game/types';
+import { RARITY_LABEL } from '@/game/items';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
   Gem, ArrowDown, Package, Zap, Shield, Crown
@@ -140,7 +141,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     if (tile.entity && !tile.entity.isPlayer) {
       return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} ATK: ${tile.entity.attack} DEF: ${tile.entity.defense}`;
     }
-    if (tile.item) return `${tile.item.name} — ${tile.item.description}`;
+    if (tile.item) return `[${RARITY_LABEL[tile.item.rarity]}] ${tile.item.name} — ${tile.item.description}`;
     if (tile.type === 'stairs') return 'Stairs — Descend to next floor (>)';
     if (tile.type === 'treasure') return '✨ Ancient Treasure Chest — Claim the artifact!';
     return null;
@@ -209,7 +210,13 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                           <EntityIcon className={`text-game-enemy ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
                         )}
                         {hasItem && !tile.entity && (
-                          <Package className="text-game-item" size={12} />
+                          <Package className={
+                            tile.item!.rarity === 'legendary' ? 'text-yellow-400' :
+                            tile.item!.rarity === 'epic' ? 'text-purple-400' :
+                            tile.item!.rarity === 'rare' ? 'text-blue-400' :
+                            tile.item!.rarity === 'uncommon' ? 'text-green-400' :
+                            'text-game-item'
+                          } size={12} />
                         )}
                         {isStairs && !tile.entity && !hasItem && (
                           <ArrowDown className="text-primary" size={14} />

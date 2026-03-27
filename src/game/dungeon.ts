@@ -1,4 +1,5 @@
-import { Position, Tile, TileType, Entity, Item } from './types';
+import { Position, Tile, TileType, Entity } from './types';
+import { rollItemForFloor } from './items';
 
 const ROOM_MIN = 4;
 const ROOM_MAX = 8;
@@ -77,18 +78,6 @@ const ENEMY_TEMPLATES = [
   { name: 'Wraith', icon: 'Ghost', hp: 22, attack: 7, defense: 3, dodge: 3, luck: 2 },
 ];
 
-const ITEM_POOL: Omit<Item, 'id'>[] = [
-  { name: 'Fire Scroll', itemType: 'consumable', verb: 'HIT', traits: ['FIRE', 'AOE'], manaCost: 3, power: 10, range: 3, description: 'Launches a fiery blast hitting nearby enemies' },
-  { name: 'Healing Potion', itemType: 'consumable', verb: 'HEAL', traits: [], manaCost: 2, power: 15, range: 0, description: 'Restores health' },
-  { name: 'Ice Shard', itemType: 'consumable', verb: 'HIT', traits: ['ICE', 'STUN'], manaCost: 3, power: 8, range: 4, description: 'Freezes and stuns a target' },
-  { name: 'Poison Dagger', itemType: 'weapon', verb: 'HIT', traits: ['POISON', 'PIERCING'], manaCost: 0, power: 6, range: 1, description: 'Venomous strike that ignores armor' },
-  { name: 'Vampiric Blade', itemType: 'weapon', verb: 'HIT', traits: ['LIFESTEAL'], manaCost: 0, power: 8, range: 1, description: 'Drains life from the target' },
-  { name: 'Teleport Stone', itemType: 'consumable', verb: 'TELEPORT', traits: [], manaCost: 4, power: 0, range: 6, description: 'Teleport to a visible tile' },
-  { name: 'War Cry', itemType: 'consumable', verb: 'BUFF', traits: [], manaCost: 2, power: 3, range: 0, description: 'Temporarily boosts attack' },
-  { name: 'Iron Shield', itemType: 'armor', verb: 'BUFF', traits: [], manaCost: 0, power: 0, range: 0, description: 'A sturdy shield. +2 DEF', defenseBonus: 2 },
-  { name: 'Chainmail', itemType: 'armor', verb: 'BUFF', traits: [], manaCost: 0, power: 0, range: 0, description: 'Light chainmail. +3 DEF', defenseBonus: 3 },
-  { name: 'Steel Sword', itemType: 'weapon', verb: 'HIT', traits: [], manaCost: 0, power: 8, range: 1, description: 'A reliable steel sword' },
-];
 
 let entityIdCounter = 0;
 function nextEntityId(): string {
@@ -183,7 +172,7 @@ export function generateDungeon(
       y: rand(room.y, room.y + room.h - 1),
     };
     if (grid[pos.y][pos.x].type === 'floor' && !grid[pos.y][pos.x].item && !grid[pos.y][pos.x].entity) {
-      const template = ITEM_POOL[rand(0, ITEM_POOL.length - 1)];
+      const template = rollItemForFloor(floor);
       grid[pos.y][pos.x].item = { ...template, id: nextItemId() };
     }
   }
