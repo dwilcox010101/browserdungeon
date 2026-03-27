@@ -20,11 +20,13 @@ export type Trait =
   | 'KNOCKBACK';
 
 export type ItemType = 'weapon' | 'armor' | 'consumable';
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
 export interface Item {
   id: string;
   name: string;
   itemType: ItemType;
+  rarity: Rarity;
   verb: Verb;
   traits: Trait[];
   manaCost: number;
