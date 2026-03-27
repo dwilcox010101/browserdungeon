@@ -141,7 +141,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     if (tile.entity && !tile.entity.isPlayer) {
       return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} ATK: ${tile.entity.attack} DEF: ${tile.entity.defense}`;
     }
-    if (tile.item) return `${tile.item.name} — ${tile.item.description}`;
+    if (tile.item) return `[${RARITY_LABEL[tile.item.rarity]}] ${tile.item.name} — ${tile.item.description}`;
     if (tile.type === 'stairs') return 'Stairs — Descend to next floor (>)';
     if (tile.type === 'treasure') return '✨ Ancient Treasure Chest — Claim the artifact!';
     return null;
