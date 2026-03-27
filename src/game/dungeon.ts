@@ -130,7 +130,7 @@ export function generateDungeon(
   const playerStart = roomCenter(rooms[0]);
 
   const stairsPos = roomCenter(rooms[rooms.length - 1]);
-  grid[stairsPos.y][stairsPos.x].type = 'stairs';
+  grid[stairsPos.y][stairsPos.x].type = isFinalFloor ? 'treasure' : 'stairs';
 
   // Place enemies
   const enemies: Entity[] = [];
