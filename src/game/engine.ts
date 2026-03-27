@@ -523,6 +523,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'PASS_TURN': {
       s.targetMode = null;
+      s.log.push(addLog(s, 'You wait...', 'info'));
       endTurn(s);
       s.grid = computeFOV(s.grid, s.player.pos, FOV_RADIUS);
       return s;
