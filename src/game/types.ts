@@ -27,14 +27,14 @@ export interface Item {
   itemType: ItemType;
   verb: Verb;
   traits: Trait[];
-  energyCost: number;
+  manaCost: number;
   power: number;
   range: number;
   description: string;
   defenseBonus?: number;
 }
 
-export type LevelUpStat = 'hp' | 'energy' | 'attack' | 'defense' | 'inventory' | 'luck' | 'dodge';
+export type LevelUpStat = 'hp' | 'mana' | 'attack' | 'defense' | 'inventory' | 'luck' | 'dodge';
 
 export type Direction = 'up' | 'down' | 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right';
 
@@ -44,8 +44,8 @@ export interface Entity {
   pos: Position;
   hp: number;
   maxHp: number;
-  energy: number;
-  maxEnergy: number;
+  mana: number;
+  maxMana: number;
   attack: number;
   defense: number;
   luck: number;
@@ -78,7 +78,7 @@ export interface LogEntry {
 
 export type GameEventType = 
   | 'player_attack' | 'player_hit' | 'enemy_killed' | 'player_dodge' | 'enemy_dodge'
-  | 'pickup' | 'level_up' | 'descend' | 'heal' | 'crit' | 'no_energy' | 'game_over';
+  | 'pickup' | 'level_up' | 'descend' | 'heal' | 'crit' | 'no_mana' | 'game_over';
 
 export interface GameEvent {
   type: GameEventType;

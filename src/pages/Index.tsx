@@ -27,7 +27,7 @@ function processEvents(events: GameEvent[]) {
       case 'enemy_dodge': sfxDodge(); break;
       case 'crit': sfxCrit(); break;
       case 'heal': sfxHeal(); break;
-      case 'no_energy': sfxNoEnergy(); break;
+      case 'no_mana': sfxNoEnergy(); break;
     }
   });
 }
@@ -44,10 +44,10 @@ const GamePage: React.FC = () => {
     if (state.events.length === 0) return;
     processEvents(state.events);
 
-    if (state.events.some(e => e.type === 'no_energy')) {
+    if (state.events.some(e => e.type === 'no_mana')) {
       toast({
-        title: "Out of Energy!",
-        description: "Pass turn (Space) to recover energy.",
+        title: "Not Enough Mana!",
+        description: "Wait for mana to regenerate or use non-magic items.",
         variant: "destructive",
         duration: 2000,
       });

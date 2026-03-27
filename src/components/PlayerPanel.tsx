@@ -1,6 +1,6 @@
 import React from 'react';
 import { Entity, Item } from '@/game/types';
-import { Heart, Zap, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind } from 'lucide-react';
+import { Heart, Droplets, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind } from 'lucide-react';
 
 interface PlayerPanelProps {
   player: Entity;
@@ -43,8 +43,8 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ ite
   >
     <div className="flex justify-between items-center">
       <span className="text-foreground font-medium">{item.name}</span>
-      {item.energyCost > 0 && (
-        <span className="text-game-energy text-[10px]">⚡{item.energyCost}</span>
+      {item.manaCost > 0 && (
+        <span className="text-game-energy text-[10px]">💧{item.manaCost}</span>
       )}
     </div>
     <div className="text-muted-foreground text-[10px] mt-0.5">
@@ -66,7 +66,7 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       </h2>
 
       <StatBar label="HP" current={player.hp} max={player.maxHp} icon={<Heart size={12} />} colorClass="bg-game-health" />
-      <StatBar label="Energy" current={player.energy} max={player.maxEnergy} icon={<Zap size={12} />} colorClass="bg-game-energy" />
+      <StatBar label="Mana" current={player.mana} max={player.maxMana} icon={<Droplets size={12} />} colorClass="bg-game-energy" />
       <StatBar label="XP" current={player.xp} max={player.xpToNext} icon={<Star size={12} />} colorClass="bg-primary" />
 
       <div className="grid grid-cols-3 gap-1.5 mb-4 text-xs">
