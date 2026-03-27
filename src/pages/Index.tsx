@@ -147,7 +147,7 @@ const GamePage: React.FC = () => {
   }
 
   const playerTile = state.grid[state.player.pos.y]?.[state.player.pos.x];
-  const canDescend = playerTile?.type === 'stairs';
+  const canDescend = playerTile?.type === 'stairs' || playerTile?.type === 'treasure';
   const hasItemOnGround = !!playerTile?.item;
 
   return (
