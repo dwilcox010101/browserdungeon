@@ -172,7 +172,7 @@ export function generateDungeon(
       y: rand(room.y, room.y + room.h - 1),
     };
     if (grid[pos.y][pos.x].type === 'floor' && !grid[pos.y][pos.x].item && !grid[pos.y][pos.x].entity) {
-      const template = ITEM_POOL[rand(0, ITEM_POOL.length - 1)];
+      const template = rollItemForFloor(floor);
       grid[pos.y][pos.x].item = { ...template, id: nextItemId() };
     }
   }
