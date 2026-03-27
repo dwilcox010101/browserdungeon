@@ -122,10 +122,13 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
           <Shirt size={12} /> Armor
         </h3>
         {player.equippedArmor ? (
-          <div className="w-full text-left text-xs bg-secondary rounded p-2">
+          <div className={`w-full text-left text-xs ${RARITY_BG[player.equippedArmor.rarity]} rounded p-2 border ${RARITY_BORDER[player.equippedArmor.rarity]}`}>
             <div className="flex justify-between items-center">
-              <span className="text-foreground font-medium">{player.equippedArmor.name}</span>
+              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} font-medium`}>{player.equippedArmor.name}</span>
               <span className="text-primary text-[10px]">+{player.equippedArmor.defenseBonus} DEF</span>
+            </div>
+            <div className="text-muted-foreground text-[10px] mt-0.5">
+              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} opacity-70`}>[{RARITY_LABEL[player.equippedArmor.rarity]}]</span>
             </div>
           </div>
         ) : (
