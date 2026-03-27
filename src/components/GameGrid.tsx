@@ -176,6 +176,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                 const isEnemy = tile.entity && !tile.entity.isPlayer;
                 const hasItem = !!tile.item;
                 const isStairs = tile.type === 'stairs';
+                const isTreasure = tile.type === 'treasure';
                 const inRange = targetMode && manhattan(playerPos, { x, y }) <= targetMode.range;
                 const flashColor = isFlashing(x, y);
 
