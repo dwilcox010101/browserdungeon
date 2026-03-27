@@ -1,4 +1,6 @@
 import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat, Direction, GameEvent } from './types';
+
+const FINAL_FLOOR = 10;
 import { generateDungeon, computeFOV } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
