@@ -111,7 +111,7 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       {/* Equipment Slots */}
       <div className="border-t border-border pt-3 mt-2">
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
-          <Sword size={12} /> Weapon
+          <Sword size={12} /> Weapon <span className="text-muted-foreground font-mono text-[10px] ml-auto">[F]</span>
         </h3>
         {player.equippedWeapon ? (
           <ItemButton item={player.equippedWeapon} onUse={onUseItem} />
