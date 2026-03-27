@@ -36,14 +36,17 @@ const StatBar: React.FC<{
   </div>
 );
 
-const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void }> = ({ item, onUse }) => (
+const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: string }> = ({ item, onUse, keybind }) => (
   <button
     onClick={() => onUse(item.id)}
     className={`w-full text-left text-xs ${RARITY_BG[item.rarity]} hover:opacity-80 rounded p-2 transition-colors group border ${RARITY_BORDER[item.rarity]}`}
-    title={`[${RARITY_LABEL[item.rarity]}] ${item.description}`}
+    title={`[${RARITY_LABEL[item.rarity]}] ${item.description}${keybind ? ` (${keybind})` : ''}`}
   >
     <div className="flex justify-between items-center">
-      <span className={`${RARITY_COLORS[item.rarity]} font-medium`}>{item.name}</span>
+      <span className={`${RARITY_COLORS[item.rarity]} font-medium`}>
+        {keybind && <span className="text-muted-foreground font-mono mr-1">[{keybind}]</span>}
+        {item.name}
+      </span>
       {item.manaCost > 0 && (
         <span className="text-game-energy text-[10px]">💧{item.manaCost}</span>
       )}
