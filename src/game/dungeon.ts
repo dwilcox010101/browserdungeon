@@ -102,7 +102,8 @@ function nextItemId(): string {
 export function generateDungeon(
   width: number,
   height: number,
-  floor: number
+  floor: number,
+  isFinalFloor: boolean = false
 ): { grid: Tile[][]; playerStart: Position; enemies: Entity[]; stairs: Position } {
   entityIdCounter = 0;
   itemIdCounter = 0;
