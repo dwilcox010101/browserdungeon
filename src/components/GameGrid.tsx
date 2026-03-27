@@ -213,6 +213,9 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                         {isStairs && !tile.entity && !hasItem && (
                           <ArrowDown className="text-primary" size={14} />
                         )}
+                        {isTreasure && !tile.entity && !hasItem && (
+                          <Crown className="text-yellow-400 animate-pulse" size={14} />
+                        )}
                       </>
                     )}
                   </div>
