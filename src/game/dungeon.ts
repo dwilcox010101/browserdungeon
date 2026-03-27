@@ -102,7 +102,8 @@ function nextItemId(): string {
 export function generateDungeon(
   width: number,
   height: number,
-  floor: number
+  floor: number,
+  isFinalFloor: boolean = false
 ): { grid: Tile[][]; playerStart: Position; enemies: Entity[]; stairs: Position } {
   entityIdCounter = 0;
   itemIdCounter = 0;
@@ -129,7 +130,7 @@ export function generateDungeon(
   const playerStart = roomCenter(rooms[0]);
 
   const stairsPos = roomCenter(rooms[rooms.length - 1]);
-  grid[stairsPos.y][stairsPos.x].type = 'stairs';
+  grid[stairsPos.y][stairsPos.x].type = isFinalFloor ? 'treasure' : 'stairs';
 
   // Place enemies
   const enemies: Entity[] = [];

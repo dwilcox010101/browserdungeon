@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { Tile, Position, GameEvent } from '@/game/types';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
-  Gem, ArrowDown, Package, Zap, Shield
+  Gem, ArrowDown, Package, Zap, Shield, Crown
 } from 'lucide-react';
 
 import {
@@ -142,6 +142,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     }
     if (tile.item) return `${tile.item.name} — ${tile.item.description}`;
     if (tile.type === 'stairs') return 'Stairs — Descend to next floor (>)';
+    if (tile.type === 'treasure') return '✨ Ancient Treasure Chest — Claim the artifact!';
     return null;
   };
 
@@ -176,13 +177,14 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                 const isEnemy = tile.entity && !tile.entity.isPlayer;
                 const hasItem = !!tile.item;
                 const isStairs = tile.type === 'stairs';
+                const isTreasure = tile.type === 'treasure';
                 const inRange = targetMode && manhattan(playerPos, { x, y }) <= targetMode.range;
                 const flashColor = isFlashing(x, y);
 
                 let bgClass = 'bg-game-grid';
                 if (tile.visible) {
                   bgClass = tile.type === 'wall' ? 'bg-game-wall' : 'bg-game-floor';
-                  if (isStairs) bgClass = 'bg-primary/20';
+                  if (isStairs || isTreasure) bgClass = 'bg-primary/20';
                 } else if (tile.explored) {
                   bgClass = tile.type === 'wall' ? 'bg-game-wall/30' : 'bg-game-floor/30';
                 }
@@ -211,6 +213,9 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                         )}
                         {isStairs && !tile.entity && !hasItem && (
                           <ArrowDown className="text-primary" size={14} />
+                        )}
+                        {isTreasure && !tile.entity && !hasItem && (
+                          <Crown className="text-yellow-400 animate-pulse" size={14} />
                         )}
                       </>
                     )}

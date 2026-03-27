@@ -1,4 +1,6 @@
 import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, LevelUpStat, Direction, GameEvent } from './types';
+
+const FINAL_FLOOR = 10;
 import { generateDungeon, computeFOV } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
@@ -288,6 +290,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     log: [],
     logIdCounter: 0,
     gameOver: false,
+    victory: false,
     floor: 1,
     targetMode: null,
     pendingLevelUp: false,
@@ -316,7 +319,7 @@ function endTurn(s: GameState): void {
 // === REDUCER ===
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
-  if (state.gameOver && action.type !== 'NEW_GAME') return state;
+  if ((state.gameOver || state.victory) && action.type !== 'NEW_GAME') return state;
   if (state.pendingLevelUp && action.type !== 'LEVEL_UP_CHOICE' && action.type !== 'NEW_GAME') return state;
 
   let s = cloneGrid(state);
@@ -503,9 +506,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'DESCEND': {
       const tile = s.grid[s.player.pos.y][s.player.pos.x];
+      if (tile.type === 'treasure') {
+        // Victory!
+        s.victory = true;
+        s.log.push(addLog(s, '✨ You open the ancient treasure chest and find the legendary Artifact of Verbs!', 'system'));
+        s.log.push(addLog(s, '🏆 You have conquered the dungeon! Victory!', 'system'));
+        emit(s, { type: 'victory', pos: { ...s.player.pos } });
+        return s;
+      }
       if (tile.type === 'stairs') {
         const newFloor = s.floor + 1;
-        const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, newFloor);
+        const isFinalFloor = newFloor >= FINAL_FLOOR;
+        const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, newFloor, isFinalFloor);
         s.grid = grid;
         s.enemies = enemies;
         s.floor = newFloor;
@@ -513,7 +525,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         s.player.mana = s.player.maxMana;
         s.grid[playerStart.y][playerStart.x].entity = s.player;
         s.grid = computeFOV(s.grid, playerStart, FOV_RADIUS);
-        s.log.push(addLog(s, `You descend to floor ${newFloor}...`, 'system'));
+        s.log.push(addLog(s, `You descend to floor ${newFloor}...${isFinalFloor ? ' Something powerful awaits...' : ''}`, 'system'));
         emit(s, { type: 'descend' });
         recordFloorReached(newFloor);
         grantXp(s, 10 + newFloor * 2, 'new floor');
