@@ -183,7 +183,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                 let bgClass = 'bg-game-grid';
                 if (tile.visible) {
                   bgClass = tile.type === 'wall' ? 'bg-game-wall' : 'bg-game-floor';
-                  if (isStairs) bgClass = 'bg-primary/20';
+                  if (isStairs || isTreasure) bgClass = 'bg-primary/20';
                 } else if (tile.explored) {
                   bgClass = tile.type === 'wall' ? 'bg-game-wall/30' : 'bg-game-floor/30';
                 }
