@@ -128,7 +128,7 @@ const GamePage: React.FC = () => {
         handlePass();
       } else if (key === 'g' || key === 'enter') {
         const pTile = state.grid[state.player.pos.y]?.[state.player.pos.x];
-        if (pTile?.type === 'stairs') {
+        if (pTile?.type === 'stairs' || pTile?.type === 'treasure') {
           handleDescend();
         } else if (key === 'g') {
           handlePickUp();
