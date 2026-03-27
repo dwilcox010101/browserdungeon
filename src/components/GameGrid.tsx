@@ -142,6 +142,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     }
     if (tile.item) return `${tile.item.name} — ${tile.item.description}`;
     if (tile.type === 'stairs') return 'Stairs — Descend to next floor (>)';
+    if (tile.type === 'treasure') return '✨ Ancient Treasure Chest — Claim the artifact!';
     return null;
   };
 
