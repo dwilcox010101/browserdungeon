@@ -101,7 +101,7 @@ const GamePage: React.FC = () => {
   useEffect(() => {
     if (screen !== 'game') return;
     const handler = (e: KeyboardEvent) => {
-      if (state.gameOver || state.pendingLevelUp) return;
+      if (state.gameOver || state.victory || state.pendingLevelUp) return;
       const key = e.key.toLowerCase();
 
       if (key === 'escape') {
