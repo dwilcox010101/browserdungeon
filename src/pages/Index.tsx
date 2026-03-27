@@ -103,29 +103,59 @@ const GamePage: React.FC = () => {
     const handler = (e: KeyboardEvent) => {
       if (state.gameOver || state.victory || state.pendingLevelUp) return;
       const key = e.key.toLowerCase();
+      const code = e.code;
+      const isNumpad = code.startsWith('Numpad');
 
       if (key === 'escape') {
         dispatch({ type: 'SET_TARGET_MODE', item: null });
         return;
       }
 
-      const dirMap: Record<string, Direction> = {
-        w: 'up', arrowup: 'up', '8': 'up',
-        s: 'down', arrowdown: 'down', '2': 'down',
-        a: 'left', arrowleft: 'left', '4': 'left',
-        d: 'right', arrowright: 'right', '6': 'right',
-        q: 'up-left', '7': 'up-left',
-        e: 'up-right', '9': 'up-right',
-        z: 'down-left', '1': 'down-left',
-        c: 'down-right', '3': 'down-right',
+      // Numpad directions
+      const numpadDirMap: Record<string, Direction> = {
+        Numpad8: 'up', Numpad2: 'down', Numpad4: 'left', Numpad6: 'right',
+        Numpad7: 'up-left', Numpad9: 'up-right', Numpad1: 'down-left', Numpad3: 'down-right',
       };
 
-      if (dirMap[key]) {
+      // WASD / Arrow directions
+      const dirMap: Record<string, Direction> = {
+        w: 'up', arrowup: 'up',
+        s: 'down', arrowdown: 'down',
+        a: 'left', arrowleft: 'left',
+        d: 'right', arrowright: 'right',
+        q: 'up-left', e: 'up-right',
+        z: 'down-left', c: 'down-right',
+      };
+
+      if (isNumpad && numpadDirMap[code]) {
         e.preventDefault();
-        handleMove(dirMap[key]);
-      } else if (key === ' ' || key === '5') {
+        handleMove(numpadDirMap[code]);
+      } else if (code === 'Numpad5') {
         e.preventDefault();
         handlePass();
+      } else if (!isNumpad && dirMap[key]) {
+        e.preventDefault();
+        handleMove(dirMap[key]);
+      } else if (key === ' ') {
+        e.preventDefault();
+        handlePass();
+      } else if (key === 'f') {
+        e.preventDefault();
+        if (state.player.equippedWeapon) {
+          handleUseItem(state.player.equippedWeapon.id);
+        }
+      } else if (!isNumpad && /^[1-9]$/.test(key)) {
+        e.preventDefault();
+        const idx = parseInt(key) - 1;
+        if (idx < state.player.inventory.length) {
+          handleUseItem(state.player.inventory[idx].id);
+        }
+      } else if (!isNumpad && key === '0') {
+        e.preventDefault();
+        const idx = 9;
+        if (idx < state.player.inventory.length) {
+          handleUseItem(state.player.inventory[idx].id);
+        }
       } else if (key === 'g' || key === 'enter') {
         const pTile = state.grid[state.player.pos.y]?.[state.player.pos.x];
         if (pTile?.type === 'stairs' || pTile?.type === 'treasure') {
