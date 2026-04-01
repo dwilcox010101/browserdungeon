@@ -139,7 +139,10 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     if (!tile.visible) return null;
     if (tile.entity?.isPlayer) return 'You (Hero)';
     if (tile.entity && !tile.entity.isPlayer) {
-      return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} ATK: ${tile.entity.attack} DEF: ${tile.entity.defense}`;
+      const effects = tile.entity.statusEffects.length > 0
+        ? ` [${tile.entity.statusEffects.map(e => `${e.type}:${e.turnsLeft}t`).join(', ')}]`
+        : '';
+      return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} ATK: ${tile.entity.attack} DEF: ${tile.entity.defense}${effects}`;
     }
     if (tile.item) return `[${RARITY_LABEL[tile.item.rarity]}] ${tile.item.name} — ${tile.item.description}`;
     if (tile.type === 'stairs') return 'Stairs — Descend to next floor (>)';
