@@ -93,3 +93,28 @@ export function sfxHeal() {
   setTimeout(() => playTone(600, 0.1, 'sine', 0.06), 80);
   setTimeout(() => playTone(700, 0.08, 'sine', 0.05), 160);
 }
+
+export function sfxCast() {
+  playTone(600, 0.06, 'sine', 0.06);
+  playTone(800, 0.08, 'sine', 0.04);
+  setTimeout(() => playTone(1000, 0.1, 'sine', 0.05), 60);
+  setTimeout(() => playTone(1200, 0.06, 'sine', 0.03), 120);
+}
+
+export function sfxThrow() {
+  playNoise(0.04, 0.06);
+  playTone(400, 0.06, 'square', 0.04);
+  setTimeout(() => playTone(300, 0.08, 'square', 0.03), 50);
+}
+
+export function sfxFireball() {
+  playNoise(0.12, 0.1);
+  playTone(200, 0.15, 'sawtooth', 0.07);
+  setTimeout(() => playTone(150, 0.2, 'sawtooth', 0.06), 80);
+}
+
+export function sfxIceBlast() {
+  playTone(1200, 0.08, 'sine', 0.05);
+  playNoise(0.06, 0.04);
+  setTimeout(() => playTone(900, 0.1, 'sine', 0.04), 60);
+}

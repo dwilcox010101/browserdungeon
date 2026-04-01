@@ -90,13 +90,17 @@ export interface LogEntry {
 
 export type GameEventType = 
   | 'player_attack' | 'player_hit' | 'enemy_killed' | 'player_dodge' | 'enemy_dodge'
-  | 'pickup' | 'level_up' | 'descend' | 'heal' | 'crit' | 'no_mana' | 'game_over' | 'victory';
+  | 'pickup' | 'level_up' | 'descend' | 'heal' | 'crit' | 'no_mana' | 'game_over' | 'victory'
+  | 'ranged_attack';
 
 export interface GameEvent {
   type: GameEventType;
   pos?: Position;
   amount?: number;
   entityId?: string;
+  fromPos?: Position;
+  toPos?: Position;
+  traits?: Trait[];
 }
 
 export interface GameState {
