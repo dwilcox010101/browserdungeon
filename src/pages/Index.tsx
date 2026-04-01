@@ -100,7 +100,10 @@ const GamePage: React.FC = () => {
 
   useEffect(() => {
     if (screen !== 'game') return;
-    const handler = (e: KeyboardEvent) => {
+
+    const getPlayerTile = () => state.grid[state.player.pos.y]?.[state.player.pos.x];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (state.gameOver || state.victory || state.pendingLevelUp) return;
       const key = e.key.toLowerCase();
       const code = e.code;
@@ -111,13 +114,11 @@ const GamePage: React.FC = () => {
         return;
       }
 
-      // Numpad directions
       const numpadDirMap: Record<string, Direction> = {
         Numpad8: 'up', Numpad2: 'down', Numpad4: 'left', Numpad6: 'right',
         Numpad7: 'up-left', Numpad9: 'up-right', Numpad1: 'down-left', Numpad3: 'down-right',
       };
 
-      // WASD / Arrow directions
       const dirMap: Record<string, Direction> = {
         w: 'up', arrowup: 'up',
         s: 'down', arrowdown: 'down',
@@ -156,21 +157,42 @@ const GamePage: React.FC = () => {
         if (idx < state.player.inventory.length) {
           handleUseItem(state.player.inventory[idx].id);
         }
-      } else if (key === 'g' || key === 'enter') {
-        const pTile = state.grid[state.player.pos.y]?.[state.player.pos.x];
+      } else if (key === 'g') {
+        e.preventDefault();
+        const pTile = getPlayerTile();
         if (pTile?.type === 'stairs' || pTile?.type === 'treasure') {
           handleDescend();
-        } else if (key === 'g') {
+        } else {
           handlePickUp();
+        }
+      } else if (key === 'enter') {
+        const pTile = getPlayerTile();
+        if (pTile?.type === 'stairs' || pTile?.type === 'treasure') {
+          e.preventDefault();
         }
       } else if (key === '>') {
         handleDescend();
       }
     };
 
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [screen, state.gameOver, state.pendingLevelUp, state.victory, state.player.equippedWeapon, state.player.inventory, handleMove, handlePass, handlePickUp, handleDescend, handleUseItem]);
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (state.gameOver || state.victory || state.pendingLevelUp) return;
+      if (e.key.toLowerCase() !== 'enter') return;
+
+      const pTile = getPlayerTile();
+      if (pTile?.type === 'stairs' || pTile?.type === 'treasure') {
+        e.preventDefault();
+        handleDescend();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [screen, state.gameOver, state.pendingLevelUp, state.victory, state.grid, state.player.pos, state.player.equippedWeapon, state.player.inventory, handleMove, handlePass, handlePickUp, handleDescend, handleUseItem]);
 
   if (screen === 'title') {
     return <TitleScreen onStart={handleStartGame} />;
