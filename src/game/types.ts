@@ -19,6 +19,15 @@ export type Trait =
   | 'STUN'
   | 'KNOCKBACK';
 
+export type StatusEffectType = 'poison' | 'burning' | 'frozen' | 'stunned' | 'regen' | 'fear';
+
+export interface StatusEffect {
+  type: StatusEffectType;
+  turnsLeft: number;
+  power: number; // damage per tick, heal per tick, etc.
+  sourceId: string; // who applied it
+}
+
 export type ItemType = 'weapon' | 'armor' | 'consumable';
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
@@ -60,7 +69,8 @@ export interface Entity {
   inventory: Item[];
   inventorySize: number;
   isPlayer: boolean;
-  icon: string; // lucide icon name
+  icon: string;
+  statusEffects: StatusEffect[];
 }
 
 export interface Tile {

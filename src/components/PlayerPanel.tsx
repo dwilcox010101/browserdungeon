@@ -1,7 +1,7 @@
 import React from 'react';
-import { Entity, Item } from '@/game/types';
+import { Entity, Item, StatusEffect } from '@/game/types';
 import { RARITY_COLORS, RARITY_BG, RARITY_BORDER, RARITY_LABEL } from '@/game/items';
-import { Heart, Droplets, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind } from 'lucide-react';
+import { Heart, Droplets, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind, Flame, Snowflake, Skull, Zap, Activity } from 'lucide-react';
 
 interface PlayerPanelProps {
   player: Entity;
@@ -59,6 +59,25 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: 
   </button>
 );
 
+const STATUS_EFFECT_CONFIG: Record<StatusEffect['type'], { icon: React.ReactNode; label: string; color: string }> = {
+  poison: { icon: <Skull size={10} />, label: 'Poison', color: 'bg-green-900/60 text-green-400 border-green-700' },
+  burning: { icon: <Flame size={10} />, label: 'Burning', color: 'bg-red-900/60 text-red-400 border-red-700' },
+  frozen: { icon: <Snowflake size={10} />, label: 'Frozen', color: 'bg-blue-900/60 text-blue-400 border-blue-700' },
+  stunned: { icon: <Zap size={10} />, label: 'Stunned', color: 'bg-yellow-900/60 text-yellow-400 border-yellow-700' },
+  regen: { icon: <Activity size={10} />, label: 'Regen', color: 'bg-emerald-900/60 text-emerald-400 border-emerald-700' },
+  fear: { icon: <Skull size={10} />, label: 'Fear', color: 'bg-purple-900/60 text-purple-400 border-purple-700' },
+};
+
+const StatusBadge: React.FC<{ effect: StatusEffect }> = ({ effect }) => {
+  const config = STATUS_EFFECT_CONFIG[effect.type];
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded border ${config.color}`}
+          title={`${config.label}: ${effect.power > 0 ? `${effect.power}/turn` : 'active'} (${effect.turnsLeft} turns left)`}>
+      {config.icon} {config.label} ({effect.turnsLeft})
+    </span>
+  );
+};
+
 const PlayerPanel: React.FC<PlayerPanelProps> = ({
   player, floor, turn, targetMode, onUseItem, onCancelTarget, inventoryFlash
 }) => {
@@ -94,6 +113,15 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
           <ChevronUp size={10} className="text-primary" /> FLR: {floor}
         </div>
       </div>
+
+      {/* Status Effects */}
+      {player.statusEffects.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {player.statusEffects.map((eff, idx) => (
+            <StatusBadge key={`${eff.type}-${idx}`} effect={eff} />
+          ))}
+        </div>
+      )}
 
       <div className="text-xs text-muted-foreground mb-2 flex justify-between">
         <span>Turn {turn}</span>

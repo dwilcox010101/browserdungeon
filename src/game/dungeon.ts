@@ -162,6 +162,7 @@ export function generateDungeon(
         inventorySize: 0,
         isPlayer: false,
         icon: template.icon,
+        statusEffects: [],
       };
       grid[pos.y][pos.x].entity = enemy;
       enemies.push(enemy);
