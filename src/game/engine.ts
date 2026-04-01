@@ -282,6 +282,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     inventorySize: charDef.inventorySize,
     isPlayer: true,
     icon: charDef.icon,
+    statusEffects: [],
   };
 
   grid[playerStart.y][playerStart.x].entity = player;
