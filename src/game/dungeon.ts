@@ -1,9 +1,9 @@
 import { Position, Tile, TileType, Entity } from './types';
 import { rollItemForFloor } from './items';
 
-const ROOM_MIN = 4;
-const ROOM_MAX = 8;
-const MAX_ROOMS = 12;
+const ROOM_MIN = 3;
+const ROOM_MAX_BASE = 6;
+const MAX_ROOMS_BASE = 5;
 
 interface Room {
   x: number;

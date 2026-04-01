@@ -5,8 +5,11 @@ const FINAL_FLOOR = 10;
 import { generateDungeon, computeFOV } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
-const MAP_WIDTH = 40;
-const MAP_HEIGHT = 30;
+function getMapSize(floor: number) {
+  const w = Math.min(20 + floor * 4, 60);
+  const h = Math.min(15 + floor * 3, 45);
+  return { width: w, height: h };
+}
 const FOV_RADIUS = 7;
 
 const DIRECTION_DELTAS: Record<Direction, Position> = {
