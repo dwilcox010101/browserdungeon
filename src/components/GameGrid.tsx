@@ -33,6 +33,17 @@ interface FlashTile {
   startTime: number;
 }
 
+interface Projectile {
+  id: number;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  color: string;
+  startTime: number;
+  traits: Trait[];
+}
+
 interface GameGridProps {
   grid: Tile[][];
   playerPos: Position;
