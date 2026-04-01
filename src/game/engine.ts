@@ -53,9 +53,109 @@ function checkItemOnGround(s: GameState): void {
   }
 }
 
+// === STATUS EFFECTS ===
+
+function addStatusEffect(entity: Entity, effect: StatusEffect): void {
+  const existing = entity.statusEffects.find(e => e.type === effect.type);
+  if (existing) {
+    // Refresh duration and use stronger power
+    existing.turnsLeft = Math.max(existing.turnsLeft, effect.turnsLeft);
+    existing.power = Math.max(existing.power, effect.power);
+  } else {
+    entity.statusEffects.push({ ...effect });
+  }
+}
+
+function hasEffect(entity: Entity, type: StatusEffect['type']): boolean {
+  return entity.statusEffects.some(e => e.type === type);
+}
+
+function processStatusEffects(entity: Entity, state: GameState): { skipTurn: boolean } {
+  let skipTurn = false;
+  const expiredEffects: string[] = [];
+
+  entity.statusEffects = entity.statusEffects.filter(effect => {
+    effect.turnsLeft--;
+
+    switch (effect.type) {
+      case 'poison': {
+        const dmg = effect.power;
+        entity.hp -= dmg;
+        state.log.push(addLog(state, `☠ ${entity.name} takes ${dmg} poison damage!`, 'damage'));
+        emit(state, { type: entity.isPlayer ? 'player_hit' : 'player_attack', pos: { ...entity.pos }, amount: dmg });
+        break;
+      }
+      case 'burning': {
+        const dmg = effect.power;
+        entity.hp -= dmg;
+        state.log.push(addLog(state, `🔥 ${entity.name} takes ${dmg} burn damage!`, 'damage'));
+        emit(state, { type: entity.isPlayer ? 'player_hit' : 'player_attack', pos: { ...entity.pos }, amount: dmg });
+        break;
+      }
+      case 'regen': {
+        const heal = effect.power;
+        entity.hp = Math.min(entity.maxHp, entity.hp + heal);
+        state.log.push(addLog(state, `💚 ${entity.name} regenerates ${heal} HP`, 'combat'));
+        if (entity.isPlayer) emit(state, { type: 'heal', pos: { ...entity.pos }, amount: heal });
+        break;
+      }
+      case 'frozen': {
+        skipTurn = true;
+        state.log.push(addLog(state, `❄ ${entity.name} is frozen and cannot act!`, 'system'));
+        break;
+      }
+      case 'stunned': {
+        skipTurn = true;
+        state.log.push(addLog(state, `⚡ ${entity.name} is stunned!`, 'system'));
+        break;
+      }
+      case 'fear': {
+        skipTurn = true; // fear causes flee behavior handled separately for enemies
+        if (!entity.isPlayer) {
+          state.log.push(addLog(state, `😱 ${entity.name} is terrified and flees!`, 'system'));
+        }
+        break;
+      }
+    }
+
+    if (effect.turnsLeft <= 0) {
+      expiredEffects.push(effect.type);
+      return false;
+    }
+    return true;
+  });
+
+  // Check if entity died from DOT
+  if (entity.hp <= 0 && !entity.isPlayer) {
+    emit(state, { type: 'enemy_killed', pos: { ...entity.pos }, entityId: entity.id });
+  }
+
+  return { skipTurn };
+}
+
+function fleeBehavior(state: GameState, enemy: Entity): void {
+  const player = state.player;
+  const dx = Math.sign(enemy.pos.x - player.pos.x);
+  const dy = Math.sign(enemy.pos.y - player.pos.y);
+  const moves: Position[] = [
+    { x: enemy.pos.x + dx, y: enemy.pos.y + dy },
+    { x: enemy.pos.x + dx, y: enemy.pos.y },
+    { x: enemy.pos.x, y: enemy.pos.y + dy },
+  ].filter(p =>
+    p.x >= 0 && p.x < state.width && p.y >= 0 && p.y < state.height &&
+    state.grid[p.y][p.x].type !== 'wall' && !state.grid[p.y][p.x].entity
+  );
+  if (moves.length > 0) {
+    state.grid[enemy.pos.y][enemy.pos.x].entity = null;
+    enemy.pos = moves[0];
+    state.grid[enemy.pos.y][enemy.pos.x].entity = enemy;
+  }
+}
+
 // === COMBAT HELPERS ===
 
 function rollDodge(defender: Entity): boolean {
+  if (hasEffect(defender, 'frozen') || hasEffect(defender, 'stunned')) return false;
   const chance = Math.min(defender.dodge * 3, 50);
   return Math.random() * 100 < chance;
 }
@@ -106,8 +206,23 @@ function resolveVerb(
           user.hp = Math.min(user.maxHp, user.hp + heal);
           messages.push(`${user.name} drains ${heal} HP`);
         }
-        if (traits.includes('POISON')) messages.push(`${t.name} is poisoned!`);
-        if (traits.includes('STUN')) messages.push(`${t.name} is stunned!`);
+        // Apply status effects from traits
+        if (traits.includes('POISON')) {
+          addStatusEffect(t, { type: 'poison', turnsLeft: 4, power: Math.max(2, Math.floor(power * 0.3)), sourceId: user.id });
+          messages.push(`${t.name} is poisoned!`);
+        }
+        if (traits.includes('FIRE')) {
+          addStatusEffect(t, { type: 'burning', turnsLeft: 3, power: Math.max(2, Math.floor(power * 0.25)), sourceId: user.id });
+          messages.push(`${t.name} is set ablaze!`);
+        }
+        if (traits.includes('ICE')) {
+          addStatusEffect(t, { type: 'frozen', turnsLeft: 2, power: 0, sourceId: user.id });
+          messages.push(`${t.name} is frozen solid!`);
+        }
+        if (traits.includes('STUN')) {
+          addStatusEffect(t, { type: 'stunned', turnsLeft: 2, power: 0, sourceId: user.id });
+          messages.push(`${t.name} is stunned!`);
+        }
       });
       break;
     }
