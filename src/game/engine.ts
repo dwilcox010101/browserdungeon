@@ -523,7 +523,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (tile.type === 'stairs') {
         const newFloor = s.floor + 1;
         const isFinalFloor = newFloor >= FINAL_FLOOR;
-        const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, newFloor, isFinalFloor);
+        const { width: newW, height: newH } = getMapSize(newFloor);
+        const { grid, playerStart, enemies } = generateDungeon(newW, newH, newFloor, isFinalFloor);
+        s.width = newW;
+        s.height = newH;
         s.grid = grid;
         s.enemies = enemies;
         s.floor = newFloor;

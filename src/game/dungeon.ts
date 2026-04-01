@@ -99,9 +99,12 @@ export function generateDungeon(
   const grid = createEmptyGrid(width, height);
   const rooms: Room[] = [];
 
-  for (let i = 0; i < MAX_ROOMS * 3 && rooms.length < MAX_ROOMS; i++) {
-    const w = rand(ROOM_MIN, ROOM_MAX);
-    const h = rand(ROOM_MIN, ROOM_MAX);
+  const maxRooms = MAX_ROOMS_BASE + Math.floor(floor * 1.5);
+  const roomMax = Math.min(ROOM_MAX_BASE + Math.floor(floor * 0.5), 10);
+
+  for (let i = 0; i < maxRooms * 3 && rooms.length < maxRooms; i++) {
+    const w = rand(ROOM_MIN, roomMax);
+    const h = rand(ROOM_MIN, roomMax);
     const x = rand(1, width - w - 1);
     const y = rand(1, height - h - 1);
     const room: Room = { x, y, w, h };
