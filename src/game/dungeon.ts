@@ -1,9 +1,9 @@
 import { Position, Tile, TileType, Entity } from './types';
 import { rollItemForFloor } from './items';
 
-const ROOM_MIN = 4;
-const ROOM_MAX = 8;
-const MAX_ROOMS = 12;
+const ROOM_MIN = 3;
+const ROOM_MAX_BASE = 6;
+const MAX_ROOMS_BASE = 5;
 
 interface Room {
   x: number;
@@ -99,9 +99,12 @@ export function generateDungeon(
   const grid = createEmptyGrid(width, height);
   const rooms: Room[] = [];
 
-  for (let i = 0; i < MAX_ROOMS * 3 && rooms.length < MAX_ROOMS; i++) {
-    const w = rand(ROOM_MIN, ROOM_MAX);
-    const h = rand(ROOM_MIN, ROOM_MAX);
+  const maxRooms = MAX_ROOMS_BASE + Math.floor(floor * 1.5);
+  const roomMax = Math.min(ROOM_MAX_BASE + Math.floor(floor * 0.5), 10);
+
+  for (let i = 0; i < maxRooms * 3 && rooms.length < maxRooms; i++) {
+    const w = rand(ROOM_MIN, roomMax);
+    const h = rand(ROOM_MIN, roomMax);
     const x = rand(1, width - w - 1);
     const y = rand(1, height - h - 1);
     const room: Room = { x, y, w, h };

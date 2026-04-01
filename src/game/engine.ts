@@ -5,8 +5,11 @@ const FINAL_FLOOR = 10;
 import { generateDungeon, computeFOV } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
-const MAP_WIDTH = 40;
-const MAP_HEIGHT = 30;
+function getMapSize(floor: number) {
+  const w = Math.min(20 + floor * 4, 60);
+  const h = Math.min(15 + floor * 3, 45);
+  return { width: w, height: h };
+}
 const FOV_RADIUS = 7;
 
 const DIRECTION_DELTAS: Record<Direction, Position> = {
@@ -249,7 +252,8 @@ function grantXp(s: GameState, amount: number, reason: string): void {
 
 export function createInitialState(characterId: string = 'warrior'): GameState {
   const charDef = CHARACTERS.find(c => c.id === characterId) || CHARACTERS[0];
-  const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, 1);
+  const { width: mapW, height: mapH } = getMapSize(1);
+  const { grid, playerStart, enemies } = generateDungeon(mapW, mapH, 1);
 
   let itemIdCounter = 100;
   const startWeapon: Item = { ...charDef.startWeapon, id: `start_weapon_${itemIdCounter++}` };
@@ -284,8 +288,8 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
 
   const state: GameState = {
     grid: fovGrid,
-    width: MAP_WIDTH,
-    height: MAP_HEIGHT,
+    width: mapW,
+    height: mapH,
     player,
     enemies,
     turn: 1,
@@ -519,7 +523,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (tile.type === 'stairs') {
         const newFloor = s.floor + 1;
         const isFinalFloor = newFloor >= FINAL_FLOOR;
-        const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, newFloor, isFinalFloor);
+        const { width: newW, height: newH } = getMapSize(newFloor);
+        const { grid, playerStart, enemies } = generateDungeon(newW, newH, newFloor, isFinalFloor);
+        s.width = newW;
+        s.height = newH;
         s.grid = grid;
         s.enemies = enemies;
         s.floor = newFloor;
