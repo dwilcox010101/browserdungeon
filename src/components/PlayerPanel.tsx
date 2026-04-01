@@ -95,6 +95,15 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
         </div>
       </div>
 
+      {/* Status Effects */}
+      {player.statusEffects.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {player.statusEffects.map((eff, idx) => (
+            <StatusBadge key={`${eff.type}-${idx}`} effect={eff} />
+          ))}
+        </div>
+      )}
+
       <div className="text-xs text-muted-foreground mb-2 flex justify-between">
         <span>Turn {turn}</span>
       </div>
