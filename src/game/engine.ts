@@ -592,11 +592,30 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           emit(s, { type: 'player_attack', pos: { ...enemy.pos }, amount: dmg, entityId: enemy.id });
           if (isCrit) emit(s, { type: 'crit', pos: { ...enemy.pos } });
 
-          if (weapon?.traits.includes('LIFESTEAL')) {
-            const heal = Math.floor(dmg * 0.3);
-            s.player.hp = Math.min(s.player.maxHp, s.player.hp + heal);
-            s.log.push(addLog(s, `You drain ${heal} HP!`, 'combat'));
-            emit(s, { type: 'heal', pos: { ...s.player.pos }, amount: heal });
+          // Apply weapon trait effects on melee hit
+          if (weapon) {
+            if (weapon.traits.includes('LIFESTEAL')) {
+              const heal = Math.floor(dmg * 0.3);
+              s.player.hp = Math.min(s.player.maxHp, s.player.hp + heal);
+              s.log.push(addLog(s, `You drain ${heal} HP!`, 'combat'));
+              emit(s, { type: 'heal', pos: { ...s.player.pos }, amount: heal });
+            }
+            if (weapon.traits.includes('POISON') && enemy.hp > 0) {
+              addStatusEffect(enemy, { type: 'poison', turnsLeft: 4, power: Math.max(2, Math.floor(weapon.power * 0.3)), sourceId: s.player.id });
+              s.log.push(addLog(s, `${enemy.name} is poisoned!`, 'combat'));
+            }
+            if (weapon.traits.includes('FIRE') && enemy.hp > 0) {
+              addStatusEffect(enemy, { type: 'burning', turnsLeft: 3, power: Math.max(2, Math.floor(weapon.power * 0.4)), sourceId: s.player.id });
+              s.log.push(addLog(s, `${enemy.name} is burning!`, 'combat'));
+            }
+            if (weapon.traits.includes('ICE') && enemy.hp > 0) {
+              addStatusEffect(enemy, { type: 'frozen', turnsLeft: 2, power: 0, sourceId: s.player.id });
+              s.log.push(addLog(s, `${enemy.name} is frozen!`, 'combat'));
+            }
+            if (weapon.traits.includes('STUN') && enemy.hp > 0) {
+              addStatusEffect(enemy, { type: 'stunned', turnsLeft: 1, power: 0, sourceId: s.player.id });
+              s.log.push(addLog(s, `${enemy.name} is stunned!`, 'combat'));
+            }
           }
 
           if (enemy.hp <= 0) {
