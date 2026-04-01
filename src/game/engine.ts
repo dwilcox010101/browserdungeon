@@ -299,10 +299,27 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
 
 function processEnemyTurns(state: GameState): void {
   state.enemies.forEach(enemy => {
-    if (enemy.hp > 0) {
-      moveEnemyTowardPlayer(state, enemy);
+    if (enemy.hp <= 0) return;
+
+    // Process status effects at start of enemy turn
+    const { skipTurn } = processStatusEffects(enemy, state);
+
+    // Remove enemies killed by DOT
+    if (enemy.hp <= 0) return;
+
+    if (skipTurn) {
+      // Fear causes flee instead of full skip
+      if (hasEffect(enemy, 'fear')) {
+        fleeBehavior(state, enemy);
+      }
+      return;
     }
+
+    moveEnemyTowardPlayer(state, enemy);
   });
+
+  // Clean up enemies killed by DOT
+  handleDeadEnemies(state);
 }
 
 // === XP & LEVELING ===
