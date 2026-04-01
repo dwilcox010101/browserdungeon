@@ -2,7 +2,7 @@ import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, L
 import { RARITY_LABEL } from './items';
 
 const FINAL_FLOOR = 10;
-import { generateDungeon, computeFOV } from './dungeon';
+import { generateDungeon, computeFOV, resetIdCounters } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
 function getMapSize(floor: number) {
@@ -251,6 +251,7 @@ function grantXp(s: GameState, amount: number, reason: string): void {
 // === INITIAL STATE ===
 
 export function createInitialState(characterId: string = 'warrior'): GameState {
+  resetIdCounters();
   const charDef = CHARACTERS.find(c => c.id === characterId) || CHARACTERS[0];
   const { width: mapW, height: mapH } = getMapSize(1);
   const { grid, playerStart, enemies } = generateDungeon(mapW, mapH, 1);

@@ -87,6 +87,10 @@ let itemIdCounter = 0;
 function nextItemId(): string {
   return `i_${++itemIdCounter}`;
 }
+export function resetIdCounters(): void {
+  entityIdCounter = 0;
+  itemIdCounter = 0;
+}
 
 export function generateDungeon(
   width: number,
@@ -94,8 +98,7 @@ export function generateDungeon(
   floor: number,
   isFinalFloor: boolean = false
 ): { grid: Tile[][]; playerStart: Position; enemies: Entity[]; stairs: Position } {
-  entityIdCounter = 0;
-  itemIdCounter = 0;
+  // Do NOT reset counters — IDs must be globally unique across floors
   const grid = createEmptyGrid(width, height);
   const rooms: Room[] = [];
 
