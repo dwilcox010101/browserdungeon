@@ -2,7 +2,7 @@ import { GameState, GameAction, Entity, Position, LogEntry, Trait, Item, Verb, L
 import { RARITY_LABEL } from './items';
 
 const FINAL_FLOOR = 10;
-import { generateDungeon, computeFOV } from './dungeon';
+import { generateDungeon, computeFOV, resetIdCounters } from './dungeon';
 import { CHARACTERS, CharacterDef, recordFloorReached } from './characters';
 
 function getMapSize(floor: number) {
