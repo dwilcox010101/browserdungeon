@@ -61,6 +61,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [flashTiles, setFlashTiles] = useState<FlashTile[]>([]);
+  const [projectiles, setProjectiles] = useState<Projectile[]>([]);
 
   const updateDims = useCallback(() => {
     if (containerRef.current) {
