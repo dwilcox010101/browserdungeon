@@ -288,8 +288,8 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
 
   const state: GameState = {
     grid: fovGrid,
-    width: MAP_WIDTH,
-    height: MAP_HEIGHT,
+    width: mapW,
+    height: mapH,
     player,
     enemies,
     turn: 1,
