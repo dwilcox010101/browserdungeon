@@ -1,7 +1,7 @@
 import React from 'react';
-import { Entity, Item } from '@/game/types';
+import { Entity, Item, StatusEffect } from '@/game/types';
 import { RARITY_COLORS, RARITY_BG, RARITY_BORDER, RARITY_LABEL } from '@/game/items';
-import { Heart, Droplets, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind } from 'lucide-react';
+import { Heart, Droplets, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind, Flame, Snowflake, Skull, Zap, Activity } from 'lucide-react';
 
 interface PlayerPanelProps {
   player: Entity;
