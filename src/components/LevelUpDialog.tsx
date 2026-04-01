@@ -48,11 +48,11 @@ const LevelUpDialog: React.FC<LevelUpDialogProps> = ({ open, player, onChoose })
     } else if (key === 's' || key === 'arrowdown' || key === '2') {
       e.preventDefault();
       setSelected(i => (i + 1) % STAT_OPTIONS.length);
-    if (key === 'enter' || key === ' ' || key === '5') {
+    } else if (key === 'enter' || key === ' ' || key === '5') {
       e.preventDefault();
       if (ready) onChoose(STAT_OPTIONS[selected].stat);
     }
-  }, [open, selected, onChoose]);
+  }, [open, selected, ready, onChoose]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
