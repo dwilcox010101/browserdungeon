@@ -319,6 +319,63 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
         </div>
       )}
 
+      {/* Projectile trails */}
+      {projectiles.map(proj => {
+        const age = Date.now() - proj.startTime;
+        const progress = Math.min(age / 300, 1);
+        const opacity = 1 - Math.max(0, (age - 150) / 250);
+        const currentX = proj.fromX + (proj.toX - proj.fromX) * progress;
+        const currentY = proj.fromY + (proj.toY - proj.fromY) * progress;
+
+        return (
+          <svg
+            key={proj.id}
+            className="absolute inset-0 pointer-events-none z-20"
+            style={{ width: '100%', height: '100%', overflow: 'visible' }}
+          >
+            {/* Trail line */}
+            <line
+              x1={proj.fromX}
+              y1={proj.fromY}
+              x2={currentX}
+              y2={currentY}
+              stroke={proj.color}
+              strokeWidth={2}
+              opacity={opacity * 0.6}
+              strokeLinecap="round"
+            />
+            {/* Projectile head */}
+            <circle
+              cx={currentX}
+              cy={currentY}
+              r={3}
+              fill={proj.color}
+              opacity={opacity}
+            />
+            {/* Glow effect */}
+            <circle
+              cx={currentX}
+              cy={currentY}
+              r={6}
+              fill={proj.color}
+              opacity={opacity * 0.3}
+            />
+            {/* Impact burst at destination */}
+            {progress >= 0.9 && (
+              <circle
+                cx={proj.toX}
+                cy={proj.toY}
+                r={8 + (progress - 0.9) * 80}
+                fill="none"
+                stroke={proj.color}
+                strokeWidth={1.5}
+                opacity={opacity * 0.5}
+              />
+            )}
+          </svg>
+        );
+      })}
+
       {/* Floating damage/heal numbers */}
       {floatingTexts.map(ft => {
         const age = Date.now() - ft.startTime;
