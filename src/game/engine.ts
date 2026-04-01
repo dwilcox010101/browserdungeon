@@ -252,7 +252,8 @@ function grantXp(s: GameState, amount: number, reason: string): void {
 
 export function createInitialState(characterId: string = 'warrior'): GameState {
   const charDef = CHARACTERS.find(c => c.id === characterId) || CHARACTERS[0];
-  const { grid, playerStart, enemies } = generateDungeon(MAP_WIDTH, MAP_HEIGHT, 1);
+  const { width: mapW, height: mapH } = getMapSize(1);
+  const { grid, playerStart, enemies } = generateDungeon(mapW, mapH, 1);
 
   let itemIdCounter = 100;
   const startWeapon: Item = { ...charDef.startWeapon, id: `start_weapon_${itemIdCounter++}` };
