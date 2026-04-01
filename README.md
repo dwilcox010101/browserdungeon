@@ -56,5 +56,5 @@ This application was designed to be highly modular and easy to tinker with. If y
 
 ---
 
-**Made with ❤️ by [Donnie Wilcox](https://dwilcox.me)**
+**Made by [Donnie Wilcox](https://dwilcox.me)**
 If you enjoy this project or want to collaborate, feel free to reach out via my website!
