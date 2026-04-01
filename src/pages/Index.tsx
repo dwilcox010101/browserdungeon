@@ -29,6 +29,14 @@ function processEvents(events: GameEvent[]) {
       case 'crit': sfxCrit(); break;
       case 'heal': sfxHeal(); break;
       case 'no_mana': sfxNoEnergy(); break;
+      case 'ranged_attack': {
+        const traits = ev.traits || [];
+        if (traits.includes('FIRE')) sfxFireball();
+        else if (traits.includes('ICE')) sfxIceBlast();
+        else if (traits.includes('POISON')) sfxThrow();
+        else sfxCast();
+        break;
+      }
     }
   });
 }
