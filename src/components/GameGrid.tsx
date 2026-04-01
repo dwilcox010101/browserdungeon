@@ -185,6 +185,19 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     return () => clearTimeout(timer);
   }, [projectiles]);
 
+  // Animate projectiles with requestAnimationFrame
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (projectiles.length === 0) return;
+    let raf: number;
+    const animate = () => {
+      setTick(t => t + 1);
+      raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [projectiles.length > 0]);
+
   const manhattan = (a: Position, b: Position) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
   const getTileTooltip = (tile: Tile): string | null => {
