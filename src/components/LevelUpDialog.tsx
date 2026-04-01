@@ -27,42 +27,50 @@ const STAT_OPTIONS: { stat: LevelUpStat; label: string; icon: React.ElementType;
 
 const LevelUpDialog: React.FC<LevelUpDialogProps> = ({ open, player, onChoose }) => {
   const [selected, setSelected] = useState(0);
-  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      setSelected(0);
-      setReady(false);
-      const timer = setTimeout(() => setReady(true), 350);
-      return () => clearTimeout(timer);
-    }
-    setReady(false);
+    if (open) setSelected(0);
   }, [open]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!open) return;
     const key = e.key.toLowerCase();
+
     if (key === 'w' || key === 'arrowup' || key === '8') {
       e.preventDefault();
-      setSelected(i => (i - 1 + STAT_OPTIONS.length) % STAT_OPTIONS.length);
+      setSelected((i) => (i - 1 + STAT_OPTIONS.length) % STAT_OPTIONS.length);
     } else if (key === 's' || key === 'arrowdown' || key === '2') {
       e.preventDefault();
-      setSelected(i => (i + 1) % STAT_OPTIONS.length);
+      setSelected((i) => (i + 1) % STAT_OPTIONS.length);
     } else if (key === 'enter' || key === ' ' || key === '5') {
       e.preventDefault();
-      if (ready) onChoose(STAT_OPTIONS[selected].stat);
     }
-  }, [open, selected, ready, onChoose]);
+  }, [open]);
+
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    if (!open) return;
+    const key = e.key.toLowerCase();
+
+    if (key === 'enter' || key === ' ' || key === '5') {
+      e.preventDefault();
+      onChoose(STAT_OPTIONS[selected].stat);
+    }
+  }, [open, selected, onChoose]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
 
   return (
     <Dialog open={open}>
       <DialogContent
         className="sm:max-w-md"
+        onOpenAutoFocus={(e) => e.preventDefault()}
         onPointerDownOutside={(e) => e.preventDefault()}
         overlayClassName="bg-black/20"
       >
