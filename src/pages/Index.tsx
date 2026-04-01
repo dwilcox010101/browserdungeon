@@ -215,7 +215,7 @@ const GamePage: React.FC = () => {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <div className="h-10 bg-card border-b border-border flex items-center px-4 justify-between shrink-0">
         <h1 className="text-primary font-bold text-sm tracking-widest uppercase">
-          ⚔ Dungeon of Verbs
+          ⚔ Browser Dungeon Roguelike
         </h1>
         <button
           onClick={handleNewGame}
@@ -267,7 +267,7 @@ const GamePage: React.FC = () => {
           {state.victory && (
             <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center">
               <div className="text-primary text-3xl font-bold mb-2">🏆 Victory!</div>
-              <div className="text-foreground text-lg font-medium mb-1">You claimed the Artifact of Verbs!</div>
+              <div className="text-foreground text-lg font-medium mb-1">You claimed "The Artifact"!</div>
               <p className="text-muted-foreground text-sm mb-1">
                 Conquered all {state.floor} floors as {state.player.name}
               </p>
