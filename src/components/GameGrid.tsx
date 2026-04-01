@@ -175,6 +175,16 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     return () => clearTimeout(timer);
   }, [flashTiles]);
 
+  // Clean up old projectiles
+  useEffect(() => {
+    if (projectiles.length === 0) return;
+    const timer = setTimeout(() => {
+      const now = Date.now();
+      setProjectiles(prev => prev.filter(p => now - p.startTime < 400));
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [projectiles]);
+
   const manhattan = (a: Position, b: Position) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
   const getTileTooltip = (tile: Tile): string | null => {
