@@ -451,6 +451,16 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
 
 function endTurn(s: GameState): void {
   s.turn++;
+
+  // Process player status effects at start of their "next" turn
+  const { skipTurn: playerSkip } = processStatusEffects(s.player, s);
+  if (s.player.hp <= 0) {
+    s.gameOver = true;
+    s.log.push(addLog(s, 'You have been slain...', 'system'));
+    emit(s, { type: 'game_over' });
+    return;
+  }
+
   processEnemyTurns(s);
   // Regenerate 1 mana per turn
   s.player.mana = Math.min(s.player.maxMana, s.player.mana + 1);
