@@ -11,7 +11,8 @@ import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   sfxHit, sfxPlayerHit, sfxKill, sfxPickup, sfxLevelUp,
-  sfxDescend, sfxDodge, sfxCrit, sfxNoEnergy, sfxHeal
+  sfxDescend, sfxDodge, sfxCrit, sfxNoEnergy, sfxHeal,
+  sfxCast, sfxThrow, sfxFireball, sfxIceBlast
 } from '@/game/sfx';
 
 function processEvents(events: GameEvent[]) {

@@ -507,6 +507,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       s.player.mana -= item.manaCost;
 
+      // Emit ranged attack event for visual feedback
+      emit(s, { type: 'ranged_attack', fromPos: { ...s.player.pos }, toPos: { ...pos }, traits: [...item.traits] });
+
       if (item.verb === 'TELEPORT') {
         if (s.grid[pos.y][pos.x].type !== 'wall' && !s.grid[pos.y][pos.x].entity) {
           s.grid[s.player.pos.y][s.player.pos.x].entity = null;
@@ -526,6 +529,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         if (targets.length > 0) {
           const result = resolveVerb(item.verb, item.traits, item.power, s.player, targets, s);
           result.messages.forEach(m => s.log.push(addLog(s, m, 'combat')));
+          targets.forEach(t => {
+            if (t.hp > 0 || t.hp <= 0) {
+              emit(s, { type: 'player_attack', pos: { ...t.pos }, amount: result.damage, entityId: t.id });
+            }
+          });
           handleDeadEnemies(s);
         } else if (item.verb === 'HEAL' || item.verb === 'BUFF') {
           const result = resolveVerb(item.verb, item.traits, item.power, s.player, [], s);
