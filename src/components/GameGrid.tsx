@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { Tile, Position, GameEvent } from '@/game/types';
+import { Tile, Position, GameEvent, Trait } from '@/game/types';
 import { RARITY_LABEL } from '@/game/items';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
@@ -33,6 +33,17 @@ interface FlashTile {
   startTime: number;
 }
 
+interface Projectile {
+  id: number;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  color: string;
+  startTime: number;
+  traits: Trait[];
+}
+
 interface GameGridProps {
   grid: Tile[][];
   playerPos: Position;
@@ -50,6 +61,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [flashTiles, setFlashTiles] = useState<FlashTile[]>([]);
+  const [projectiles, setProjectiles] = useState<Projectile[]>([]);
 
   const updateDims = useCallback(() => {
     if (containerRef.current) {
@@ -107,6 +119,36 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
           newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'LEVEL UP!', color: 'hsl(var(--primary))', startTime: now });
         }
       }
+
+      // Ranged attack projectile
+      if (ev.type === 'ranged_attack' && ev.fromPos && ev.toPos) {
+        const traits = ev.traits || [];
+        let color = 'hsl(var(--primary))';
+        if (traits.includes('FIRE')) color = 'hsl(var(--game-enemy))';
+        else if (traits.includes('ICE')) color = 'hsl(200, 90%, 60%)';
+        else if (traits.includes('POISON')) color = 'hsl(120, 60%, 40%)';
+
+        const fromScreenX = (ev.fromPos.x - viewport.startX) * TILE_SIZE + TILE_SIZE / 2;
+        const fromScreenY = (ev.fromPos.y - viewport.startY) * TILE_SIZE + TILE_SIZE / 2;
+        const toScreenX = (ev.toPos.x - viewport.startX) * TILE_SIZE + TILE_SIZE / 2;
+        const toScreenY = (ev.toPos.y - viewport.startY) * TILE_SIZE + TILE_SIZE / 2;
+
+        setProjectiles(prev => [...prev, {
+          id: floatIdCounter++,
+          fromX: fromScreenX, fromY: fromScreenY,
+          toX: toScreenX, toY: toScreenY,
+          color, startTime: now, traits,
+        }]);
+
+        // Flash the target tile
+        if (ev.toPos) {
+          const flashColor = traits.includes('FIRE') ? 'bg-game-enemy/50'
+            : traits.includes('ICE') ? 'bg-blue-400/50'
+            : traits.includes('POISON') ? 'bg-green-500/50'
+            : 'bg-primary/40';
+          newFlashes.push({ x: ev.toPos.x, y: ev.toPos.y, color: flashColor, startTime: now });
+        }
+      }
     });
 
     if (newFloats.length > 0) setFloatingTexts(prev => [...prev, ...newFloats]);
@@ -132,6 +174,29 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     }, 250);
     return () => clearTimeout(timer);
   }, [flashTiles]);
+
+  // Clean up old projectiles
+  useEffect(() => {
+    if (projectiles.length === 0) return;
+    const timer = setTimeout(() => {
+      const now = Date.now();
+      setProjectiles(prev => prev.filter(p => now - p.startTime < 400));
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [projectiles]);
+
+  // Animate projectiles with requestAnimationFrame
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (projectiles.length === 0) return;
+    let raf: number;
+    const animate = () => {
+      setTick(t => t + 1);
+      raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [projectiles.length > 0]);
 
   const manhattan = (a: Position, b: Position) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
@@ -266,6 +331,63 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
           </div>
         </div>
       )}
+
+      {/* Projectile trails */}
+      {projectiles.map(proj => {
+        const age = Date.now() - proj.startTime;
+        const progress = Math.min(age / 300, 1);
+        const opacity = 1 - Math.max(0, (age - 150) / 250);
+        const currentX = proj.fromX + (proj.toX - proj.fromX) * progress;
+        const currentY = proj.fromY + (proj.toY - proj.fromY) * progress;
+
+        return (
+          <svg
+            key={proj.id}
+            className="absolute inset-0 pointer-events-none z-20"
+            style={{ width: '100%', height: '100%', overflow: 'visible' }}
+          >
+            {/* Trail line */}
+            <line
+              x1={proj.fromX}
+              y1={proj.fromY}
+              x2={currentX}
+              y2={currentY}
+              stroke={proj.color}
+              strokeWidth={2}
+              opacity={opacity * 0.6}
+              strokeLinecap="round"
+            />
+            {/* Projectile head */}
+            <circle
+              cx={currentX}
+              cy={currentY}
+              r={3}
+              fill={proj.color}
+              opacity={opacity}
+            />
+            {/* Glow effect */}
+            <circle
+              cx={currentX}
+              cy={currentY}
+              r={6}
+              fill={proj.color}
+              opacity={opacity * 0.3}
+            />
+            {/* Impact burst at destination */}
+            {progress >= 0.9 && (
+              <circle
+                cx={proj.toX}
+                cy={proj.toY}
+                r={8 + (progress - 0.9) * 80}
+                fill="none"
+                stroke={proj.color}
+                strokeWidth={1.5}
+                opacity={opacity * 0.5}
+              />
+            )}
+          </svg>
+        );
+      })}
 
       {/* Floating damage/heal numbers */}
       {floatingTexts.map(ft => {
