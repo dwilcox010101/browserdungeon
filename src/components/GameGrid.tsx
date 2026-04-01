@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { Tile, Position, GameEvent } from '@/game/types';
+import { Tile, Position, GameEvent, Trait } from '@/game/types';
 import { RARITY_LABEL } from '@/game/items';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
