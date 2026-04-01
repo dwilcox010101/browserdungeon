@@ -27,9 +27,16 @@ const STAT_OPTIONS: { stat: LevelUpStat; label: string; icon: React.ElementType;
 
 const LevelUpDialog: React.FC<LevelUpDialogProps> = ({ open, player, onChoose }) => {
   const [selected, setSelected] = useState(0);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (open) setSelected(0);
+    if (open) {
+      setSelected(0);
+      setReady(false);
+      const timer = setTimeout(() => setReady(true), 350);
+      return () => clearTimeout(timer);
+    }
+    setReady(false);
   }, [open]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -43,9 +50,9 @@ const LevelUpDialog: React.FC<LevelUpDialogProps> = ({ open, player, onChoose })
       setSelected(i => (i + 1) % STAT_OPTIONS.length);
     } else if (key === 'enter' || key === ' ' || key === '5') {
       e.preventDefault();
-      onChoose(STAT_OPTIONS[selected].stat);
+      if (ready) onChoose(STAT_OPTIONS[selected].stat);
     }
-  }, [open, selected, onChoose]);
+  }, [open, selected, ready, onChoose]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
