@@ -302,6 +302,19 @@ const GamePage: React.FC = () => {
         player={state.player}
         onChoose={handleLevelUpChoice}
       />
+      <footer className="py-3 mt-2">
+        <p className="text-center text-muted-foreground text-sm">
+          This is a product of <strong>DW Group LLC</strong> by{' '}
+          <a
+            className="text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+            href="https://dwilcox.me"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Donnie Wilcox
+          </a>
+        </p>
+      </footer>
     </div>
   );
 };
