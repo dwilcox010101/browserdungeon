@@ -87,6 +87,10 @@ let itemIdCounter = 0;
 function nextItemId(): string {
   return `i_${++itemIdCounter}`;
 }
+export function resetIdCounters(): void {
+  entityIdCounter = 0;
+  itemIdCounter = 0;
+}
 
 export function generateDungeon(
   width: number,
