@@ -21,7 +21,7 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onStart }) => {
     <div className="h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="mb-8 text-center">
         <h1 className="text-primary font-bold text-3xl tracking-widest uppercase mb-2">
-          ⚔ Dungeon of Verbs
+          ⚔ Browser Dungeon Roguelike
         </h1>
         <p className="text-muted-foreground text-sm">Choose your champion</p>
         {maxFloor > 1 && (
@@ -37,13 +37,12 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onStart }) => {
             <button
               key={char.id}
               onClick={() => isUnlocked && setSelected(char.id)}
-              className={`relative p-3 rounded-lg border transition-all text-left ${
-                selected === char.id
+              className={`relative p-3 rounded-lg border transition-all text-left ${selected === char.id
                   ? 'border-primary bg-primary/10'
                   : isUnlocked
                     ? 'border-border bg-card hover:border-primary/40'
                     : 'border-border bg-card/50 opacity-60 cursor-not-allowed'
-              }`}
+                }`}
             >
               {!isUnlocked && (
                 <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-lg z-10">
