@@ -119,6 +119,36 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
           newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'LEVEL UP!', color: 'hsl(var(--primary))', startTime: now });
         }
       }
+
+      // Ranged attack projectile
+      if (ev.type === 'ranged_attack' && ev.fromPos && ev.toPos) {
+        const traits = ev.traits || [];
+        let color = 'hsl(var(--primary))';
+        if (traits.includes('FIRE')) color = 'hsl(var(--game-enemy))';
+        else if (traits.includes('ICE')) color = 'hsl(200, 90%, 60%)';
+        else if (traits.includes('POISON')) color = 'hsl(120, 60%, 40%)';
+
+        const fromScreenX = (ev.fromPos.x - viewport.startX) * TILE_SIZE + TILE_SIZE / 2;
+        const fromScreenY = (ev.fromPos.y - viewport.startY) * TILE_SIZE + TILE_SIZE / 2;
+        const toScreenX = (ev.toPos.x - viewport.startX) * TILE_SIZE + TILE_SIZE / 2;
+        const toScreenY = (ev.toPos.y - viewport.startY) * TILE_SIZE + TILE_SIZE / 2;
+
+        setProjectiles(prev => [...prev, {
+          id: floatIdCounter++,
+          fromX: fromScreenX, fromY: fromScreenY,
+          toX: toScreenX, toY: toScreenY,
+          color, startTime: now, traits,
+        }]);
+
+        // Flash the target tile
+        if (ev.toPos) {
+          const flashColor = traits.includes('FIRE') ? 'bg-game-enemy/50'
+            : traits.includes('ICE') ? 'bg-blue-400/50'
+            : traits.includes('POISON') ? 'bg-green-500/50'
+            : 'bg-primary/40';
+          newFlashes.push({ x: ev.toPos.x, y: ev.toPos.y, color: flashColor, startTime: now });
+        }
+      }
     });
 
     if (newFloats.length > 0) setFloatingTexts(prev => [...prev, ...newFloats]);
