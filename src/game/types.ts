@@ -45,7 +45,7 @@ export interface Item {
   defenseBonus?: number;
 }
 
-export type LevelUpStat = 'hp' | 'mana' | 'attack' | 'defense' | 'inventory' | 'luck' | 'dodge';
+export type LevelUpStat = 'hp' | 'mana' | 'attack' | 'defense' | 'inventory' | 'luck' | 'agility';
 
 export type Direction = 'up' | 'down' | 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right';
 
