@@ -18,8 +18,8 @@ const STAT_OPTIONS: {
 }[] = [
   { stat: "hp", label: "Max HP", icon: Heart, description: "Increase maximum health", bonus: "+5 HP" },
   { stat: "mana", label: "Max Mana", icon: Droplets, description: "More mana for magic items", bonus: "+2 Mana" },
-  { stat: "attack", label: "Strength", icon: Sword, description: "Deal more damage", bonus: "+2 STR" },
-  { stat: "dodge", label: "Agility", icon: Wind, description: "Chance to avoid attacks entirely", bonus: "+2 AGI" },
+  { stat: "strength", label: "Strength", icon: Sword, description: "Deal more damage", bonus: "+2 STR" },
+  { stat: "agility", label: "Agility", icon: Wind, description: "Ranged damage & evasion", bonus: "+2 AGI" },
   { stat: "defense", label: "Defense", icon: Shield, description: "Take less damage", bonus: "+1 DEF" },
   { stat: "luck", label: "Luck", icon: Clover, description: "Higher crit chance & bonus XP", bonus: "+2 LCK" },
   { stat: "inventory", label: "Inventory", icon: Package, description: "Carry more items", bonus: "+1 Slot" },
