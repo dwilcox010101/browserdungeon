@@ -285,6 +285,12 @@ const GamePage: React.FC = () => {
         <h1 className="text-primary font-bold text-sm tracking-widest uppercase">⚔ Browser Dungeon Roguelike</h1>
         <div className="flex items-center gap-3">
           <button
+            onClick={() => setLightTheme(prev => !prev)}
+            className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 transition-colors"
+          >
+            {lightTheme ? <Moon size={12} /> : <Sun size={12} />} {lightTheme ? 'Dark' : 'Light'}
+          </button>
+          <button
             onClick={() => {
               if (document.fullscreenElement) {
                 document.exitFullscreen();
