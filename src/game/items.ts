@@ -12,10 +12,10 @@ export const RARITY_COLORS: Record<Rarity, string> = {
 
 export const RARITY_BG: Record<Rarity, string> = {
   common: 'bg-secondary',
-  uncommon: 'bg-green-950/40',
-  rare: 'bg-blue-950/40',
-  epic: 'bg-purple-950/40',
-  legendary: 'bg-yellow-950/40',
+  uncommon: 'bg-green-950/40 dark:bg-green-950/40 bg-green-100',
+  rare: 'bg-blue-950/40 dark:bg-blue-950/40 bg-blue-100',
+  epic: 'bg-purple-950/40 dark:bg-purple-950/40 bg-purple-100',
+  legendary: 'bg-yellow-950/40 dark:bg-yellow-950/40 bg-yellow-100',
 };
 
 export const RARITY_BORDER: Record<Rarity, string> = {
