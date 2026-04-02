@@ -319,13 +319,8 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                           );
                         })()}
                         {hasItem && !tile.entity && (
-                          <Package className={
-                            tile.item!.rarity === 'legendary' ? 'text-yellow-400' :
-                            tile.item!.rarity === 'epic' ? 'text-purple-400' :
-                            tile.item!.rarity === 'rare' ? 'text-blue-400' :
-                            tile.item!.rarity === 'uncommon' ? 'text-green-400' :
-                            'text-game-item'
-                          } size={12} />
+                          <Package className={RARITY_COLORS[tile.item!.rarity]} size={12} />
+                        )}
                         )}
                         {isStairs && !tile.entity && !hasItem && (
                           <ArrowDown className="text-primary" size={14} />
