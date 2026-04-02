@@ -169,17 +169,17 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Strength (damage dealt)">
           <Sword size={10} className="text-primary" /> STR: {player.strength}
         </div>
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Agility (ranged damage & evasion)">
+          <Wind size={10} className="text-primary" /> AGI: {player.agility}
+        </div>
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Defense (reduces damage taken)">
           <Shield size={10} className="text-primary" /> DEF: {totalDef}
-        </div>
-        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Level">
-          <Star size={10} className="text-primary" /> LVL: {player.level}
         </div>
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Luck (crit chance & bonus XP)">
           <Clover size={10} className="text-primary" /> LCK: {player.luck}
         </div>
-        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Agility (chance to avoid attacks)">
-          <Wind size={10} className="text-primary" /> AGI: {player.agility}
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Level">
+          <Star size={10} className="text-primary" /> LVL: {player.level}
         </div>
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Current floor">
           <ChevronUp size={10} className="text-primary" /> FLR: {floor}
