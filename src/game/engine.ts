@@ -430,6 +430,8 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     isPlayer: true,
     icon: charDef.icon,
     statusEffects: [],
+    speed: 1,
+    rangeAttack: 0,
   };
 
   grid[playerStart.y][playerStart.x].entity = player;
