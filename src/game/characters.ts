@@ -10,7 +10,7 @@ export interface CharacterDef {
   attack: number;
   defense: number;
   luck: number;
-  dodge: number;
+  agility: number;
   inventorySize: number;
   startWeapon: Omit<Item, 'id'>;
   startArmor: Omit<Item, 'id'> | null;

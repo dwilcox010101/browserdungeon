@@ -479,7 +479,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     attack: charDef.attack,
     defense: charDef.defense,
     luck: charDef.luck,
-    dodge: charDef.dodge,
+    agility: charDef.agility,
     level: 1,
     xp: 0,
     xpToNext: 20,
