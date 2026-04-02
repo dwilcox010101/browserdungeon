@@ -297,7 +297,8 @@ function enemyRangedAttack(state: GameState, enemy: Entity): boolean {
     return true;
   }
   const isCrit = rollCritical(enemy);
-  let dmg = enemy.strength;
+  // Enemy ranged attacks scale off agility
+  let dmg = enemy.agility > enemy.strength ? enemy.agility : enemy.strength;
   if (isCrit) dmg = Math.floor(dmg * 1.5);
   dmg = Math.max(1, dmg - getPlayerDefense(player));
   player.hp -= dmg;
