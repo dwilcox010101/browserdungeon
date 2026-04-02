@@ -136,7 +136,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
           newFlashes.push({ x: ev.pos.x, y: ev.pos.y, color: 'bg-game-enemy/40', startTime: now });
         } else if (ev.type === 'heal' && ev.amount) {
           newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: `+${ev.amount}`, color: 'hsl(var(--game-item))', startTime: now });
-        } else if (ev.type === 'player_evade' || ev.type === 'player_evade') {
+        } else if (ev.type === 'player_evade' || ev.type === 'enemy_evade') {
           newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'EVADE', color: 'hsl(var(--game-energy))', startTime: now });
         } else if (ev.type === 'crit') {
           newFloats.push({ id: floatIdCounter++, x: screenX + 12, y: screenY - 8, text: 'CRIT!', color: 'hsl(var(--primary))', startTime: now });
