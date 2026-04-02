@@ -117,6 +117,7 @@ const STATUS_EFFECT_CONFIG: Record<StatusEffect["type"], { icon: React.ReactNode
     color: "bg-emerald-900/60 text-emerald-400 border-emerald-700",
   },
   fear: { icon: <Skull size={10} />, label: "Fear", color: "bg-purple-900/60 text-purple-400 border-purple-700" },
+  buff: { icon: <Sword size={10} />, label: "Buff", color: "bg-amber-900/60 text-amber-400 border-amber-700" },
 };
 
 const StatusBadge: React.FC<{ effect: StatusEffect }> = ({ effect }) => {
