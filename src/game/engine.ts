@@ -249,7 +249,7 @@ function resolveVerb(
       break;
     case 'BUFF':
       user.strength += power;
-      messages.push(`${user.name}'s attack increased by ${power}!`);
+      messages.push(`${user.name}'s strength increased by ${power}!`);
       break;
     case 'TELEPORT':
       messages.push(`${user.name} teleports!`);
@@ -257,7 +257,7 @@ function resolveVerb(
     case 'DEBUFF':
       targets.forEach(t => {
         t.strength = Math.max(0, t.strength - power);
-        messages.push(`${t.name}'s attack reduced by ${power}`);
+        messages.push(`${t.name}'s strength reduced by ${power}`);
       });
       break;
   }
@@ -425,7 +425,7 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
       break;
     case 'attack':
       s.player.strength += 2;
-      s.log.push(addLog(s, 'Attack increased by 2!', 'system'));
+      s.log.push(addLog(s, 'Strength increased by 2!', 'system'));
       break;
     case 'defense':
       s.player.defense += 1;

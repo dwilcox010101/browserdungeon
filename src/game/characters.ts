@@ -112,7 +112,7 @@ export const CHARACTERS: CharacterDef[] = [
     id: 'berserker',
     name: 'Berserker',
     icon: 'Skull',
-    description: 'Glass cannon. Massive attack, paper-thin defense.',
+    description: 'Glass cannon. Massive strength, paper-thin defense.',
     hp: 22,
     mana: 2,
     strength: 8,
