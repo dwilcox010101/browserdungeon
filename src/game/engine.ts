@@ -439,9 +439,9 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
       s.player.luck += 2;
       s.log.push(addLog(s, 'Luck increased by 2!', 'system'));
       break;
-    case 'dodge':
-      s.player.dodge += 2;
-      s.log.push(addLog(s, 'Dodge increased by 2!', 'system'));
+    case 'agility':
+      s.player.agility += 2;
+      s.log.push(addLog(s, 'Agility increased by 2!', 'system'));
       break;
   }
   s.pendingLevelUp = false;
