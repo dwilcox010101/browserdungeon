@@ -16,7 +16,7 @@ import {
   sfxPickup,
   sfxLevelUp,
   sfxDescend,
-  sfxDodge,
+  sfxEvade,
   sfxCrit,
   sfxNoEnergy,
   sfxHeal,
@@ -47,9 +47,9 @@ function processEvents(events: GameEvent[]) {
       case "descend":
         sfxDescend();
         break;
-      case "player_dodge":
-      case "enemy_dodge":
-        sfxDodge();
+      case "player_evade":
+      case "enemy_evade":
+        sfxEvade();
         break;
       case "crit":
         sfxCrit();

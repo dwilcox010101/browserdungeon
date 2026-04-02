@@ -205,7 +205,7 @@ function resolveVerb(
     case 'HIT': {
       const actualTargets = traits.includes('AOE') ? targets : targets.slice(0, 1);
       actualTargets.forEach(t => {
-        if (rollDodge(t)) {
+        if (rollEvade(t)) {
           messages.push(`${t.name} dodges the attack!`);
           return;
         }
@@ -291,9 +291,9 @@ function enemyRangedAttack(state: GameState, enemy: Entity): boolean {
   if (!hasLineOfSightEngine(state.grid, enemy.pos, player.pos, state.width, state.height)) return false;
 
   // Ranged attack
-  if (rollDodge(player)) {
+  if (rollEvade(player)) {
     state.log.push(addLog(state, `You dodge ${enemy.name}'s ranged attack!`, 'combat'));
-    emit(state, { type: 'player_dodge', pos: { ...player.pos } });
+    emit(state, { type: 'player_evade', pos: { ...player.pos } });
     return true;
   }
   const isCrit = rollCritical(enemy);
@@ -319,9 +319,9 @@ function doSingleMove(state: GameState, enemy: Entity): boolean {
 
   // Melee attack if adjacent
   if (dist <= 1) {
-    if (rollDodge(player)) {
+    if (rollEvade(player)) {
       state.log.push(addLog(state, `You dodge ${enemy.name}'s attack!`, 'combat'));
-      emit(state, { type: 'player_dodge', pos: { ...player.pos } });
+      emit(state, { type: 'player_evade', pos: { ...player.pos } });
       return true; // used action
     }
     const isCrit = rollCritical(enemy);
@@ -654,9 +654,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (targetTile.entity && !targetTile.entity.isPlayer) {
         const enemy = targetTile.entity;
-        if (rollDodge(enemy)) {
+        if (rollEvade(enemy)) {
           s.log.push(addLog(s, `${enemy.name} dodges your attack!`, 'combat'));
-          emit(s, { type: 'enemy_dodge', pos: { ...enemy.pos } });
+          emit(s, { type: 'enemy_evade', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
           // Magic weapons (manaCost > 0) do reduced melee damage — full power requires using the ability

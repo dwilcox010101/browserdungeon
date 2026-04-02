@@ -73,7 +73,7 @@ export function sfxDescend() {
   setTimeout(() => playTone(200, 0.2, 'sine', 0.05), 120);
 }
 
-export function sfxDodge() {
+export function sfxEvade() {
   playTone(800, 0.06, 'sine', 0.04);
 }
 

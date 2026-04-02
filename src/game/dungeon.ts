@@ -74,45 +74,45 @@ function rand(min: number, max: number): number {
 // Each tier introduces new, tougher enemies. speed=2 means double-move, rangeAttack>0 means ranged.
 const ENEMY_TEMPLATES = [
   // ─── Tier 0 — Floor 1+ (weak fodder) ───
-  { name: 'Slime',        icon: 'Droplets', hp: 6,  attack: 2, defense: 0, dodge: 0, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
-  { name: 'Rat',          icon: 'Bug',      hp: 4,  attack: 2, defense: 0, dodge: 2, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
-  { name: 'Bat',          icon: 'Bird',     hp: 5,  attack: 3, defense: 0, dodge: 3, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
+  { name: 'Slime',        icon: 'Droplets', hp: 6,  attack: 2, defense: 0, agility: 0, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
+  { name: 'Rat',          icon: 'Bug',      hp: 4,  attack: 2, defense: 0, agility: 2, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
+  { name: 'Bat',          icon: 'Bird',     hp: 5,  attack: 3, defense: 0, agility: 3, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
 
   // ─── Tier 1 — Floor 2+ ───
-  { name: 'Goblin',       icon: 'Bug',      hp: 10, attack: 3, defense: 1, dodge: 2, luck: 1, minFloor: 2,  speed: 1, rangeAttack: 0 },
-  { name: 'Kobold Archer',icon: 'Target',   hp: 8,  attack: 4, defense: 0, dodge: 2, luck: 0, minFloor: 2,  speed: 1, rangeAttack: 3 },
+  { name: 'Goblin',       icon: 'Bug',      hp: 10, attack: 3, defense: 1, agility: 2, luck: 1, minFloor: 2,  speed: 1, rangeAttack: 0 },
+  { name: 'Kobold Archer',icon: 'Target',   hp: 8,  attack: 4, defense: 0, agility: 2, luck: 0, minFloor: 2,  speed: 1, rangeAttack: 3 },
 
   // ─── Tier 2 — Floor 3+ ───
-  { name: 'Wolf',         icon: 'Dog',      hp: 12, attack: 5, defense: 1, dodge: 4, luck: 0, minFloor: 3,  speed: 2, rangeAttack: 0 },
-  { name: 'Mushroom',     icon: 'Flower2',  hp: 14, attack: 3, defense: 3, dodge: 0, luck: 0, minFloor: 3,  speed: 1, rangeAttack: 0 },
+  { name: 'Wolf',         icon: 'Dog',      hp: 12, attack: 5, defense: 1, agility: 4, luck: 0, minFloor: 3,  speed: 2, rangeAttack: 0 },
+  { name: 'Mushroom',     icon: 'Flower2',  hp: 14, attack: 3, defense: 3, agility: 0, luck: 0, minFloor: 3,  speed: 1, rangeAttack: 0 },
 
   // ─── Tier 3 — Floor 4+ ───
-  { name: 'Skeleton',     icon: 'Skull',    hp: 16, attack: 5, defense: 2, dodge: 0, luck: 0, minFloor: 4,  speed: 1, rangeAttack: 0 },
-  { name: 'Dark Elf',     icon: 'Crosshair',hp: 12, attack: 6, defense: 1, dodge: 6, luck: 2, minFloor: 4,  speed: 1, rangeAttack: 4 },
+  { name: 'Skeleton',     icon: 'Skull',    hp: 16, attack: 5, defense: 2, agility: 0, luck: 0, minFloor: 4,  speed: 1, rangeAttack: 0 },
+  { name: 'Dark Elf',     icon: 'Crosshair',hp: 12, attack: 6, defense: 1, agility: 6, luck: 2, minFloor: 4,  speed: 1, rangeAttack: 4 },
 
   // ─── Tier 4 — Floor 5+ ───
-  { name: 'Orc Brute',    icon: 'Axe',      hp: 22, attack: 7, defense: 3, dodge: 0, luck: 0, minFloor: 5,  speed: 1, rangeAttack: 0 },
-  { name: 'Shadow',       icon: 'Ghost',    hp: 14, attack: 5, defense: 1, dodge: 8, luck: 3, minFloor: 5,  speed: 2, rangeAttack: 0 },
+  { name: 'Orc Brute',    icon: 'Axe',      hp: 22, attack: 7, defense: 3, agility: 0, luck: 0, minFloor: 5,  speed: 1, rangeAttack: 0 },
+  { name: 'Shadow',       icon: 'Ghost',    hp: 14, attack: 5, defense: 1, agility: 8, luck: 3, minFloor: 5,  speed: 2, rangeAttack: 0 },
 
   // ─── Tier 5 — Floor 6+ ───
-  { name: 'Wraith',       icon: 'Ghost',    hp: 20, attack: 7, defense: 3, dodge: 3, luck: 2, minFloor: 6,  speed: 1, rangeAttack: 0 },
-  { name: 'Fire Imp',     icon: 'Flame',    hp: 16, attack: 8, defense: 1, dodge: 4, luck: 1, minFloor: 6,  speed: 1, rangeAttack: 3 },
+  { name: 'Wraith',       icon: 'Ghost',    hp: 20, attack: 7, defense: 3, agility: 3, luck: 2, minFloor: 6,  speed: 1, rangeAttack: 0 },
+  { name: 'Fire Imp',     icon: 'Flame',    hp: 16, attack: 8, defense: 1, agility: 4, luck: 1, minFloor: 6,  speed: 1, rangeAttack: 3 },
 
   // ─── Tier 6 — Floor 7+ ───
-  { name: 'Minotaur',     icon: 'Axe',      hp: 30, attack: 9, defense: 4, dodge: 0, luck: 0, minFloor: 7,  speed: 2, rangeAttack: 0 },
-  { name: 'Phantom',      icon: 'Ghost',    hp: 18, attack: 6, defense: 2, dodge: 10,luck: 3, minFloor: 7,  speed: 1, rangeAttack: 0 },
+  { name: 'Minotaur',     icon: 'Axe',      hp: 30, attack: 9, defense: 4, agility: 0, luck: 0, minFloor: 7,  speed: 2, rangeAttack: 0 },
+  { name: 'Phantom',      icon: 'Ghost',    hp: 18, attack: 6, defense: 2, agility: 10,luck: 3, minFloor: 7,  speed: 1, rangeAttack: 0 },
 
   // ─── Tier 7 — Floor 8+ ───
-  { name: 'Lich',         icon: 'Skull',    hp: 28, attack: 10,defense: 4, dodge: 3, luck: 4, minFloor: 8,  speed: 1, rangeAttack: 5 },
-  { name: 'Death Knight', icon: 'Shield',   hp: 35, attack: 11,defense: 6, dodge: 1, luck: 1, minFloor: 8,  speed: 1, rangeAttack: 0 },
+  { name: 'Lich',         icon: 'Skull',    hp: 28, attack: 10,defense: 4, agility: 3, luck: 4, minFloor: 8,  speed: 1, rangeAttack: 5 },
+  { name: 'Death Knight', icon: 'Shield',   hp: 35, attack: 11,defense: 6, agility: 1, luck: 1, minFloor: 8,  speed: 1, rangeAttack: 0 },
 
   // ─── Tier 8 — Floor 9+ ───
-  { name: 'Dragon Whelp', icon: 'Flame',    hp: 40, attack: 12,defense: 5, dodge: 3, luck: 2, minFloor: 9,  speed: 1, rangeAttack: 4 },
-  { name: 'Assassin',     icon: 'Crosshair',hp: 22, attack: 14,defense: 2, dodge: 12,luck: 5, minFloor: 9,  speed: 2, rangeAttack: 0 },
+  { name: 'Dragon Whelp', icon: 'Flame',    hp: 40, attack: 12,defense: 5, agility: 3, luck: 2, minFloor: 9,  speed: 1, rangeAttack: 4 },
+  { name: 'Assassin',     icon: 'Crosshair',hp: 22, attack: 14,defense: 2, agility: 12,luck: 5, minFloor: 9,  speed: 2, rangeAttack: 0 },
 
   // ─── Tier 9 — Floor 10 (final) ───
-  { name: 'Demon Lord',   icon: 'Skull',    hp: 50, attack: 14,defense: 7, dodge: 4, luck: 3, minFloor: 10, speed: 1, rangeAttack: 3 },
-  { name: 'Arch Mage',    icon: 'Wand',     hp: 30, attack: 16,defense: 3, dodge: 6, luck: 5, minFloor: 10, speed: 1, rangeAttack: 5 },
+  { name: 'Demon Lord',   icon: 'Skull',    hp: 50, attack: 14,defense: 7, agility: 4, luck: 3, minFloor: 10, speed: 1, rangeAttack: 3 },
+  { name: 'Arch Mage',    icon: 'Wand',     hp: 30, attack: 16,defense: 3, agility: 6, luck: 5, minFloor: 10, speed: 1, rangeAttack: 5 },
 ];
 
 
@@ -190,7 +190,7 @@ export function generateDungeon(
         attack: template.attack + Math.floor(floorBonus * 0.5),
         defense: template.defense + Math.floor(floorBonus / 3),
         luck: template.luck + Math.floor(floorBonus / 4),
-        dodge: template.dodge + Math.floor(floorBonus / 4),
+        agility: template.agility + Math.floor(floorBonus / 4),
         level: floor,
         xp: 0,
         xpToNext: 100,
