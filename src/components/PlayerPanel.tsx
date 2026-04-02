@@ -1,7 +1,23 @@
-import React from 'react';
-import { Entity, Item, StatusEffect } from '@/game/types';
-import { RARITY_COLORS, RARITY_BG, RARITY_BORDER, RARITY_LABEL } from '@/game/items';
-import { Heart, Droplets, Shield, Sword, Star, ChevronUp, Package, Shirt, Clover, Wind, Flame, Snowflake, Skull, Zap, Activity } from 'lucide-react';
+import React from "react";
+import { Entity, Item, StatusEffect } from "@/game/types";
+import { RARITY_COLORS, RARITY_BG, RARITY_BORDER, RARITY_LABEL } from "@/game/items";
+import {
+  Heart,
+  Droplets,
+  Shield,
+  Sword,
+  Star,
+  ChevronUp,
+  Package,
+  Shirt,
+  Clover,
+  Wind,
+  Flame,
+  Snowflake,
+  Skull,
+  Zap,
+  Activity,
+} from "lucide-react";
 
 interface PlayerPanelProps {
   player: Entity;
@@ -25,7 +41,9 @@ const StatBar: React.FC<{
       <span className="flex items-center gap-1 text-muted-foreground">
         {icon} {label}
       </span>
-      <span className="text-foreground font-medium">{current}/{max}</span>
+      <span className="text-foreground font-medium">
+        {current}/{max}
+      </span>
     </div>
     <div className="w-full h-2 bg-secondary rounded-sm overflow-hidden">
       <div
@@ -36,61 +54,85 @@ const StatBar: React.FC<{
   </div>
 );
 
-const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: string }> = ({ item, onUse, keybind }) => (
+const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: string }> = ({
+  item,
+  onUse,
+  keybind,
+}) => (
   <button
     onClick={() => onUse(item.id)}
     className={`w-full text-left text-xs ${RARITY_BG[item.rarity]} hover:opacity-80 rounded p-2 transition-colors group border ${RARITY_BORDER[item.rarity]}`}
-    title={`[${RARITY_LABEL[item.rarity]}] ${item.description}${keybind ? ` (${keybind})` : ''}`}
+    title={`[${RARITY_LABEL[item.rarity]}] ${item.description}${keybind ? ` (${keybind})` : ""}`}
   >
     <div className="flex justify-between items-center">
       <span className={`${RARITY_COLORS[item.rarity]} font-medium`}>
         {keybind && <span className="text-muted-foreground font-mono mr-1">[{keybind}]</span>}
         {item.name}
       </span>
-      {item.manaCost > 0 && (
-        <span className="text-game-energy text-[10px]">💧{item.manaCost}</span>
-      )}
+      {item.manaCost > 0 && <span className="text-game-energy text-[10px]">💧{item.manaCost}</span>}
     </div>
     <div className="text-muted-foreground text-[10px] mt-0.5">
-      <span className={`${RARITY_COLORS[item.rarity]} opacity-70`}>[{RARITY_LABEL[item.rarity]}]</span>{' '}
+      <span className={`${RARITY_COLORS[item.rarity]} opacity-70`}>[{RARITY_LABEL[item.rarity]}]</span>{" "}
       {item.description}
-      {item.defenseBonus ? ` • +${item.defenseBonus} DEF` : ''}
+      {item.defenseBonus ? ` • +${item.defenseBonus} DEF` : ""}
     </div>
   </button>
 );
 
-const STATUS_EFFECT_CONFIG: Record<StatusEffect['type'], { icon: React.ReactNode; label: string; color: string }> = {
-  poison: { icon: <Skull size={10} />, label: 'Poison', color: 'bg-green-900/60 text-green-400 border-green-700' },
-  burning: { icon: <Flame size={10} />, label: 'Burning', color: 'bg-red-900/60 text-red-400 border-red-700' },
-  frozen: { icon: <Snowflake size={10} />, label: 'Frozen', color: 'bg-blue-900/60 text-blue-400 border-blue-700' },
-  stunned: { icon: <Zap size={10} />, label: 'Stunned', color: 'bg-yellow-900/60 text-yellow-400 border-yellow-700' },
-  regen: { icon: <Activity size={10} />, label: 'Regen', color: 'bg-emerald-900/60 text-emerald-400 border-emerald-700' },
-  fear: { icon: <Skull size={10} />, label: 'Fear', color: 'bg-purple-900/60 text-purple-400 border-purple-700' },
+const STATUS_EFFECT_CONFIG: Record<StatusEffect["type"], { icon: React.ReactNode; label: string; color: string }> = {
+  poison: { icon: <Skull size={10} />, label: "Poison", color: "bg-green-900/60 text-green-400 border-green-700" },
+  burning: { icon: <Flame size={10} />, label: "Burning", color: "bg-red-900/60 text-red-400 border-red-700" },
+  frozen: { icon: <Snowflake size={10} />, label: "Frozen", color: "bg-blue-900/60 text-blue-400 border-blue-700" },
+  stunned: { icon: <Zap size={10} />, label: "Stunned", color: "bg-yellow-900/60 text-yellow-400 border-yellow-700" },
+  regen: {
+    icon: <Activity size={10} />,
+    label: "Regen",
+    color: "bg-emerald-900/60 text-emerald-400 border-emerald-700",
+  },
+  fear: { icon: <Skull size={10} />, label: "Fear", color: "bg-purple-900/60 text-purple-400 border-purple-700" },
 };
 
 const StatusBadge: React.FC<{ effect: StatusEffect }> = ({ effect }) => {
   const config = STATUS_EFFECT_CONFIG[effect.type];
   return (
-    <span className={`inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded border ${config.color}`}
-          title={`${config.label}: ${effect.power > 0 ? `${effect.power}/turn` : 'active'} (${effect.turnsLeft} turns left)`}>
+    <span
+      className={`inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded border ${config.color}`}
+      title={`${config.label}: ${effect.power > 0 ? `${effect.power}/turn` : "active"} (${effect.turnsLeft} turns left)`}
+    >
       {config.icon} {config.label} ({effect.turnsLeft})
     </span>
   );
 };
 
 const PlayerPanel: React.FC<PlayerPanelProps> = ({
-  player, floor, turn, targetMode, onUseItem, onCancelTarget, inventoryFlash
+  player,
+  floor,
+  turn,
+  targetMode,
+  onUseItem,
+  onCancelTarget,
+  inventoryFlash,
 }) => {
   const totalDef = player.defense + (player.equippedArmor?.defenseBonus ?? 0);
 
   return (
-    <div className="w-64 bg-card border-r border-border p-4 flex flex-col h-full overflow-y-auto shrink-0">
-      <h2 className="text-primary font-bold text-sm tracking-wider uppercase mb-4">
-        {player.name}
-      </h2>
+    <div className="w-1/4 bg-card border-r border-border p-4 flex flex-col h-full overflow-y-auto shrink-0">
+      <h2 className="text-primary font-bold text-sm tracking-wider uppercase mb-4">{player.name}</h2>
 
-      <StatBar label="HP" current={player.hp} max={player.maxHp} icon={<Heart size={12} />} colorClass="bg-game-health" />
-      <StatBar label="Mana" current={player.mana} max={player.maxMana} icon={<Droplets size={12} />} colorClass="bg-game-energy" />
+      <StatBar
+        label="HP"
+        current={player.hp}
+        max={player.maxHp}
+        icon={<Heart size={12} />}
+        colorClass="bg-game-health"
+      />
+      <StatBar
+        label="Mana"
+        current={player.mana}
+        max={player.maxMana}
+        icon={<Droplets size={12} />}
+        colorClass="bg-game-energy"
+      />
       <StatBar label="XP" current={player.xp} max={player.xpToNext} icon={<Star size={12} />} colorClass="bg-primary" />
 
       <div className="grid grid-cols-3 gap-1.5 mb-4 text-xs">
@@ -153,13 +195,19 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
           <Shirt size={12} /> Armor
         </h3>
         {player.equippedArmor ? (
-          <div className={`w-full text-left text-xs ${RARITY_BG[player.equippedArmor.rarity]} rounded p-2 border ${RARITY_BORDER[player.equippedArmor.rarity]}`}>
+          <div
+            className={`w-full text-left text-xs ${RARITY_BG[player.equippedArmor.rarity]} rounded p-2 border ${RARITY_BORDER[player.equippedArmor.rarity]}`}
+          >
             <div className="flex justify-between items-center">
-              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} font-medium`}>{player.equippedArmor.name}</span>
+              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} font-medium`}>
+                {player.equippedArmor.name}
+              </span>
               <span className="text-primary text-[10px]">+{player.equippedArmor.defenseBonus} DEF</span>
             </div>
             <div className="text-muted-foreground text-[10px] mt-0.5">
-              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} opacity-70`}>[{RARITY_LABEL[player.equippedArmor.rarity]}]</span>
+              <span className={`${RARITY_COLORS[player.equippedArmor.rarity]} opacity-70`}>
+                [{RARITY_LABEL[player.equippedArmor.rarity]}]
+              </span>
             </div>
           </div>
         ) : (
@@ -168,17 +216,22 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       </div>
 
       {/* General Inventory */}
-      <div className={`border-t border-border pt-3 mt-2 ${inventoryFlash ? 'animate-[inventoryPulse_0.4s_ease-out]' : ''}`}>
+      <div
+        className={`border-t border-border pt-3 mt-2 ${inventoryFlash ? "animate-[inventoryPulse_0.4s_ease-out]" : ""}`}
+      >
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
           <Package size={12} /> Inventory ({player.inventory.length}/{player.inventorySize})
         </h3>
         <div className="space-y-1">
           {player.inventory.map((item, idx) => (
-            <ItemButton key={item.id} item={item} onUse={onUseItem} keybind={idx < 10 ? `${(idx + 1) % 10}` : undefined} />
+            <ItemButton
+              key={item.id}
+              item={item}
+              onUse={onUseItem}
+              keybind={idx < 10 ? `${(idx + 1) % 10}` : undefined}
+            />
           ))}
-          {player.inventory.length === 0 && (
-            <p className="text-muted-foreground text-xs italic">Empty</p>
-          )}
+          {player.inventory.length === 0 && <p className="text-muted-foreground text-xs italic">Empty</p>}
         </div>
       </div>
     </div>
