@@ -659,7 +659,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           emit(s, { type: 'enemy_dodge', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
-          const atkPower = weapon ? weapon.power + s.player.attack : s.player.attack;
+          // Magic weapons (manaCost > 0) do reduced melee damage — full power requires using the ability
+          const weaponBonus = weapon ? (weapon.manaCost > 0 ? Math.floor(weapon.power * 0.25) : weapon.power) : 0;
+          const atkPower = weaponBonus + s.player.attack;
           const isCrit = rollCritical(s.player);
           let dmg = atkPower;
           if (isCrit) dmg = Math.floor(dmg * 1.5);
