@@ -249,7 +249,8 @@ function resolveVerb(
       break;
     case 'BUFF':
       user.strength += power;
-      messages.push(`${user.name}'s strength increased by ${power}!`);
+      user.agility += Math.floor(power * 0.5);
+      messages.push(`${user.name}'s strength increased by ${power}, agility by ${Math.floor(power * 0.5)}!`);
       break;
     case 'TELEPORT':
       messages.push(`${user.name} teleports!`);
