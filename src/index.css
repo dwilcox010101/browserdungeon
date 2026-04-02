@@ -118,3 +118,39 @@
     @apply bg-background text-foreground font-mono;
   }
 }
+
+@layer components {
+  /* Rarity text colors */
+  .rarity-text-uncommon { color: hsl(142, 60%, 45%); }
+  .rarity-text-rare { color: hsl(217, 70%, 55%); }
+  .rarity-text-epic { color: hsl(270, 60%, 55%); }
+  .rarity-text-legendary { color: hsl(45, 90%, 45%); }
+
+  /* Rarity backgrounds */
+  .rarity-bg-uncommon { background-color: hsla(142, 60%, 15%, 0.4); }
+  .rarity-bg-rare { background-color: hsla(217, 70%, 15%, 0.4); }
+  .rarity-bg-epic { background-color: hsla(270, 60%, 15%, 0.4); }
+  .rarity-bg-legendary { background-color: hsla(45, 90%, 15%, 0.4); }
+
+  /* Rarity borders */
+  .rarity-border-uncommon { border-color: hsla(142, 60%, 40%, 0.5); }
+  .rarity-border-rare { border-color: hsla(217, 70%, 40%, 0.5); }
+  .rarity-border-epic { border-color: hsla(270, 60%, 40%, 0.5); }
+  .rarity-border-legendary { border-color: hsla(45, 90%, 40%, 0.5); }
+
+  /* Light mode overrides */
+  .light .rarity-text-uncommon { color: hsl(142, 65%, 30%); }
+  .light .rarity-text-rare { color: hsl(217, 75%, 40%); }
+  .light .rarity-text-epic { color: hsl(270, 65%, 40%); }
+  .light .rarity-text-legendary { color: hsl(45, 90%, 32%); }
+
+  .light .rarity-bg-uncommon { background-color: hsla(142, 50%, 85%, 0.7); }
+  .light .rarity-bg-rare { background-color: hsla(217, 55%, 88%, 0.7); }
+  .light .rarity-bg-epic { background-color: hsla(270, 50%, 88%, 0.7); }
+  .light .rarity-bg-legendary { background-color: hsla(45, 70%, 85%, 0.7); }
+
+  .light .rarity-border-uncommon { border-color: hsla(142, 50%, 45%, 0.5); }
+  .light .rarity-border-rare { border-color: hsla(217, 55%, 50%, 0.5); }
+  .light .rarity-border-epic { border-color: hsla(270, 50%, 50%, 0.5); }
+  .light .rarity-border-legendary { border-color: hsla(45, 70%, 45%, 0.5); }
+}

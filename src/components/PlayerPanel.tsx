@@ -85,15 +85,15 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: 
     </div>
     <div className="flex flex-wrap gap-1.5 mt-1 text-[10px]">
       {item.power > 0 && item.verb === 'HIT' && (
-        <span className="text-red-400">⚔️ {item.power} DMG</span>
+        <span className="text-destructive">⚔️ {item.power} DMG</span>
       )}
       {item.power > 0 && item.verb === 'HEAL' && (
-        <span className="text-emerald-400">💚 {item.power} HP</span>
+        <span className="text-game-item">💚 {item.power} HP</span>
       )}
       {item.power > 0 && item.verb === 'BUFF' && (
-        <span className="text-blue-400">⬆ +{item.power} STR</span>
+        <span className="text-primary">⬆ +{item.power} STR</span>
       )}
-      {item.defenseBonus ? <span className="text-blue-400">🛡️ +{item.defenseBonus} DEF</span> : null}
+      {item.defenseBonus ? <span className="text-primary">🛡️ +{item.defenseBonus} DEF</span> : null}
       {item.range > 1 && (
         <span className="text-muted-foreground">📏 {item.range} RNG</span>
       )}
