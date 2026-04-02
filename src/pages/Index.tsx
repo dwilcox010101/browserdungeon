@@ -322,7 +322,9 @@ const GamePage: React.FC = () => {
           turn={state.turn}
           targetMode={!!state.targetMode}
           onUseItem={handleUseItem}
+          onDropItem={handleDropItem}
           onCancelTarget={handleCancelTarget}
+          canDrop={!playerTile?.item}
           inventoryFlash={inventoryFlash}
         />
 
