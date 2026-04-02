@@ -365,8 +365,8 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                   : 'translate(-50%, -100%)',
             }}
           >
-            <div className="bg-card border border-border rounded px-2 py-1 text-xs text-foreground shadow-lg max-w-[min(22rem,calc(100vw-1rem))] whitespace-normal break-words">
-              <span className="text-game-item font-medium">{playerTileItem.name}</span>
+            <div className={`bg-card border ${RARITY_BORDER[playerTileItem.rarity]} rounded px-2 py-1 text-xs text-foreground shadow-lg max-w-[min(22rem,calc(100vw-1rem))] whitespace-normal break-words`}>
+              <span className={`${RARITY_COLORS[playerTileItem.rarity]} font-medium`}>[{RARITY_LABEL[playerTileItem.rarity]}] {playerTileItem.name}</span>
               <span className="text-muted-foreground ml-1">— {playerTileItem.description}</span>
             </div>
           </div>,
