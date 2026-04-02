@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Entity, Item, StatusEffect } from "@/game/types";
 import { RARITY_COLORS, RARITY_BG, RARITY_BORDER, RARITY_LABEL } from "@/game/items";
 import {
@@ -17,6 +17,7 @@ import {
   Skull,
   Zap,
   Activity,
+  Trash2,
 } from "lucide-react";
 
 interface PlayerPanelProps {
@@ -25,7 +26,9 @@ interface PlayerPanelProps {
   turn: number;
   targetMode: boolean;
   onUseItem: (itemId: string) => void;
+  onDropItem: (itemId: string) => void;
   onCancelTarget: () => void;
+  canDrop: boolean;
   inventoryFlash?: boolean;
 }
 
@@ -134,9 +137,12 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
   turn,
   targetMode,
   onUseItem,
+  onDropItem,
   onCancelTarget,
+  canDrop,
   inventoryFlash,
 }) => {
+  const [dropMode, setDropMode] = useState(false);
   const totalDef = player.defense + (player.equippedArmor?.defenseBonus ?? 0);
 
   return (
@@ -245,14 +251,35 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       >
         <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1">
           <Package size={12} /> Inventory ({player.inventory.length}/{player.inventorySize})
+          {player.inventory.length > 0 && (
+            <button
+              onClick={() => setDropMode(prev => !prev)}
+              disabled={!canDrop && !dropMode}
+              className={`ml-auto p-1 rounded transition-colors ${
+                dropMode
+                  ? 'bg-accent/30 text-accent-foreground'
+                  : canDrop
+                    ? 'text-muted-foreground hover:text-foreground'
+                    : 'text-muted-foreground/30 cursor-not-allowed'
+              }`}
+              title={dropMode ? 'Cancel drop mode' : canDrop ? 'Drop an item' : 'Cannot drop here (tile occupied)'}
+            >
+              <Trash2 size={12} />
+            </button>
+          )}
         </h3>
+        {dropMode && (
+          <p className="text-accent-foreground text-[10px] mb-2 bg-accent/20 rounded px-2 py-1 border border-accent/30">
+            Select an item to drop on the ground
+          </p>
+        )}
         <div className="space-y-1">
           {player.inventory.map((item, idx) => (
             <ItemButton
               key={item.id}
               item={item}
-              onUse={onUseItem}
-              keybind={idx < 10 ? `${(idx + 1) % 10}` : undefined}
+              onUse={dropMode ? (id) => { onDropItem(id); setDropMode(false); } : onUseItem}
+              keybind={!dropMode && idx < 10 ? `${(idx + 1) % 10}` : undefined}
             />
           ))}
           {player.inventory.length === 0 && <p className="text-muted-foreground text-xs italic">Empty</p>}

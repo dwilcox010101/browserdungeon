@@ -834,6 +834,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return s;
     }
 
+    case 'DROP_ITEM': {
+      const tile = s.grid[s.player.pos.y][s.player.pos.x];
+      if (tile.item) {
+        s.log.push(addLog(s, 'There is already an item here!', 'system'));
+        return s;
+      }
+      const itemIdx = s.player.inventory.findIndex(i => i.id === action.itemId);
+      if (itemIdx === -1) return s;
+      const [dropped] = s.player.inventory.splice(itemIdx, 1);
+      tile.item = dropped;
+      s.log.push(addLog(s, `You drop ${dropped.name}.`, 'info'));
+      return s;
+    }
+
     default:
       return s;
   }
