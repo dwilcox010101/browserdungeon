@@ -71,6 +71,8 @@ export interface Entity {
   isPlayer: boolean;
   icon: string;
   statusEffects: StatusEffect[];
+  speed: number;        // tiles per turn (1 = normal, 2 = fast)
+  rangeAttack: number;  // 0 = melee only, >0 = can attack from that range
 }
 
 export interface Tile {

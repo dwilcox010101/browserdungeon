@@ -70,16 +70,49 @@ function rand(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// ─── ENEMY TEMPLATES ───
+// Each tier introduces new, tougher enemies. speed=2 means double-move, rangeAttack>0 means ranged.
 const ENEMY_TEMPLATES = [
-  // tier 0 — floors 1+
-  { name: 'Slime', icon: 'Droplets', hp: 6, attack: 2, defense: 0, dodge: 0, luck: 0, minFloor: 1 },
-  { name: 'Bat', icon: 'Bird', hp: 5, attack: 3, defense: 0, dodge: 3, luck: 0, minFloor: 1 },
-  // tier 1 — floors 2+
-  { name: 'Goblin', icon: 'Bug', hp: 10, attack: 3, defense: 1, dodge: 2, luck: 1, minFloor: 2 },
-  // tier 2 — floors 4+
-  { name: 'Skeleton', icon: 'Skull', hp: 16, attack: 5, defense: 2, dodge: 0, luck: 0, minFloor: 4 },
-  // tier 3 — floors 6+
-  { name: 'Wraith', icon: 'Ghost', hp: 20, attack: 7, defense: 3, dodge: 3, luck: 2, minFloor: 6 },
+  // ─── Tier 0 — Floor 1+ (weak fodder) ───
+  { name: 'Slime',        icon: 'Droplets', hp: 6,  attack: 2, defense: 0, dodge: 0, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
+  { name: 'Rat',          icon: 'Bug',      hp: 4,  attack: 2, defense: 0, dodge: 2, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
+  { name: 'Bat',          icon: 'Bird',     hp: 5,  attack: 3, defense: 0, dodge: 3, luck: 0, minFloor: 1,  speed: 1, rangeAttack: 0 },
+
+  // ─── Tier 1 — Floor 2+ ───
+  { name: 'Goblin',       icon: 'Bug',      hp: 10, attack: 3, defense: 1, dodge: 2, luck: 1, minFloor: 2,  speed: 1, rangeAttack: 0 },
+  { name: 'Kobold Archer',icon: 'Target',   hp: 8,  attack: 4, defense: 0, dodge: 2, luck: 0, minFloor: 2,  speed: 1, rangeAttack: 3 },
+
+  // ─── Tier 2 — Floor 3+ ───
+  { name: 'Wolf',         icon: 'Dog',      hp: 12, attack: 5, defense: 1, dodge: 4, luck: 0, minFloor: 3,  speed: 2, rangeAttack: 0 },
+  { name: 'Mushroom',     icon: 'Flower2',  hp: 14, attack: 3, defense: 3, dodge: 0, luck: 0, minFloor: 3,  speed: 1, rangeAttack: 0 },
+
+  // ─── Tier 3 — Floor 4+ ───
+  { name: 'Skeleton',     icon: 'Skull',    hp: 16, attack: 5, defense: 2, dodge: 0, luck: 0, minFloor: 4,  speed: 1, rangeAttack: 0 },
+  { name: 'Dark Elf',     icon: 'Crosshair',hp: 12, attack: 6, defense: 1, dodge: 6, luck: 2, minFloor: 4,  speed: 1, rangeAttack: 4 },
+
+  // ─── Tier 4 — Floor 5+ ───
+  { name: 'Orc Brute',    icon: 'Axe',      hp: 22, attack: 7, defense: 3, dodge: 0, luck: 0, minFloor: 5,  speed: 1, rangeAttack: 0 },
+  { name: 'Shadow',       icon: 'Ghost',    hp: 14, attack: 5, defense: 1, dodge: 8, luck: 3, minFloor: 5,  speed: 2, rangeAttack: 0 },
+
+  // ─── Tier 5 — Floor 6+ ───
+  { name: 'Wraith',       icon: 'Ghost',    hp: 20, attack: 7, defense: 3, dodge: 3, luck: 2, minFloor: 6,  speed: 1, rangeAttack: 0 },
+  { name: 'Fire Imp',     icon: 'Flame',    hp: 16, attack: 8, defense: 1, dodge: 4, luck: 1, minFloor: 6,  speed: 1, rangeAttack: 3 },
+
+  // ─── Tier 6 — Floor 7+ ───
+  { name: 'Minotaur',     icon: 'Axe',      hp: 30, attack: 9, defense: 4, dodge: 0, luck: 0, minFloor: 7,  speed: 2, rangeAttack: 0 },
+  { name: 'Phantom',      icon: 'Ghost',    hp: 18, attack: 6, defense: 2, dodge: 10,luck: 3, minFloor: 7,  speed: 1, rangeAttack: 0 },
+
+  // ─── Tier 7 — Floor 8+ ───
+  { name: 'Lich',         icon: 'Skull',    hp: 28, attack: 10,defense: 4, dodge: 3, luck: 4, minFloor: 8,  speed: 1, rangeAttack: 5 },
+  { name: 'Death Knight', icon: 'Shield',   hp: 35, attack: 11,defense: 6, dodge: 1, luck: 1, minFloor: 8,  speed: 1, rangeAttack: 0 },
+
+  // ─── Tier 8 — Floor 9+ ───
+  { name: 'Dragon Whelp', icon: 'Flame',    hp: 40, attack: 12,defense: 5, dodge: 3, luck: 2, minFloor: 9,  speed: 1, rangeAttack: 4 },
+  { name: 'Assassin',     icon: 'Crosshair',hp: 22, attack: 14,defense: 2, dodge: 12,luck: 5, minFloor: 9,  speed: 2, rangeAttack: 0 },
+
+  // ─── Tier 9 — Floor 10 (final) ───
+  { name: 'Demon Lord',   icon: 'Skull',    hp: 50, attack: 14,defense: 7, dodge: 4, luck: 3, minFloor: 10, speed: 1, rangeAttack: 3 },
+  { name: 'Arch Mage',    icon: 'Wand',     hp: 30, attack: 16,defense: 3, dodge: 6, luck: 5, minFloor: 10, speed: 1, rangeAttack: 5 },
 ];
 
 
@@ -102,7 +135,6 @@ export function generateDungeon(
   floor: number,
   isFinalFloor: boolean = false
 ): { grid: Tile[][]; playerStart: Position; enemies: Entity[]; stairs: Position } {
-  // Do NOT reset counters — IDs must be globally unique across floors
   const grid = createEmptyGrid(width, height);
   const rooms: Room[] = [];
 
@@ -131,9 +163,9 @@ export function generateDungeon(
   const stairsPos = roomCenter(rooms[rooms.length - 1]);
   grid[stairsPos.y][stairsPos.x].type = isFinalFloor ? 'treasure' : 'stairs';
 
-  // Place enemies — fewer on early floors, more on later floors
+  // Place enemies — scales with floor
   const enemies: Entity[] = [];
-  const enemyCount = floor <= 2 ? rand(2, 3) : rand(3, 5) + Math.floor(floor * 0.5);
+  const enemyCount = floor <= 2 ? rand(2, 3) : rand(3, 5) + Math.floor(floor * 0.7);
   const eligible = ENEMY_TEMPLATES.filter(t => t.minFloor <= floor);
   for (let i = 0; i < enemyCount; i++) {
     const roomIdx = rand(1, rooms.length - 1);
@@ -145,7 +177,7 @@ export function generateDungeon(
     if (grid[pos.y][pos.x].type === 'floor' && !grid[pos.y][pos.x].entity &&
         !(pos.x === playerStart.x && pos.y === playerStart.y)) {
       const template = eligible[rand(0, eligible.length - 1)];
-      const floorBonus = Math.max(0, floor - 1); // no stat boost on floor 1
+      const floorBonus = Math.max(0, floor - 1);
       const scaledHp = template.hp + floorBonus * 2;
       const enemy: Entity = {
         id: nextEntityId(),
@@ -169,6 +201,8 @@ export function generateDungeon(
         isPlayer: false,
         icon: template.icon,
         statusEffects: [],
+        speed: template.speed,
+        rangeAttack: template.rangeAttack,
       };
       grid[pos.y][pos.x].entity = enemy;
       enemies.push(enemy);
