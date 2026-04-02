@@ -78,6 +78,14 @@ const GamePage: React.FC = () => {
   const { toast } = useToast();
   const prevInventoryLen = useRef(state.player.inventory.length);
   const [inventoryFlash, setInventoryFlash] = useState(false);
+  const [lightTheme, setLightTheme] = useState(() => {
+    return localStorage.getItem('theme') === 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', lightTheme);
+    localStorage.setItem('theme', lightTheme ? 'light' : 'dark');
+  }, [lightTheme]);
 
   // Process game events for sfx + toasts
   useEffect(() => {
