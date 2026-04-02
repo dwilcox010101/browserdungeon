@@ -54,6 +54,11 @@ const StatBar: React.FC<{
   </div>
 );
 
+const TRAIT_LABELS: Record<string, string> = {
+  FIRE: '🔥', ICE: '❄️', POISON: '☠️', AOE: '💥', LIFESTEAL: '🧛',
+  PIERCING: '🗡️', STUN: '⚡', KNOCKBACK: '💨',
+};
+
 const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: string }> = ({
   item,
   onUse,
@@ -74,7 +79,26 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: 
     <div className="text-muted-foreground text-[10px] mt-0.5">
       <span className={`${RARITY_COLORS[item.rarity]} opacity-70`}>[{RARITY_LABEL[item.rarity]}]</span>{" "}
       {item.description}
-      {item.defenseBonus ? ` • +${item.defenseBonus} DEF` : ""}
+    </div>
+    <div className="flex flex-wrap gap-1.5 mt-1 text-[10px]">
+      {item.power > 0 && item.verb === 'HIT' && (
+        <span className="text-red-400">⚔️ {item.power} DMG</span>
+      )}
+      {item.power > 0 && item.verb === 'HEAL' && (
+        <span className="text-emerald-400">💚 {item.power} HP</span>
+      )}
+      {item.power > 0 && item.verb === 'BUFF' && (
+        <span className="text-blue-400">⬆ +{item.power} ATK</span>
+      )}
+      {item.defenseBonus ? <span className="text-blue-400">🛡️ +{item.defenseBonus} DEF</span> : null}
+      {item.range > 1 && (
+        <span className="text-muted-foreground">📏 {item.range} RNG</span>
+      )}
+      {item.traits.length > 0 && (
+        <span className="text-muted-foreground">
+          {item.traits.map(t => TRAIT_LABELS[t] || t).join(' ')}
+        </span>
+      )}
     </div>
   </button>
 );
