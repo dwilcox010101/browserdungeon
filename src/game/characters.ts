@@ -7,7 +7,7 @@ export interface CharacterDef {
   description: string;
   hp: number;
   mana: number;
-  attack: number;
+  strength: number;
   defense: number;
   luck: number;
   agility: number;
@@ -26,7 +26,7 @@ export const CHARACTERS: CharacterDef[] = [
     description: 'Balanced fighter with solid stats.',
     hp: 30,
     mana: 3,
-    attack: 5,
+    strength: 5,
     defense: 2,
     luck: 1,
     agility: 1,
@@ -43,7 +43,7 @@ export const CHARACTERS: CharacterDef[] = [
     description: 'Fast and evasive. High agility, low HP.',
     hp: 18,
     mana: 4,
-    attack: 4,
+    strength: 4,
     defense: 0,
     luck: 3,
     agility: 5,
@@ -60,7 +60,7 @@ export const CHARACTERS: CharacterDef[] = [
     description: 'Fragile but wields powerful ranged magic.',
     hp: 16,
     mana: 8,
-    attack: 3,
+    strength: 3,
     defense: 0,
     luck: 4,
     agility: 1,
@@ -79,7 +79,7 @@ export const CHARACTERS: CharacterDef[] = [
     description: 'Holy knight. High defense and self-healing.',
     hp: 35,
     mana: 5,
-    attack: 4,
+    strength: 4,
     defense: 4,
     luck: 1,
     agility: 0,
@@ -98,7 +98,7 @@ export const CHARACTERS: CharacterDef[] = [
     description: 'Drains life from foes. No armor, must feed.',
     hp: 20,
     mana: 3,
-    attack: 6,
+    strength: 6,
     defense: 0,
     luck: 2,
     agility: 3,
@@ -115,7 +115,7 @@ export const CHARACTERS: CharacterDef[] = [
     description: 'Glass cannon. Massive attack, paper-thin defense.',
     hp: 22,
     mana: 2,
-    attack: 8,
+    strength: 8,
     defense: 0,
     luck: 3,
     agility: 0,

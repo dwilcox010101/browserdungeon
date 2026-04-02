@@ -45,7 +45,7 @@ export interface Item {
   defenseBonus?: number;
 }
 
-export type LevelUpStat = 'hp' | 'mana' | 'attack' | 'defense' | 'inventory' | 'luck' | 'agility';
+export type LevelUpStat = 'hp' | 'mana' | 'strength' | 'defense' | 'inventory' | 'luck' | 'agility';
 
 export type Direction = 'up' | 'down' | 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right';
 
@@ -57,7 +57,7 @@ export interface Entity {
   maxHp: number;
   mana: number;
   maxMana: number;
-  attack: number;
+  strength: number;
   defense: number;
   luck: number;
   agility: number;

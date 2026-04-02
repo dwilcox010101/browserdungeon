@@ -18,7 +18,7 @@ interface LevelUpDialogProps {
 const STAT_OPTIONS: { stat: LevelUpStat; label: string; icon: React.ElementType; description: string; bonus: string }[] = [
   { stat: 'hp', label: 'Max HP', icon: Heart, description: 'Increase maximum health', bonus: '+5 HP' },
   { stat: 'mana', label: 'Max Mana', icon: Droplets, description: 'More mana for magic items', bonus: '+2 Mana' },
-  { stat: 'attack', label: 'Attack', icon: Sword, description: 'Deal more damage', bonus: '+2 ATK' },
+  { stat: 'strength', label: 'Strength', icon: Sword, description: 'Deal more damage', bonus: '+2 STR' },
   { stat: 'defense', label: 'Defense', icon: Shield, description: 'Take less damage', bonus: '+1 DEF' },
   { stat: 'luck', label: 'Luck', icon: Clover, description: 'Higher crit chance & bonus XP', bonus: '+2 LCK' },
   { stat: 'agility', label: 'Agility', icon: Wind, description: 'Chance to avoid attacks entirely', bonus: '+2 AGI' },

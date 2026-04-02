@@ -234,7 +234,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
       const effects = tile.entity.statusEffects.length > 0
         ? ` [${tile.entity.statusEffects.map(e => `${e.type}:${e.turnsLeft}t`).join(', ')}]`
         : '';
-      return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} ATK: ${tile.entity.attack} DEF: ${tile.entity.defense}${effects}`;
+      return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} ATK: ${tile.entity.strength} DEF: ${tile.entity.defense}${effects}`;
     }
     if (tile.item) return `[${RARITY_LABEL[tile.item.rarity]}] ${tile.item.name} — ${tile.item.description}`;
     if (tile.type === 'stairs') return 'Stairs — Descend to next floor (>)';
@@ -303,7 +303,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                         )}
                         {isEnemy && EntityIcon && (() => {
                           const e = tile.entity!;
-                          const threat = e.attack + e.defense + Math.floor(e.maxHp / 5) + e.agility + e.rangeAttack + (e.speed > 1 ? 3 : 0);
+                          const threat = e.strength + e.defense + Math.floor(e.maxHp / 5) + e.agility + e.rangeAttack + (e.speed > 1 ? 3 : 0);
                           // threat ranges roughly 2 (Rat) to 50+ (Demon Lord)
                           const t = Math.min(threat / 40, 1);
                           // Light pink for weak, deep crimson for strong

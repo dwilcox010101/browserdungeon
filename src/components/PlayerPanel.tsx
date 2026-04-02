@@ -167,7 +167,7 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
 
       <div className="grid grid-cols-3 gap-1.5 mb-4 text-xs">
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Attack power">
-          <Sword size={10} className="text-primary" /> ATK: {player.attack}
+          <Sword size={10} className="text-primary" /> ATK: {player.strength}
         </div>
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Defense (reduces damage taken)">
           <Shield size={10} className="text-primary" /> DEF: {totalDef}

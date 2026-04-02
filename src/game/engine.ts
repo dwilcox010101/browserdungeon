@@ -248,7 +248,7 @@ function resolveVerb(
       messages.push(`${user.name} heals for ${healed} HP`);
       break;
     case 'BUFF':
-      user.attack += power;
+      user.strength += power;
       messages.push(`${user.name}'s attack increased by ${power}!`);
       break;
     case 'TELEPORT':
@@ -256,7 +256,7 @@ function resolveVerb(
       break;
     case 'DEBUFF':
       targets.forEach(t => {
-        t.attack = Math.max(0, t.attack - power);
+        t.strength = Math.max(0, t.strength - power);
         messages.push(`${t.name}'s attack reduced by ${power}`);
       });
       break;
@@ -297,7 +297,7 @@ function enemyRangedAttack(state: GameState, enemy: Entity): boolean {
     return true;
   }
   const isCrit = rollCritical(enemy);
-  let dmg = enemy.attack;
+  let dmg = enemy.strength;
   if (isCrit) dmg = Math.floor(dmg * 1.5);
   dmg = Math.max(1, dmg - getPlayerDefense(player));
   player.hp -= dmg;
@@ -325,7 +325,7 @@ function doSingleMove(state: GameState, enemy: Entity): boolean {
       return true; // used action
     }
     const isCrit = rollCritical(enemy);
-    let dmg = enemy.attack;
+    let dmg = enemy.strength;
     if (isCrit) dmg = Math.floor(dmg * 1.5);
     dmg = Math.max(1, dmg - getPlayerDefense(player));
     player.hp -= dmg;
@@ -424,7 +424,7 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
       s.log.push(addLog(s, 'Max Mana increased by 2!', 'system'));
       break;
     case 'attack':
-      s.player.attack += 2;
+      s.player.strength += 2;
       s.log.push(addLog(s, 'Attack increased by 2!', 'system'));
       break;
     case 'defense':
@@ -476,7 +476,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     maxHp: charDef.hp,
     mana: charDef.mana,
     maxMana: charDef.mana,
-    attack: charDef.attack,
+    strength: charDef.strength,
     defense: charDef.defense,
     luck: charDef.luck,
     agility: charDef.agility,
@@ -661,7 +661,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           const weapon = s.player.equippedWeapon;
           // Magic weapons (manaCost > 0) do reduced melee damage — full power requires using the ability
           const weaponBonus = weapon ? (weapon.manaCost > 0 ? Math.floor(weapon.power * 0.25) : weapon.power) : 0;
-          const atkPower = weaponBonus + s.player.attack;
+          const atkPower = weaponBonus + s.player.strength;
           const isCrit = rollCritical(s.player);
           let dmg = atkPower;
           if (isCrit) dmg = Math.floor(dmg * 1.5);
