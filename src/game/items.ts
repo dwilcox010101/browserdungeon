@@ -4,26 +4,26 @@ export type ItemTemplate = Omit<Item, 'id'>;
 
 export const RARITY_COLORS: Record<Rarity, string> = {
   common: 'text-muted-foreground',
-  uncommon: 'text-green-400',
-  rare: 'text-blue-400',
-  epic: 'text-purple-400',
-  legendary: 'text-yellow-400',
+  uncommon: 'rarity-text-uncommon',
+  rare: 'rarity-text-rare',
+  epic: 'rarity-text-epic',
+  legendary: 'rarity-text-legendary',
 };
 
 export const RARITY_BG: Record<Rarity, string> = {
   common: 'bg-secondary',
-  uncommon: 'bg-green-950/40 dark:bg-green-950/40 bg-green-100',
-  rare: 'bg-blue-950/40 dark:bg-blue-950/40 bg-blue-100',
-  epic: 'bg-purple-950/40 dark:bg-purple-950/40 bg-purple-100',
-  legendary: 'bg-yellow-950/40 dark:bg-yellow-950/40 bg-yellow-100',
+  uncommon: 'rarity-bg-uncommon',
+  rare: 'rarity-bg-rare',
+  epic: 'rarity-bg-epic',
+  legendary: 'rarity-bg-legendary',
 };
 
 export const RARITY_BORDER: Record<Rarity, string> = {
   common: 'border-border',
-  uncommon: 'border-green-700/50',
-  rare: 'border-blue-700/50',
-  epic: 'border-purple-700/50',
-  legendary: 'border-yellow-700/50',
+  uncommon: 'rarity-border-uncommon',
+  rare: 'rarity-border-rare',
+  epic: 'rarity-border-epic',
+  legendary: 'rarity-border-legendary',
 };
 
 export const RARITY_LABEL: Record<Rarity, string> = {
