@@ -7,7 +7,7 @@ import CombatLog from "@/components/CombatLog";
 import ActionBar from "@/components/ActionBar";
 import LevelUpDialog from "@/components/LevelUpDialog";
 import TitleScreen from "@/components/TitleScreen";
-import { RotateCcw, Maximize, Minimize } from "lucide-react";
+import { RotateCcw, Maximize, Minimize, Sun, Moon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   sfxHit,
