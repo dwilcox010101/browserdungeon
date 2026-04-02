@@ -125,16 +125,27 @@ function processStatusEffects(entity: Entity, state: GameState): { skipTurn: boo
         break;
       }
       case 'fear': {
-        skipTurn = true; // fear causes flee behavior handled separately for enemies
+        skipTurn = true;
         if (!entity.isPlayer) {
           state.log.push(addLog(state, `😱 ${entity.name} is terrified and flees!`, 'system'));
         }
+        break;
+      }
+      case 'buff': {
+        // No per-tick effect; just expires after duration
         break;
       }
     }
 
     if (effect.turnsLeft <= 0) {
       expiredEffects.push(effect.type);
+      // Revert buff stats on expiry
+      if (effect.type === 'buff') {
+        const agiRevert = Math.floor(effect.power * 0.5);
+        entity.strength = Math.max(0, entity.strength - effect.power);
+        entity.agility = Math.max(0, entity.agility - agiRevert);
+        state.log.push(addLog(state, `💨 ${entity.name}'s buff fades. STR -${effect.power}, AGI -${agiRevert}`, 'system'));
+      }
       return false;
     }
     return true;
@@ -247,11 +258,14 @@ function resolveVerb(
       user.hp = Math.min(user.maxHp, user.hp + healed);
       messages.push(`${user.name} heals for ${healed} HP`);
       break;
-    case 'BUFF':
+    case 'BUFF': {
+      const agiBoost = Math.floor(power * 0.5);
       user.strength += power;
-      user.agility += Math.floor(power * 0.5);
-      messages.push(`${user.name}'s strength increased by ${power}, agility by ${Math.floor(power * 0.5)}!`);
+      user.agility += agiBoost;
+      addStatusEffect(user, { type: 'buff', turnsLeft: 8, power, sourceId: user.id });
+      messages.push(`${user.name}'s strength increased by ${power}, agility by ${agiBoost} for 8 turns!`);
       break;
+    }
     case 'TELEPORT':
       messages.push(`${user.name} teleports!`);
       break;

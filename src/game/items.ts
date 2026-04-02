@@ -63,7 +63,7 @@ export const ITEM_POOL: ItemTemplate[] = [
   { name: 'Fire Scroll', itemType: 'consumable', rarity: 'uncommon', verb: 'HIT', traits: ['FIRE', 'AOE'], manaCost: 3, power: 10, range: 3, description: 'Launches a fiery blast hitting nearby enemies' },
   { name: 'Ice Shard', itemType: 'consumable', rarity: 'uncommon', verb: 'HIT', traits: ['ICE', 'STUN'], manaCost: 3, power: 8, range: 4, description: 'Freezes and stuns a target' },
   { name: 'Greater Healing Potion', itemType: 'consumable', rarity: 'uncommon', verb: 'HEAL', traits: [], manaCost: 2, power: 20, range: 0, description: 'Restores a good amount of health' },
-  { name: 'War Cry Scroll', itemType: 'consumable', rarity: 'uncommon', verb: 'BUFF', traits: [], manaCost: 2, power: 3, range: 0, description: 'Temporarily boosts strength by 3' },
+  { name: 'War Cry Scroll', itemType: 'consumable', rarity: 'uncommon', verb: 'BUFF', traits: [], manaCost: 2, power: 3, range: 0, description: 'Boosts STR by 3 and AGI by 1 for 8 turns' },
   { name: 'Teleport Stone', itemType: 'consumable', rarity: 'uncommon', verb: 'TELEPORT', traits: [], manaCost: 3, power: 0, range: 6, description: 'Teleport to a visible tile' },
   { name: 'Poison Flask', itemType: 'consumable', rarity: 'uncommon', verb: 'HIT', traits: ['POISON'], manaCost: 2, power: 7, range: 3, description: 'Throws a poisonous flask' },
   { name: 'Acid Vial', itemType: 'consumable', rarity: 'uncommon', verb: 'HIT', traits: ['PIERCING'], manaCost: 2, power: 9, range: 3, description: 'Melts through armor' },
