@@ -249,7 +249,8 @@ function resolveVerb(
       break;
     case 'BUFF':
       user.strength += power;
-      messages.push(`${user.name}'s strength increased by ${power}!`);
+      user.agility += Math.floor(power * 0.5);
+      messages.push(`${user.name}'s strength increased by ${power}, agility by ${Math.floor(power * 0.5)}!`);
       break;
     case 'TELEPORT':
       messages.push(`${user.name} teleports!`);
@@ -297,7 +298,8 @@ function enemyRangedAttack(state: GameState, enemy: Entity): boolean {
     return true;
   }
   const isCrit = rollCritical(enemy);
-  let dmg = enemy.strength;
+  // Enemy ranged attacks scale off agility
+  let dmg = enemy.agility > enemy.strength ? enemy.agility : enemy.strength;
   if (isCrit) dmg = Math.floor(dmg * 1.5);
   dmg = Math.max(1, dmg - getPlayerDefense(player));
   player.hp -= dmg;
@@ -423,7 +425,7 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
       s.player.mana = Math.min(s.player.mana + 2, s.player.maxMana);
       s.log.push(addLog(s, 'Max Mana increased by 2!', 'system'));
       break;
-    case 'attack':
+    case 'strength':
       s.player.strength += 2;
       s.log.push(addLog(s, 'Strength increased by 2!', 'system'));
       break;
@@ -659,9 +661,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           emit(s, { type: 'enemy_evade', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
+          // Ranged weapons scale off agility, melee off strength
           // Magic weapons (manaCost > 0) do reduced melee damage — full power requires using the ability
+          const isRangedWeapon = weapon && weapon.range > 1;
+          const statBonus = isRangedWeapon ? s.player.agility : s.player.strength;
           const weaponBonus = weapon ? (weapon.manaCost > 0 ? Math.floor(weapon.power * 0.25) : weapon.power) : 0;
-          const atkPower = weaponBonus + s.player.strength;
+          const atkPower = weaponBonus + statBonus;
           const isCrit = rollCritical(s.player);
           let dmg = atkPower;
           if (isCrit) dmg = Math.floor(dmg * 1.5);
