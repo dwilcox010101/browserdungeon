@@ -178,8 +178,8 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Luck (crit chance & bonus XP)">
           <Clover size={10} className="text-primary" /> LCK: {player.luck}
         </div>
-        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Dodge (chance to avoid attacks)">
-          <Wind size={10} className="text-primary" /> DDG: {player.dodge}
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Agility (chance to avoid attacks)">
+          <Wind size={10} className="text-primary" /> AGI: {player.agility}
         </div>
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Current floor">
           <ChevronUp size={10} className="text-primary" /> FLR: {floor}

@@ -21,7 +21,7 @@ const STAT_OPTIONS: { stat: LevelUpStat; label: string; icon: React.ElementType;
   { stat: 'attack', label: 'Attack', icon: Sword, description: 'Deal more damage', bonus: '+2 ATK' },
   { stat: 'defense', label: 'Defense', icon: Shield, description: 'Take less damage', bonus: '+1 DEF' },
   { stat: 'luck', label: 'Luck', icon: Clover, description: 'Higher crit chance & bonus XP', bonus: '+2 LCK' },
-  { stat: 'dodge', label: 'Dodge', icon: Wind, description: 'Chance to avoid attacks entirely', bonus: '+2 DDG' },
+  { stat: 'agility', label: 'Agility', icon: Wind, description: 'Chance to avoid attacks entirely', bonus: '+2 AGI' },
   { stat: 'inventory', label: 'Inventory', icon: Package, description: 'Carry more items', bonus: '+1 Slot' },
 ];
 

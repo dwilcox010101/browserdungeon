@@ -10,7 +10,7 @@ export interface CharacterDef {
   attack: number;
   defense: number;
   luck: number;
-  dodge: number;
+  agility: number;
   inventorySize: number;
   startWeapon: Omit<Item, 'id'>;
   startArmor: Omit<Item, 'id'> | null;
@@ -29,7 +29,7 @@ export const CHARACTERS: CharacterDef[] = [
     attack: 5,
     defense: 2,
     luck: 1,
-    dodge: 1,
+    agility: 1,
     inventorySize: 4,
     startWeapon: { name: 'Rusty Sword', itemType: 'weapon', rarity: 'common', verb: 'HIT', traits: [], manaCost: 0, power: 5, range: 1, description: 'A basic melee attack' },
     startArmor: null,
@@ -40,13 +40,13 @@ export const CHARACTERS: CharacterDef[] = [
     id: 'rogue',
     name: 'Rogue',
     icon: 'Zap',
-    description: 'Fast and evasive. High dodge, low HP.',
+    description: 'Fast and evasive. High agility, low HP.',
     hp: 18,
     mana: 4,
     attack: 4,
     defense: 0,
     luck: 3,
-    dodge: 5,
+    agility: 5,
     inventorySize: 5,
     startWeapon: { name: 'Poison Dagger', itemType: 'weapon', rarity: 'uncommon', verb: 'HIT', traits: ['POISON', 'PIERCING'], manaCost: 0, power: 4, range: 1, description: 'Venomous strike that ignores armor' },
     startArmor: null,
@@ -63,7 +63,7 @@ export const CHARACTERS: CharacterDef[] = [
     attack: 3,
     defense: 0,
     luck: 4,
-    dodge: 1,
+    agility: 1,
     inventorySize: 5,
     startWeapon: { name: 'Apprentice Staff', itemType: 'weapon', rarity: 'uncommon', verb: 'HIT', traits: ['FIRE'], manaCost: 2, power: 7, range: 3, description: 'A staff crackling with fire magic' },
     startArmor: null,
@@ -82,7 +82,7 @@ export const CHARACTERS: CharacterDef[] = [
     attack: 4,
     defense: 4,
     luck: 1,
-    dodge: 0,
+    agility: 0,
     inventorySize: 3,
     startWeapon: { name: 'Blessed Mace', itemType: 'weapon', rarity: 'uncommon', verb: 'HIT', traits: [], manaCost: 0, power: 5, range: 1, description: 'A mace imbued with holy light' },
     startArmor: { name: 'Holy Shield', itemType: 'armor', rarity: 'rare', verb: 'BUFF', traits: [], manaCost: 0, power: 0, range: 0, description: 'A blessed shield. +3 DEF', defenseBonus: 3 },
@@ -101,7 +101,7 @@ export const CHARACTERS: CharacterDef[] = [
     attack: 6,
     defense: 0,
     luck: 2,
-    dodge: 3,
+    agility: 3,
     inventorySize: 4,
     startWeapon: { name: 'Vampiric Claws', itemType: 'weapon', rarity: 'rare', verb: 'HIT', traits: ['LIFESTEAL'], manaCost: 0, power: 6, range: 1, description: 'Claws that drain life from the target' },
     startArmor: null,
@@ -118,7 +118,7 @@ export const CHARACTERS: CharacterDef[] = [
     attack: 8,
     defense: 0,
     luck: 3,
-    dodge: 0,
+    agility: 0,
     inventorySize: 3,
     startWeapon: { name: 'Great Axe', itemType: 'weapon', rarity: 'rare', verb: 'HIT', traits: ['AOE'], manaCost: 0, power: 10, range: 1, description: 'A massive axe that cleaves nearby foes' },
     startArmor: null,

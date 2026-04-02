@@ -136,8 +136,8 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
           newFlashes.push({ x: ev.pos.x, y: ev.pos.y, color: 'bg-game-enemy/40', startTime: now });
         } else if (ev.type === 'heal' && ev.amount) {
           newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: `+${ev.amount}`, color: 'hsl(var(--game-item))', startTime: now });
-        } else if (ev.type === 'player_dodge' || ev.type === 'enemy_dodge') {
-          newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'DODGE', color: 'hsl(var(--game-energy))', startTime: now });
+        } else if (ev.type === 'player_evade' || ev.type === 'player_evade') {
+          newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'EVADE', color: 'hsl(var(--game-energy))', startTime: now });
         } else if (ev.type === 'crit') {
           newFloats.push({ id: floatIdCounter++, x: screenX + 12, y: screenY - 8, text: 'CRIT!', color: 'hsl(var(--primary))', startTime: now });
         } else if (ev.type === 'enemy_killed') {
@@ -303,7 +303,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                         )}
                         {isEnemy && EntityIcon && (() => {
                           const e = tile.entity!;
-                          const threat = e.attack + e.defense + Math.floor(e.maxHp / 5) + e.dodge + e.rangeAttack + (e.speed > 1 ? 3 : 0);
+                          const threat = e.attack + e.defense + Math.floor(e.maxHp / 5) + e.agility + e.rangeAttack + (e.speed > 1 ? 3 : 0);
                           // threat ranges roughly 2 (Rat) to 50+ (Demon Lord)
                           const t = Math.min(threat / 40, 1);
                           // Light pink for weak, deep crimson for strong

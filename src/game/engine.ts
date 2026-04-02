@@ -169,9 +169,9 @@ function fleeBehavior(state: GameState, enemy: Entity): void {
 
 // === COMBAT HELPERS ===
 
-function rollDodge(defender: Entity): boolean {
+function rollEvade(defender: Entity): boolean {
   if (hasEffect(defender, 'frozen') || hasEffect(defender, 'stunned')) return false;
-  const chance = Math.min(defender.dodge * 3, 50);
+  const chance = Math.min(defender.agility * 3, 50);
   return Math.random() * 100 < chance;
 }
 
@@ -205,8 +205,8 @@ function resolveVerb(
     case 'HIT': {
       const actualTargets = traits.includes('AOE') ? targets : targets.slice(0, 1);
       actualTargets.forEach(t => {
-        if (rollDodge(t)) {
-          messages.push(`${t.name} dodges the attack!`);
+        if (rollEvade(t)) {
+          messages.push(`${t.name} evades the attack!`);
           return;
         }
         const isCrit = rollCritical(user);
@@ -291,9 +291,9 @@ function enemyRangedAttack(state: GameState, enemy: Entity): boolean {
   if (!hasLineOfSightEngine(state.grid, enemy.pos, player.pos, state.width, state.height)) return false;
 
   // Ranged attack
-  if (rollDodge(player)) {
-    state.log.push(addLog(state, `You dodge ${enemy.name}'s ranged attack!`, 'combat'));
-    emit(state, { type: 'player_dodge', pos: { ...player.pos } });
+  if (rollEvade(player)) {
+    state.log.push(addLog(state, `You evade ${enemy.name}'s ranged attack!`, 'combat'));
+    emit(state, { type: 'player_evade', pos: { ...player.pos } });
     return true;
   }
   const isCrit = rollCritical(enemy);
@@ -319,9 +319,9 @@ function doSingleMove(state: GameState, enemy: Entity): boolean {
 
   // Melee attack if adjacent
   if (dist <= 1) {
-    if (rollDodge(player)) {
-      state.log.push(addLog(state, `You dodge ${enemy.name}'s attack!`, 'combat'));
-      emit(state, { type: 'player_dodge', pos: { ...player.pos } });
+    if (rollEvade(player)) {
+      state.log.push(addLog(state, `You evade ${enemy.name}'s attack!`, 'combat'));
+      emit(state, { type: 'player_evade', pos: { ...player.pos } });
       return true; // used action
     }
     const isCrit = rollCritical(enemy);
@@ -439,9 +439,9 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
       s.player.luck += 2;
       s.log.push(addLog(s, 'Luck increased by 2!', 'system'));
       break;
-    case 'dodge':
-      s.player.dodge += 2;
-      s.log.push(addLog(s, 'Dodge increased by 2!', 'system'));
+    case 'agility':
+      s.player.agility += 2;
+      s.log.push(addLog(s, 'Agility increased by 2!', 'system'));
       break;
   }
   s.pendingLevelUp = false;
@@ -479,7 +479,7 @@ export function createInitialState(characterId: string = 'warrior'): GameState {
     attack: charDef.attack,
     defense: charDef.defense,
     luck: charDef.luck,
-    dodge: charDef.dodge,
+    agility: charDef.agility,
     level: 1,
     xp: 0,
     xpToNext: 20,
@@ -654,9 +654,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (targetTile.entity && !targetTile.entity.isPlayer) {
         const enemy = targetTile.entity;
-        if (rollDodge(enemy)) {
+        if (rollEvade(enemy)) {
           s.log.push(addLog(s, `${enemy.name} dodges your attack!`, 'combat'));
-          emit(s, { type: 'enemy_dodge', pos: { ...enemy.pos } });
+          emit(s, { type: 'enemy_evade', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
           // Magic weapons (manaCost > 0) do reduced melee damage — full power requires using the ability
