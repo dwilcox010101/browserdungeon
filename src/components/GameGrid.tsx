@@ -4,7 +4,8 @@ import { Tile, Position, GameEvent, Trait } from '@/game/types';
 import { RARITY_LABEL } from '@/game/items';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
-  Gem, ArrowDown, Package, Zap, Shield, Crown
+  Gem, ArrowDown, Package, Zap, Shield, Crown,
+  Target, Dog, Flower2, Crosshair, Axe, Wand
 } from 'lucide-react';
 
 import {
@@ -16,6 +17,7 @@ import {
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame, Zap, Shield,
+  Target, Dog, Flower2, Crosshair, Axe, Wand,
 };
 
 interface FloatingText {
