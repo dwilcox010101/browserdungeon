@@ -247,11 +247,14 @@ function resolveVerb(
       user.hp = Math.min(user.maxHp, user.hp + healed);
       messages.push(`${user.name} heals for ${healed} HP`);
       break;
-    case 'BUFF':
+    case 'BUFF': {
+      const agiBoost = Math.floor(power * 0.5);
       user.strength += power;
-      user.agility += Math.floor(power * 0.5);
-      messages.push(`${user.name}'s strength increased by ${power}, agility by ${Math.floor(power * 0.5)}!`);
+      user.agility += agiBoost;
+      addStatusEffect(user, { type: 'buff', turnsLeft: 8, power, sourceId: user.id });
+      messages.push(`${user.name}'s strength increased by ${power}, agility by ${agiBoost} for 8 turns!`);
       break;
+    }
     case 'TELEPORT':
       messages.push(`${user.name} teleports!`);
       break;
