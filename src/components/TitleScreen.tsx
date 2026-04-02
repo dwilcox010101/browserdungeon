@@ -4,7 +4,7 @@ import { Heart, Droplet, Sword, Shield, Package, Lock, Flame, Ghost, Skull, Clov
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Sword,
-  Zap,
+  Zap: Wind,
   Flame,
   Shield,
   Ghost,
