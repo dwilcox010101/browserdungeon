@@ -425,7 +425,7 @@ function applyLevelUpChoice(s: GameState, stat: LevelUpStat): void {
       s.player.mana = Math.min(s.player.mana + 2, s.player.maxMana);
       s.log.push(addLog(s, 'Max Mana increased by 2!', 'system'));
       break;
-    case 'attack':
+    case 'strength':
       s.player.strength += 2;
       s.log.push(addLog(s, 'Strength increased by 2!', 'system'));
       break;
