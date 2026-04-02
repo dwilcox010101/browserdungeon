@@ -91,7 +91,7 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: 
         <span className="text-game-item">💚 {item.power} HP</span>
       )}
       {item.power > 0 && item.verb === 'BUFF' && (
-        <span className="text-primary">⬆ +{item.power} STR</span>
+        <span className="text-primary">⬆ +{item.power} STR, +{Math.floor(item.power * 0.5)} AGI</span>
       )}
       {item.defenseBonus ? <span className="text-primary">🛡️ +{item.defenseBonus} DEF</span> : null}
       {item.range > 1 && (

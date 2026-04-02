@@ -139,6 +139,13 @@ function processStatusEffects(entity: Entity, state: GameState): { skipTurn: boo
 
     if (effect.turnsLeft <= 0) {
       expiredEffects.push(effect.type);
+      // Revert buff stats on expiry
+      if (effect.type === 'buff') {
+        const agiRevert = Math.floor(effect.power * 0.5);
+        entity.strength = Math.max(0, entity.strength - effect.power);
+        entity.agility = Math.max(0, entity.agility - agiRevert);
+        state.log.push(addLog(state, `💨 ${entity.name}'s buff fades. STR -${effect.power}, AGI -${agiRevert}`, 'system'));
+      }
       return false;
     }
     return true;
