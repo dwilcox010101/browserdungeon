@@ -19,7 +19,7 @@ export type Trait =
   | 'STUN'
   | 'KNOCKBACK';
 
-export type StatusEffectType = 'poison' | 'burning' | 'frozen' | 'stunned' | 'regen' | 'fear';
+export type StatusEffectType = 'poison' | 'burning' | 'frozen' | 'stunned' | 'regen' | 'fear' | 'buff';
 
 export interface StatusEffect {
   type: StatusEffectType;

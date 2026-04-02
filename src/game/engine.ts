@@ -125,10 +125,14 @@ function processStatusEffects(entity: Entity, state: GameState): { skipTurn: boo
         break;
       }
       case 'fear': {
-        skipTurn = true; // fear causes flee behavior handled separately for enemies
+        skipTurn = true;
         if (!entity.isPlayer) {
           state.log.push(addLog(state, `😱 ${entity.name} is terrified and flees!`, 'system'));
         }
+        break;
+      }
+      case 'buff': {
+        // No per-tick effect; just expires after duration
         break;
       }
     }
