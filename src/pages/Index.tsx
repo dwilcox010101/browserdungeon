@@ -275,12 +275,26 @@ const GamePage: React.FC = () => {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <div className="h-10 bg-card border-b border-border flex items-center px-4 justify-between shrink-0">
         <h1 className="text-primary font-bold text-sm tracking-widest uppercase">⚔ Browser Dungeon Roguelike</h1>
-        <button
-          onClick={handleNewGame}
-          className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 transition-colors"
-        >
-          <RotateCcw size={12} /> New Game
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              if (document.fullscreenElement) {
+                document.exitFullscreen();
+              } else {
+                document.documentElement.requestFullscreen();
+              }
+            }}
+            className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 transition-colors"
+          >
+            {document.fullscreenElement ? <Minimize size={12} /> : <Maximize size={12} />} Full Screen
+          </button>
+          <button
+            onClick={handleNewGame}
+            className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 transition-colors"
+          >
+            <RotateCcw size={12} /> New Game
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-1 min-h-0">
