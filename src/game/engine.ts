@@ -38,8 +38,21 @@ function manhattan(a: Position, b: Position): number {
 
 function cloneGrid(state: GameState): GameState {
   const player = { ...state.player, inventory: [...state.player.inventory], statusEffects: [...state.player.statusEffects] };
-  const grid = state.grid.map(row => row.map(tile => ({ ...tile })));
   const enemies = state.enemies.map(e => ({ ...e, inventory: [...e.inventory], statusEffects: [...e.statusEffects] }));
+
+  // Build a lookup so grid tiles reference the NEW cloned entity objects
+  const entityMap = new Map<string, Entity>();
+  entityMap.set(player.id, player);
+  enemies.forEach(e => entityMap.set(e.id, e));
+
+  const grid = state.grid.map(row => row.map(tile => {
+    const cloned = { ...tile };
+    if (cloned.entity) {
+      cloned.entity = entityMap.get(cloned.entity.id) ?? cloned.entity;
+    }
+    return cloned;
+  }));
+
   return { ...state, player, grid, log: [...state.log], enemies, collectedItemIds: new Set(state.collectedItemIds), events: [] };
 }
 
