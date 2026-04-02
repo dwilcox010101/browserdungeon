@@ -60,7 +60,7 @@ export interface Entity {
   attack: number;
   defense: number;
   luck: number;
-  dodge: number;
+  agility: number;
   level: number;
   xp: number;
   xpToNext: number;
