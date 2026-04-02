@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { CHARACTERS, CharacterDef, isCharacterUnlocked, getMaxFloorReached } from "@/game/characters";
-import { Heart, Zap, Sword, Shield, Package, Lock, Flame, Ghost, Skull } from "lucide-react";
+import { Heart, Droplet, Sword, Shield, Package, Lock, Flame, Ghost, Skull, Clover, Wind } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Sword,
