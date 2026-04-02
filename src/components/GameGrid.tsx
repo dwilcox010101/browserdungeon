@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Tile, Position, GameEvent, Trait } from '@/game/types';
-import { RARITY_LABEL } from '@/game/items';
+import { RARITY_LABEL, RARITY_COLORS, RARITY_BORDER } from '@/game/items';
 import {
   Sword, Bug, Skull, Droplets, Bird, Ghost, Flame,
   Gem, ArrowDown, Package, Zap, Shield, Crown,
@@ -53,7 +53,7 @@ interface GameGridProps {
   targetMode: { range: number } | null;
   onTileClick: (pos: Position) => void;
   events: GameEvent[];
-  playerTileItem?: { name: string; description: string } | null;
+  playerTileItem?: { name: string; description: string; rarity: import('@/game/types').Rarity } | null;
 }
 
 const TILE_SIZE = 24;
@@ -319,13 +319,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                           );
                         })()}
                         {hasItem && !tile.entity && (
-                          <Package className={
-                            tile.item!.rarity === 'legendary' ? 'text-yellow-400' :
-                            tile.item!.rarity === 'epic' ? 'text-purple-400' :
-                            tile.item!.rarity === 'rare' ? 'text-blue-400' :
-                            tile.item!.rarity === 'uncommon' ? 'text-green-400' :
-                            'text-game-item'
-                          } size={12} />
+                          <Package className={RARITY_COLORS[tile.item!.rarity]} size={12} />
                         )}
                         {isStairs && !tile.entity && !hasItem && (
                           <ArrowDown className="text-primary" size={14} />
@@ -370,8 +364,8 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                   : 'translate(-50%, -100%)',
             }}
           >
-            <div className="bg-card border border-border rounded px-2 py-1 text-xs text-foreground shadow-lg max-w-[min(22rem,calc(100vw-1rem))] whitespace-normal break-words">
-              <span className="text-game-item font-medium">{playerTileItem.name}</span>
+            <div className={`bg-card border ${RARITY_BORDER[playerTileItem.rarity]} rounded px-2 py-1 text-xs text-foreground shadow-lg max-w-[min(22rem,calc(100vw-1rem))] whitespace-normal break-words`}>
+              <span className={`${RARITY_COLORS[playerTileItem.rarity]} font-medium`}>[{RARITY_LABEL[playerTileItem.rarity]}] {playerTileItem.name}</span>
               <span className="text-muted-foreground ml-1">— {playerTileItem.description}</span>
             </div>
           </div>,

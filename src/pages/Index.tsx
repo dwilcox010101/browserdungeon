@@ -341,7 +341,7 @@ const GamePage: React.FC = () => {
             onTileClick={handleTileClick}
             events={state.events}
             playerTileItem={
-              playerTile?.item ? { name: playerTile.item.name, description: playerTile.item.description } : null
+              playerTile?.item ? { name: playerTile.item.name, description: playerTile.item.description, rarity: playerTile.item.rarity } : null
             }
           />
           {state.gameOver && (
