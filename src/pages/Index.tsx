@@ -7,7 +7,7 @@ import CombatLog from "@/components/CombatLog";
 import ActionBar from "@/components/ActionBar";
 import LevelUpDialog from "@/components/LevelUpDialog";
 import TitleScreen from "@/components/TitleScreen";
-import { RotateCcw, Maximize, Minimize } from "lucide-react";
+import { RotateCcw, Maximize, Minimize, Sun, Moon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   sfxHit,
@@ -78,6 +78,14 @@ const GamePage: React.FC = () => {
   const { toast } = useToast();
   const prevInventoryLen = useRef(state.player.inventory.length);
   const [inventoryFlash, setInventoryFlash] = useState(false);
+  const [lightTheme, setLightTheme] = useState(() => {
+    return localStorage.getItem('theme') === 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', lightTheme);
+    localStorage.setItem('theme', lightTheme ? 'light' : 'dark');
+  }, [lightTheme]);
 
   // Process game events for sfx + toasts
   useEffect(() => {
@@ -276,6 +284,12 @@ const GamePage: React.FC = () => {
       <div className="h-10 bg-card border-b border-border flex items-center px-4 justify-between shrink-0">
         <h1 className="text-primary font-bold text-sm tracking-widest uppercase">⚔ Browser Dungeon Roguelike</h1>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setLightTheme(prev => !prev)}
+            className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 transition-colors"
+          >
+            {lightTheme ? <Moon size={12} /> : <Sun size={12} />} {lightTheme ? 'Dark' : 'Light'}
+          </button>
           <button
             onClick={() => {
               if (document.fullscreenElement) {
