@@ -206,7 +206,7 @@ function resolveVerb(
       const actualTargets = traits.includes('AOE') ? targets : targets.slice(0, 1);
       actualTargets.forEach(t => {
         if (rollEvade(t)) {
-          messages.push(`${t.name} dodges the attack!`);
+          messages.push(`${t.name} evades the attack!`);
           return;
         }
         const isCrit = rollCritical(user);
@@ -292,7 +292,7 @@ function enemyRangedAttack(state: GameState, enemy: Entity): boolean {
 
   // Ranged attack
   if (rollEvade(player)) {
-    state.log.push(addLog(state, `You dodge ${enemy.name}'s ranged attack!`, 'combat'));
+    state.log.push(addLog(state, `You evade ${enemy.name}'s ranged attack!`, 'combat'));
     emit(state, { type: 'player_evade', pos: { ...player.pos } });
     return true;
   }
@@ -320,7 +320,7 @@ function doSingleMove(state: GameState, enemy: Entity): boolean {
   // Melee attack if adjacent
   if (dist <= 1) {
     if (rollEvade(player)) {
-      state.log.push(addLog(state, `You dodge ${enemy.name}'s attack!`, 'combat'));
+      state.log.push(addLog(state, `You evade ${enemy.name}'s attack!`, 'combat'));
       emit(state, { type: 'player_evade', pos: { ...player.pos } });
       return true; // used action
     }

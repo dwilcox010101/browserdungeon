@@ -40,7 +40,7 @@ export const CHARACTERS: CharacterDef[] = [
     id: 'rogue',
     name: 'Rogue',
     icon: 'Zap',
-    description: 'Fast and evasive. High dodge, low HP.',
+    description: 'Fast and evasive. High agility, low HP.',
     hp: 18,
     mana: 4,
     attack: 4,
