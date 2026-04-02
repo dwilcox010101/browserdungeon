@@ -53,7 +53,7 @@ interface GameGridProps {
   targetMode: { range: number } | null;
   onTileClick: (pos: Position) => void;
   events: GameEvent[];
-  playerTileItem?: { name: string; description: string } | null;
+  playerTileItem?: { name: string; description: string; rarity: import('@/game/types').Rarity } | null;
 }
 
 const TILE_SIZE = 24;
