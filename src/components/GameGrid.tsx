@@ -321,7 +321,6 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                         {hasItem && !tile.entity && (
                           <Package className={RARITY_COLORS[tile.item!.rarity]} size={12} />
                         )}
-                        )}
                         {isStairs && !tile.entity && !hasItem && (
                           <ArrowDown className="text-primary" size={14} />
                         )}
