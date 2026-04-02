@@ -71,11 +71,15 @@ function rand(min: number, max: number): number {
 }
 
 const ENEMY_TEMPLATES = [
-  { name: 'Goblin', icon: 'Bug', hp: 12, attack: 3, defense: 1, dodge: 2, luck: 1 },
-  { name: 'Skeleton', icon: 'Skull', hp: 18, attack: 5, defense: 2, dodge: 0, luck: 0 },
-  { name: 'Slime', icon: 'Droplets', hp: 8, attack: 2, defense: 0, dodge: 0, luck: 0 },
-  { name: 'Bat', icon: 'Bird', hp: 6, attack: 4, defense: 0, dodge: 5, luck: 1 },
-  { name: 'Wraith', icon: 'Ghost', hp: 22, attack: 7, defense: 3, dodge: 3, luck: 2 },
+  // tier 0 — floors 1+
+  { name: 'Slime', icon: 'Droplets', hp: 6, attack: 2, defense: 0, dodge: 0, luck: 0, minFloor: 1 },
+  { name: 'Bat', icon: 'Bird', hp: 5, attack: 3, defense: 0, dodge: 3, luck: 0, minFloor: 1 },
+  // tier 1 — floors 2+
+  { name: 'Goblin', icon: 'Bug', hp: 10, attack: 3, defense: 1, dodge: 2, luck: 1, minFloor: 2 },
+  // tier 2 — floors 4+
+  { name: 'Skeleton', icon: 'Skull', hp: 16, attack: 5, defense: 2, dodge: 0, luck: 0, minFloor: 4 },
+  // tier 3 — floors 6+
+  { name: 'Wraith', icon: 'Ghost', hp: 20, attack: 7, defense: 3, dodge: 3, luck: 2, minFloor: 6 },
 ];
 
 
@@ -127,9 +131,10 @@ export function generateDungeon(
   const stairsPos = roomCenter(rooms[rooms.length - 1]);
   grid[stairsPos.y][stairsPos.x].type = isFinalFloor ? 'treasure' : 'stairs';
 
-  // Place enemies
+  // Place enemies — fewer on early floors, more on later floors
   const enemies: Entity[] = [];
-  const enemyCount = rand(3, 5) + floor;
+  const enemyCount = floor <= 2 ? rand(2, 3) : rand(3, 5) + Math.floor(floor * 0.5);
+  const eligible = ENEMY_TEMPLATES.filter(t => t.minFloor <= floor);
   for (let i = 0; i < enemyCount; i++) {
     const roomIdx = rand(1, rooms.length - 1);
     const room = rooms[roomIdx];
@@ -139,8 +144,9 @@ export function generateDungeon(
     };
     if (grid[pos.y][pos.x].type === 'floor' && !grid[pos.y][pos.x].entity &&
         !(pos.x === playerStart.x && pos.y === playerStart.y)) {
-      const template = ENEMY_TEMPLATES[rand(0, ENEMY_TEMPLATES.length - 1)];
-      const scaledHp = template.hp + floor * 3;
+      const template = eligible[rand(0, eligible.length - 1)];
+      const floorBonus = Math.max(0, floor - 1); // no stat boost on floor 1
+      const scaledHp = template.hp + floorBonus * 2;
       const enemy: Entity = {
         id: nextEntityId(),
         name: template.name,
@@ -149,10 +155,10 @@ export function generateDungeon(
         maxHp: scaledHp,
         mana: 0,
         maxMana: 0,
-        attack: template.attack + floor,
-        defense: template.defense + Math.floor(floor / 2),
-        luck: template.luck + Math.floor(floor / 3),
-        dodge: template.dodge + Math.floor(floor / 3),
+        attack: template.attack + Math.floor(floorBonus * 0.5),
+        defense: template.defense + Math.floor(floorBonus / 3),
+        luck: template.luck + Math.floor(floorBonus / 4),
+        dodge: template.dodge + Math.floor(floorBonus / 4),
         level: floor,
         xp: 0,
         xpToNext: 100,
