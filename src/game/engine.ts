@@ -169,9 +169,9 @@ function fleeBehavior(state: GameState, enemy: Entity): void {
 
 // === COMBAT HELPERS ===
 
-function rollDodge(defender: Entity): boolean {
+function rollEvade(defender: Entity): boolean {
   if (hasEffect(defender, 'frozen') || hasEffect(defender, 'stunned')) return false;
-  const chance = Math.min(defender.dodge * 3, 50);
+  const chance = Math.min(defender.agility * 3, 50);
   return Math.random() * 100 < chance;
 }
 
