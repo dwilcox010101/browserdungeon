@@ -134,4 +134,5 @@ export type GameAction =
   | { type: 'NEW_GAME'; characterId?: string }
   | { type: 'SET_TARGET_MODE'; item: Item | null }
   | { type: 'TARGET_TILE'; pos: Position }
-  | { type: 'LEVEL_UP_CHOICE'; stat: LevelUpStat };
+  | { type: 'LEVEL_UP_CHOICE'; stat: LevelUpStat }
+  | { type: 'DROP_ITEM'; itemId: string };

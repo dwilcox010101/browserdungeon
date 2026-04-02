@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Entity, Item, StatusEffect } from "@/game/types";
 import { RARITY_COLORS, RARITY_BG, RARITY_BORDER, RARITY_LABEL } from "@/game/items";
 import {
@@ -17,6 +17,7 @@ import {
   Skull,
   Zap,
   Activity,
+  Trash2,
 } from "lucide-react";
 
 interface PlayerPanelProps {
@@ -25,7 +26,9 @@ interface PlayerPanelProps {
   turn: number;
   targetMode: boolean;
   onUseItem: (itemId: string) => void;
+  onDropItem: (itemId: string) => void;
   onCancelTarget: () => void;
+  canDrop: boolean;
   inventoryFlash?: boolean;
 }
 
