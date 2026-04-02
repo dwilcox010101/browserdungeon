@@ -132,6 +132,10 @@ const GamePage: React.FC = () => {
     dispatch({ type: "USE_ITEM", itemId });
   }, []);
 
+  const handleDropItem = useCallback((itemId: string) => {
+    dispatch({ type: "DROP_ITEM", itemId });
+  }, []);
+
   const handleCancelTarget = useCallback(() => {
     dispatch({ type: "SET_TARGET_MODE", item: null });
   }, []);
