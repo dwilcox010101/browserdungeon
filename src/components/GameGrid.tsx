@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Tile, Position, GameEvent, Trait } from '@/game/types';
 import { RARITY_LABEL } from '@/game/items';
 import {
@@ -88,6 +89,30 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
     startY = Math.max(0, Math.min(startY, grid.length - viewportHeight));
     return { startX, startY };
   }, [playerPos, grid, viewportWidth, viewportHeight]);
+
+  const groundItemTooltipPosition = useMemo(() => {
+    if (!playerTileItem || dims.w <= 0 || typeof window === 'undefined' || !containerRef.current) {
+      return null;
+    }
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const gridWidth = viewportWidth * TILE_SIZE;
+    const gridLeft = rect.left + Math.max(0, (rect.width - gridWidth) / 2);
+    const rawLeft = gridLeft + (playerPos.x - viewport.startX) * TILE_SIZE + TILE_SIZE / 2;
+    const top = rect.top + (playerPos.y - viewport.startY) * TILE_SIZE - 8;
+    const estimatedTooltipWidth = window.innerWidth < 640 ? 220 : 320;
+    const edgePadding = 8;
+
+    if (rawLeft < estimatedTooltipWidth / 2 + edgePadding) {
+      return { left: edgePadding, top, align: 'left' as const };
+    }
+
+    if (rawLeft > window.innerWidth - estimatedTooltipWidth / 2 - edgePadding) {
+      return { left: window.innerWidth - edgePadding, top, align: 'right' as const };
+    }
+
+    return { left: rawLeft, top, align: 'center' as const };
+  }, [dims.w, playerPos.x, playerPos.y, playerTileItem, viewport.startX, viewport.startY, viewportWidth]);
 
   // Process events into floating texts and flashes
   useEffect(() => {
@@ -315,22 +340,27 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
         </TooltipProvider>
       )}
 
-      {/* Item tooltip above player */}
-      {playerTileItem && dims.w > 0 && (
-        <div
-          className="absolute z-30 pointer-events-none"
-          style={{
-            left: (playerPos.x - viewport.startX) * TILE_SIZE + TILE_SIZE / 2,
-            top: (playerPos.y - viewport.startY) * TILE_SIZE - 8,
-            transform: 'translate(-50%, -100%)',
-          }}
-        >
-          <div className="bg-card border border-border rounded px-2 py-1 text-xs text-foreground shadow-lg whitespace-nowrap">
-            <span className="text-game-item font-medium">{playerTileItem.name}</span>
-            <span className="text-muted-foreground ml-1">— {playerTileItem.description}</span>
-          </div>
-        </div>
-      )}
+      {playerTileItem && groundItemTooltipPosition && typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed z-[100] pointer-events-none"
+            style={{
+              left: groundItemTooltipPosition.left,
+              top: groundItemTooltipPosition.top,
+              transform: groundItemTooltipPosition.align === 'left'
+                ? 'translateY(-100%)'
+                : groundItemTooltipPosition.align === 'right'
+                  ? 'translate(-100%, -100%)'
+                  : 'translate(-50%, -100%)',
+            }}
+          >
+            <div className="bg-card border border-border rounded px-2 py-1 text-xs text-foreground shadow-lg max-w-[min(22rem,calc(100vw-1rem))] whitespace-normal break-words">
+              <span className="text-game-item font-medium">{playerTileItem.name}</span>
+              <span className="text-muted-foreground ml-1">— {playerTileItem.description}</span>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {/* Projectile trails */}
       {projectiles.map(proj => {
