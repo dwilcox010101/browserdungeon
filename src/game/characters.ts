@@ -123,7 +123,7 @@ export const CHARACTERS: CharacterDef[] = [
     startWeapon: { name: 'Great Axe', itemType: 'weapon', rarity: 'rare', verb: 'HIT', traits: ['AOE'], manaCost: 0, power: 10, range: 1, description: 'A massive axe that cleaves nearby foes' },
     startArmor: null,
     startItems: [
-      { name: 'War Cry Scroll', itemType: 'consumable', rarity: 'uncommon', verb: 'BUFF', traits: [], manaCost: 2, power: 3, range: 0, description: 'Temporarily boosts attack by 3' },
+      { name: 'War Cry Scroll', itemType: 'consumable', rarity: 'uncommon', verb: 'BUFF', traits: [], manaCost: 2, power: 3, range: 0, description: 'Boosts STR by 3 and AGI by 1 for 8 turns' },
     ],
     unlockRequirement: { type: 'floor', floor: 7 },
   },
