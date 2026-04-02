@@ -659,9 +659,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           emit(s, { type: 'enemy_evade', pos: { ...enemy.pos } });
         } else {
           const weapon = s.player.equippedWeapon;
+          // Ranged weapons scale off agility, melee off strength
           // Magic weapons (manaCost > 0) do reduced melee damage — full power requires using the ability
+          const isRangedWeapon = weapon && weapon.range > 1;
+          const statBonus = isRangedWeapon ? s.player.agility : s.player.strength;
           const weaponBonus = weapon ? (weapon.manaCost > 0 ? Math.floor(weapon.power * 0.25) : weapon.power) : 0;
-          const atkPower = weaponBonus + s.player.strength;
+          const atkPower = weaponBonus + statBonus;
           const isCrit = rollCritical(s.player);
           let dmg = atkPower;
           if (isCrit) dmg = Math.floor(dmg * 1.5);
