@@ -75,18 +75,24 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onStart }) => {
         </div>
         <p className="text-muted-foreground text-xs mb-3">{selectedChar.description}</p>
 
-        <div className="grid grid-cols-4 gap-2 text-xs mb-3">
+        <div className="grid grid-cols-3 gap-2 text-xs mb-3">
           <div className="bg-secondary rounded p-2 flex items-center gap-1">
-            <Heart size={10} className="text-game-health" /> {selectedChar.hp}
+            <Heart size={10} className="text-game-health" /> {selectedChar.hp} HP
           </div>
           <div className="bg-secondary rounded p-2 flex items-center gap-1">
-            <Zap size={10} className="text-game-energy" /> {selectedChar.mana}
+            <Droplet size={10} className="text-game-energy" /> {selectedChar.mana} MP
           </div>
           <div className="bg-secondary rounded p-2 flex items-center gap-1">
-            <Sword size={10} className="text-primary" /> {selectedChar.strength}
+            <Sword size={10} className="text-primary" /> {selectedChar.strength} STR
           </div>
           <div className="bg-secondary rounded p-2 flex items-center gap-1">
-            <Shield size={10} className="text-primary" /> {selectedChar.defense}
+            <Wind size={10} className="text-primary" /> {selectedChar.agility} AGI
+          </div>
+          <div className="bg-secondary rounded p-2 flex items-center gap-1">
+            <Shield size={10} className="text-primary" /> {selectedChar.defense} DEF
+          </div>
+          <div className="bg-secondary rounded p-2 flex items-center gap-1">
+            <Clover size={10} className="text-primary" /> {selectedChar.luck} LCK
           </div>
         </div>
 
