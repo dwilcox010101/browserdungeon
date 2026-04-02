@@ -131,9 +131,10 @@ export function generateDungeon(
   const stairsPos = roomCenter(rooms[rooms.length - 1]);
   grid[stairsPos.y][stairsPos.x].type = isFinalFloor ? 'treasure' : 'stairs';
 
-  // Place enemies
+  // Place enemies — fewer on early floors, more on later floors
   const enemies: Entity[] = [];
-  const enemyCount = rand(3, 5) + floor;
+  const enemyCount = floor <= 2 ? rand(2, 3) : rand(3, 5) + Math.floor(floor * 0.5);
+  const eligible = ENEMY_TEMPLATES.filter(t => t.minFloor <= floor);
   for (let i = 0; i < enemyCount; i++) {
     const roomIdx = rand(1, rooms.length - 1);
     const room = rooms[roomIdx];
@@ -143,8 +144,9 @@ export function generateDungeon(
     };
     if (grid[pos.y][pos.x].type === 'floor' && !grid[pos.y][pos.x].entity &&
         !(pos.x === playerStart.x && pos.y === playerStart.y)) {
-      const template = ENEMY_TEMPLATES[rand(0, ENEMY_TEMPLATES.length - 1)];
-      const scaledHp = template.hp + floor * 3;
+      const template = eligible[rand(0, eligible.length - 1)];
+      const floorBonus = Math.max(0, floor - 1); // no stat boost on floor 1
+      const scaledHp = template.hp + floorBonus * 2;
       const enemy: Entity = {
         id: nextEntityId(),
         name: template.name,
@@ -153,10 +155,10 @@ export function generateDungeon(
         maxHp: scaledHp,
         mana: 0,
         maxMana: 0,
-        attack: template.attack + floor,
-        defense: template.defense + Math.floor(floor / 2),
-        luck: template.luck + Math.floor(floor / 3),
-        dodge: template.dodge + Math.floor(floor / 3),
+        attack: template.attack + Math.floor(floorBonus * 0.5),
+        defense: template.defense + Math.floor(floorBonus / 3),
+        luck: template.luck + Math.floor(floorBonus / 4),
+        dodge: template.dodge + Math.floor(floorBonus / 4),
         level: floor,
         xp: 0,
         xpToNext: 100,
