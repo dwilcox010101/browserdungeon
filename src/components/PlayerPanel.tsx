@@ -91,7 +91,7 @@ const ItemButton: React.FC<{ item: Item; onUse: (id: string) => void; keybind?: 
         <span className="text-emerald-400">💚 {item.power} HP</span>
       )}
       {item.power > 0 && item.verb === 'BUFF' && (
-        <span className="text-blue-400">⬆ +{item.power} ATK</span>
+        <span className="text-blue-400">⬆ +{item.power} STR</span>
       )}
       {item.defenseBonus ? <span className="text-blue-400">🛡️ +{item.defenseBonus} DEF</span> : null}
       {item.range > 1 && (
@@ -166,8 +166,8 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
       <StatBar label="XP" current={player.xp} max={player.xpToNext} icon={<Star size={12} />} colorClass="bg-primary" />
 
       <div className="grid grid-cols-3 gap-1.5 mb-4 text-xs">
-        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Attack power">
-          <Sword size={10} className="text-primary" /> ATK: {player.attack}
+        <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Strength (damage dealt)">
+          <Sword size={10} className="text-primary" /> STR: {player.strength}
         </div>
         <div className="bg-secondary rounded p-1.5 flex items-center gap-1" title="Defense (reduces damage taken)">
           <Shield size={10} className="text-primary" /> DEF: {totalDef}

@@ -136,7 +136,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
           newFlashes.push({ x: ev.pos.x, y: ev.pos.y, color: 'bg-game-enemy/40', startTime: now });
         } else if (ev.type === 'heal' && ev.amount) {
           newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: `+${ev.amount}`, color: 'hsl(var(--game-item))', startTime: now });
-        } else if (ev.type === 'player_evade' || ev.type === 'player_evade') {
+        } else if (ev.type === 'player_evade' || ev.type === 'enemy_evade') {
           newFloats.push({ id: floatIdCounter++, x: screenX, y: screenY, text: 'EVADE', color: 'hsl(var(--game-energy))', startTime: now });
         } else if (ev.type === 'crit') {
           newFloats.push({ id: floatIdCounter++, x: screenX + 12, y: screenY - 8, text: 'CRIT!', color: 'hsl(var(--primary))', startTime: now });
@@ -234,7 +234,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
       const effects = tile.entity.statusEffects.length > 0
         ? ` [${tile.entity.statusEffects.map(e => `${e.type}:${e.turnsLeft}t`).join(', ')}]`
         : '';
-      return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} ATK: ${tile.entity.attack} DEF: ${tile.entity.defense}${effects}`;
+      return `${tile.entity.name} — HP: ${tile.entity.hp}/${tile.entity.maxHp} STR: ${tile.entity.strength} DEF: ${tile.entity.defense}${effects}`;
     }
     if (tile.item) return `[${RARITY_LABEL[tile.item.rarity]}] ${tile.item.name} — ${tile.item.description}`;
     if (tile.type === 'stairs') return 'Stairs — Descend to next floor (>)';
@@ -303,7 +303,7 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                         )}
                         {isEnemy && EntityIcon && (() => {
                           const e = tile.entity!;
-                          const threat = e.attack + e.defense + Math.floor(e.maxHp / 5) + e.agility + e.rangeAttack + (e.speed > 1 ? 3 : 0);
+                          const threat = e.strength + e.defense + Math.floor(e.maxHp / 5) + e.agility + e.rangeAttack + (e.speed > 1 ? 3 : 0);
                           // threat ranges roughly 2 (Rat) to 50+ (Demon Lord)
                           const t = Math.min(threat / 40, 1);
                           // Light pink for weak, deep crimson for strong

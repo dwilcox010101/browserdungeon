@@ -83,7 +83,7 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onStart }) => {
             <Zap size={10} className="text-game-energy" /> {selectedChar.mana}
           </div>
           <div className="bg-secondary rounded p-2 flex items-center gap-1">
-            <Sword size={10} className="text-primary" /> {selectedChar.attack}
+            <Sword size={10} className="text-primary" /> {selectedChar.strength}
           </div>
           <div className="bg-secondary rounded p-2 flex items-center gap-1">
             <Shield size={10} className="text-primary" /> {selectedChar.defense}
