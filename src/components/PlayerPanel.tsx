@@ -137,9 +137,12 @@ const PlayerPanel: React.FC<PlayerPanelProps> = ({
   turn,
   targetMode,
   onUseItem,
+  onDropItem,
   onCancelTarget,
+  canDrop,
   inventoryFlash,
 }) => {
+  const [dropMode, setDropMode] = useState(false);
   const totalDef = player.defense + (player.equippedArmor?.defenseBonus ?? 0);
 
   return (
