@@ -301,9 +301,23 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, playerPos, targetMode, onTile
                         {isPlayer && EntityIcon && (
                           <EntityIcon className={`text-game-player ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
                         )}
-                        {isEnemy && EntityIcon && (
-                          <EntityIcon className={`text-game-enemy ${flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}`} size={14} />
-                        )}
+                        {isEnemy && EntityIcon && (() => {
+                          const e = tile.entity!;
+                          const threat = e.attack + e.defense + Math.floor(e.maxHp / 5) + e.dodge + e.rangeAttack + (e.speed > 1 ? 3 : 0);
+                          // threat ranges roughly 2 (Rat) to 50+ (Demon Lord)
+                          const t = Math.min(threat / 40, 1);
+                          // Light pink for weak, deep crimson for strong
+                          const lightness = Math.round(75 - t * 40); // 75% down to 35%
+                          const saturation = Math.round(50 + t * 40); // 50% up to 90%
+                          const enemyColor = `hsl(0, ${saturation}%, ${lightness}%)`;
+                          return (
+                            <EntityIcon
+                              className={flashColor ? 'animate-[wiggle_0.2s_ease-in-out]' : ''}
+                              style={{ color: enemyColor }}
+                              size={14}
+                            />
+                          );
+                        })()}
                         {hasItem && !tile.entity && (
                           <Package className={
                             tile.item!.rarity === 'legendary' ? 'text-yellow-400' :
