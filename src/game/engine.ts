@@ -267,14 +267,62 @@ function resolveVerb(
 
 // === ENEMY AI ===
 
-function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
+function hasLineOfSightEngine(grid: import('./types').Tile[][], from: Position, to: Position, width: number, height: number): boolean {
+  const dx = Math.abs(to.x - from.x);
+  const dy = Math.abs(to.y - from.y);
+  const sx = from.x < to.x ? 1 : -1;
+  const sy = from.y < to.y ? 1 : -1;
+  let err = dx - dy;
+  let { x, y } = from;
+  while (x !== to.x || y !== to.y) {
+    if (x < 0 || x >= width || y < 0 || y >= height) return false;
+    if (grid[y][x].type === 'wall' && !(x === from.x && y === from.y)) return false;
+    const e2 = 2 * err;
+    if (e2 > -dy) { err -= dy; x += sx; }
+    if (e2 < dx) { err += dx; y += sy; }
+  }
+  return true;
+}
+
+function enemyRangedAttack(state: GameState, enemy: Entity): boolean {
   const player = state.player;
   const dist = manhattan(enemy.pos, player.pos);
+  if (enemy.rangeAttack <= 0 || dist > enemy.rangeAttack || dist <= 1) return false;
+  if (!hasLineOfSightEngine(state.grid, enemy.pos, player.pos, state.width, state.height)) return false;
+
+  // Ranged attack
+  if (rollDodge(player)) {
+    state.log.push(addLog(state, `You dodge ${enemy.name}'s ranged attack!`, 'combat'));
+    emit(state, { type: 'player_dodge', pos: { ...player.pos } });
+    return true;
+  }
+  const isCrit = rollCritical(enemy);
+  let dmg = enemy.attack;
+  if (isCrit) dmg = Math.floor(dmg * 1.5);
+  dmg = Math.max(1, dmg - getPlayerDefense(player));
+  player.hp -= dmg;
+  state.log.push(addLog(state, `${enemy.name} shoots you for ${dmg} damage!${isCrit ? ' (CRIT!)' : ''}`, 'damage'));
+  emit(state, { type: 'ranged_attack', fromPos: { ...enemy.pos }, toPos: { ...player.pos } });
+  emit(state, { type: 'player_hit', pos: { ...player.pos }, amount: dmg });
+  if (isCrit) emit(state, { type: 'crit', pos: { ...player.pos } });
+  if (player.hp <= 0) {
+    state.gameOver = true;
+    state.log.push(addLog(state, 'You have been slain...', 'system'));
+    emit(state, { type: 'game_over' });
+  }
+  return true;
+}
+
+function doSingleMove(state: GameState, enemy: Entity): boolean {
+  const player = state.player;
+  const dist = manhattan(enemy.pos, player.pos);
+
+  // Melee attack if adjacent
   if (dist <= 1) {
     if (rollDodge(player)) {
       state.log.push(addLog(state, `You dodge ${enemy.name}'s attack!`, 'combat'));
       emit(state, { type: 'player_dodge', pos: { ...player.pos } });
-      return;
+      return true; // used action
     }
     const isCrit = rollCritical(enemy);
     let dmg = enemy.attack;
@@ -289,10 +337,10 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
       state.log.push(addLog(state, 'You have been slain...', 'system'));
       emit(state, { type: 'game_over' });
     }
-    return;
+    return true;
   }
 
-  if (dist > FOV_RADIUS + 2) return;
+  if (dist > FOV_RADIUS + 2) return false;
 
   const dx = Math.sign(player.pos.x - enemy.pos.x);
   const dy = Math.sign(player.pos.y - enemy.pos.y);
@@ -309,6 +357,23 @@ function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
     state.grid[enemy.pos.y][enemy.pos.x].entity = null;
     enemy.pos = moves[0];
     state.grid[enemy.pos.y][enemy.pos.x].entity = enemy;
+    return true;
+  }
+  return false;
+}
+
+function moveEnemyTowardPlayer(state: GameState, enemy: Entity): void {
+  // Try ranged attack first
+  if (enemyRangedAttack(state, enemy)) return;
+
+  // Speed determines number of moves/actions per turn
+  const moves = enemy.speed || 1;
+  for (let i = 0; i < moves; i++) {
+    if (state.gameOver) return;
+    const acted = doSingleMove(state, enemy);
+    // If enemy attacked (melee), stop — only one attack per turn
+    if (acted && manhattan(enemy.pos, state.player.pos) <= 1 && i < moves - 1) break;
+    if (!acted) break;
   }
 }
 
@@ -316,14 +381,10 @@ function processEnemyTurns(state: GameState): void {
   state.enemies.forEach(enemy => {
     if (enemy.hp <= 0) return;
 
-    // Process status effects at start of enemy turn
     const { skipTurn } = processStatusEffects(enemy, state);
-
-    // Remove enemies killed by DOT
     if (enemy.hp <= 0) return;
 
     if (skipTurn) {
-      // Fear causes flee instead of full skip
       if (hasEffect(enemy, 'fear')) {
         fleeBehavior(state, enemy);
       }
@@ -333,7 +394,6 @@ function processEnemyTurns(state: GameState): void {
     moveEnemyTowardPlayer(state, enemy);
   });
 
-  // Clean up enemies killed by DOT
   handleDeadEnemies(state);
 }
 
