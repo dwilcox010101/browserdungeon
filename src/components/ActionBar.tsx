@@ -29,8 +29,8 @@ const ActionBar: React.FC<ActionBarProps> = ({ onMove, onPass, onPickUp, onDesce
     "bg-secondary/30 text-muted-foreground/30 rounded p-1.5 cursor-not-allowed flex items-center justify-center";
 
   return (
-    <div className="bg-card border-t border-border px-3 py-3 flex justify-between gap-3 shrink-0">
-      <div className="flex-col gap-1">
+    <div className="bg-card border-t border-border px-1.5 py-2 sm:px-3 sm:py-3 flex justify-between gap-1.5 sm:gap-3 shrink-0">
+      <div className="flex flex-col gap-1 min-w-0">
         <button className={`${btnClass} flex-1`} onClick={onPass} title="Pass turn (Space/Num5)">
           <SkipForward size={14} className="mr-1" />
           <span className="text-xs hidden md:block">Pass</span>

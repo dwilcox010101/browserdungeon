@@ -315,7 +315,7 @@ const GamePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 min-w-0 w-full">
         <PlayerPanel
           player={state.player}
           floor={state.floor}
@@ -328,7 +328,7 @@ const GamePage: React.FC = () => {
           inventoryFlash={inventoryFlash}
         />
 
-        <div className="flex-1 relative min-h-0 bg-game-grid">
+        <div className="flex-1 relative min-h-0 min-w-0 bg-game-grid">
           {state.targetMode && (
             <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-primary/20 text-primary text-xs px-3 py-1 rounded z-10">
               Click a tile to target • ESC to cancel
@@ -378,7 +378,7 @@ const GamePage: React.FC = () => {
           )}
         </div>
 
-        <div className="w-1/4 bg-card border-l border-border flex flex-col h-full">
+        <div className="w-[26%] min-w-[112px] max-w-[280px] sm:w-1/4 bg-card border-l border-border flex flex-col h-full shrink-0">
           <CombatLog log={state.log} />
           <ActionBar
             onMove={handleMove}
